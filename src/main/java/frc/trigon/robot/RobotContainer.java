@@ -19,6 +19,9 @@ import frc.trigon.robot.misc.objectdetectioncamera.ObjectPoseEstimator;
 import frc.trigon.robot.misc.simulatedfield.SimulatedGamePieceConstants;
 import frc.trigon.robot.poseestimation.poseestimator.PoseEstimator;
 import frc.trigon.robot.subsystems.MotorSubsystem;
+import frc.trigon.robot.subsystems.arm.Arm;
+import frc.trigon.robot.subsystems.arm.ArmCommands;
+import frc.trigon.robot.subsystems.arm.ArmConstants;
 import frc.trigon.robot.subsystems.swerve.Swerve;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import trigon.utilities.flippable.Flippable;
@@ -32,6 +35,7 @@ public class RobotContainer {
             CameraConstants.OBJECT_DETECTION_CAMERA
     );
     public static final Swerve SWERVE = new Swerve();
+    public static final Arm ARM = new Arm();
     private LoggedDashboardChooser<Command> autoChooser;
 
     public RobotContainer() {
@@ -54,6 +58,7 @@ public class RobotContainer {
 
     private void bindDefaultCommands() {
         SWERVE.setDefaultCommand(GeneralCommands.getFieldRelativeDriveCommand());
+        ARM.setDefaultCommand(ArmCommands.setTargetPositionCommand(ArmConstants.ArmState.REST));
     }
 
     /**
@@ -71,6 +76,9 @@ public class RobotContainer {
         OperatorConstants.RESET_HEADING_TRIGGER.onTrue(CommandConstants.RESET_HEADING_COMMAND);
         OperatorConstants.DRIVE_FROM_DPAD_TRIGGER.whileTrue(CommandConstants.SELF_RELATIVE_DRIVE_FROM_DPAD_COMMAND);
         OperatorConstants.TOGGLE_BRAKE_TRIGGER.onTrue(GeneralCommands.getToggleBrakeCommand());
+
+        OperatorConstants.OPERATOR_CONTROLLER.a().whileTrue(ArmCommands.setTargetPositionCommand(ArmConstants.ArmState.L2));
+        OperatorConstants.OPERATOR_CONTROLLER.s().whileTrue(ArmCommands.setTargetPositionCommand(ArmConstants.ArmState.NET));
     }
 
     private void configureSysIDBindings(MotorSubsystem subsystem) {
