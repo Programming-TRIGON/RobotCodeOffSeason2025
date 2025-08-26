@@ -20,6 +20,7 @@ import frc.trigon.robot.misc.simulatedfield.SimulatedGamePieceConstants;
 import frc.trigon.robot.poseestimation.poseestimator.PoseEstimator;
 import frc.trigon.robot.subsystems.MotorSubsystem;
 import frc.trigon.robot.subsystems.swerve.Swerve;
+import frc.trigon.robot.subsystems.transporter.Transporter;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import trigon.utilities.flippable.Flippable;
 
@@ -32,6 +33,7 @@ public class RobotContainer {
             CameraConstants.OBJECT_DETECTION_CAMERA
     );
     public static final Swerve SWERVE = new Swerve();
+    public static final Transporter TRANSPORTER = new Transporter();
     private LoggedDashboardChooser<Command> autoChooser;
 
     public RobotContainer() {
