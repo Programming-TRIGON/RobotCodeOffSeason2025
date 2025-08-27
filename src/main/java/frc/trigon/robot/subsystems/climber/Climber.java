@@ -1,0 +1,97 @@
+package frc.trigon.robot.subsystems.climber;
+
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.Units;
+import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.trigon.robot.subsystems.MotorSubsystem;
+import trigon.hardware.misc.servo.Servo;
+import trigon.hardware.phoenix6.talonfx.TalonFXMotor;
+import trigon.hardware.phoenix6.talonfx.TalonFXSignal;
+
+public class Climber extends MotorSubsystem {
+    private final TalonFXMotor motor = ClimberConstants.MOTOR;
+    private final Servo
+            rightServo = ClimberConstants.RIGHT_SERVO,
+            leftServo = ClimberConstants.LEFT_SERVO;
+    private final VoltageOut voltageRequest = new VoltageOut(0).withEnableFOC(ClimberConstants.FOC_ENABLED);
+    private final MotionMagicVoltage positionRequest = new MotionMagicVoltage(0).withEnableFOC(ClimberConstants.FOC_ENABLED);
+    private ClimberConstants.ClimberState targetState = ClimberConstants.ClimberState.REST;
+
+    public Climber() {
+        setName("Climber");
+    }
+
+    @Override
+    public void stop() {
+        motor.stopMotor();
+        setServos(0);
+    }
+
+    @Override
+    public void updateMechanism() {
+        ClimberConstants.MECHANISM.update(
+                Rotation2d.fromRotations(motor.getSignal(TalonFXSignal.POSITION)),
+                Rotation2d.fromRotations(motor.getSignal(TalonFXSignal.CLOSED_LOOP_REFERENCE))
+        );
+    }
+
+    @Override
+    public void updatePeriodically() {
+        motor.update();
+        rightServo.update();
+        leftServo.update();
+    }
+
+    @Override
+    public void setBrake(boolean brake) {
+        motor.setBrake(brake);
+    }
+
+    @Override
+    public SysIdRoutine.Config getSysIDConfig() {
+        return ClimberConstants.SYSID_CONFIG;
+    }
+
+    @Override
+    public void updateLog(SysIdRoutineLog log) {
+        log.motor("ClimberMotor")
+                .angularPosition(Units.Rotations.of(motor.getSignal(TalonFXSignal.POSITION)))
+                .angularVelocity(Units.RotationsPerSecond.of(motor.getSignal(TalonFXSignal.VELOCITY)))
+                .voltage(Units.Volts.of(motor.getSignal(TalonFXSignal.MOTOR_VOLTAGE)));
+    }
+
+    @Override
+    public void sysIDDrive(double targetDrivePower) {
+        motor.setControl(voltageRequest.withOutput(targetDrivePower));
+    }
+
+    public boolean atState(ClimberConstants.ClimberState targetState) {
+        return this.targetState == targetState && atTargetState();
+    }
+
+    public boolean atTargetState() {
+        return Math.abs(motor.getSignal(TalonFXSignal.POSITION) - targetState.targetPositionRotations) < ClimberConstants.CLIMBER_TOLERANCE_ROTATIONS;
+    }
+
+    public boolean hasCage() {
+        return ClimberConstants.HAS_CAGE_BOOLEAN_EVENT.getAsBoolean();
+    }
+
+    void setTargetState(ClimberConstants.ClimberState targetState) {
+        this.targetState = targetState;
+        setTargetState(targetState.targetPositionRotations, targetState.targetServoPower);
+    }
+
+    void setTargetState(double targetPositionRotations, double targetServoPower) {
+        motor.setControl(positionRequest.withPosition(targetPositionRotations));
+        setServos(targetServoPower);
+    }
+
+    private void setServos(double power) {
+        rightServo.set(power);
+        leftServo.set(-power);
+    }
+}
