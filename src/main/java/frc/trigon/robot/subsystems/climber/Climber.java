@@ -2,11 +2,12 @@ package frc.trigon.robot.subsystems.climber;
 
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
-import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.trigon.robot.subsystems.MotorSubsystem;
+import org.littletonrobotics.junction.Logger;
 import trigon.hardware.misc.servo.Servo;
 import trigon.hardware.phoenix6.talonfx.TalonFXMotor;
 import trigon.hardware.phoenix6.talonfx.TalonFXSignal;
@@ -36,6 +37,8 @@ public class Climber extends MotorSubsystem {
                 Rotation2d.fromRotations(motor.getSignal(TalonFXSignal.POSITION)),
                 Rotation2d.fromRotations(motor.getSignal(TalonFXSignal.CLOSED_LOOP_REFERENCE))
         );
+
+        Logger.recordOutput("Poses/Components/ClimberPose", calculateVisualizationPose());
     }
 
     @Override
@@ -93,5 +96,14 @@ public class Climber extends MotorSubsystem {
     private void setServos(double power) {
         rightServo.set(power);
         leftServo.set(-power);
+    }
+
+    private Pose3d calculateVisualizationPose() {
+        final Transform3d climberTransform = new Transform3d(
+                new Translation3d(0, 0, 0),
+                new Rotation3d(-Rotation2d.fromRotations(motor.getSignal(TalonFXSignal.POSITION)).getRadians(), 0, 0)
+        );
+
+        return ClimberConstants.CLIMBER_VISUALIZATION_ORIGIN_POINT.transformBy(climberTransform);
     }
 }
