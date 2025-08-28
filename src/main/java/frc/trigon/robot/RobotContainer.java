@@ -58,7 +58,6 @@ public class RobotContainer {
 
     private void bindDefaultCommands() {
         SWERVE.setDefaultCommand(GeneralCommands.getFieldRelativeDriveCommand());
-        ARM.setDefaultCommand(ArmCommands.setTargetPositionCommand(ArmConstants.ArmState.REST));
     }
 
     /**
@@ -76,9 +75,6 @@ public class RobotContainer {
         OperatorConstants.RESET_HEADING_TRIGGER.onTrue(CommandConstants.RESET_HEADING_COMMAND);
         OperatorConstants.DRIVE_FROM_DPAD_TRIGGER.whileTrue(CommandConstants.SELF_RELATIVE_DRIVE_FROM_DPAD_COMMAND);
         OperatorConstants.TOGGLE_BRAKE_TRIGGER.onTrue(GeneralCommands.getToggleBrakeCommand());
-
-        OperatorConstants.OPERATOR_CONTROLLER.a().whileTrue(ArmCommands.setTargetPositionCommand(ArmConstants.ArmState.L2));
-        OperatorConstants.OPERATOR_CONTROLLER.s().whileTrue(ArmCommands.setTargetPositionCommand(ArmConstants.ArmState.NET));
     }
 
     private void configureSysIDBindings(MotorSubsystem subsystem) {
