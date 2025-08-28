@@ -14,8 +14,8 @@ public class ClimberCommands {
                 (targetPositionRotations, targetServoSpeed) -> RobotContainer.CLIMBER.setTargetState(targetPositionRotations, targetServoSpeed, false),
                 false,
                 Set.of(RobotContainer.CLIMBER),
-                "TargetPositionRotations",
-                "TargetServoSpeed"
+                "Debugging/TargetPositionRotations",
+                "Debugging/TargetServoSpeed"
         );
     }
 
