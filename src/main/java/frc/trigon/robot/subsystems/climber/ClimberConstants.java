@@ -46,7 +46,7 @@ public class ClimberConstants {
     static final double GEAR_RATIO = 37.5;
     static final int
             GROUNDED_PID_SLOT = 0,
-            ON_CHAIN_PID_SLOT = 1;
+            ON_CAGE_PID_SLOT = 1;
     private static final double REVERSE_LIMIT_SWITCH_RESET_POSITION = 0;
     private static final double FORWARD_SOFT_LIMIT_POSITION_ROTATIONS = 3;
     static final boolean FOC_ENABLED = true;
@@ -76,6 +76,7 @@ public class ClimberConstants {
             Color.kGreen
     );
 
+    public static final double MAXIMUM_MANUAL_CONTROL_VOLTAGE = 4;
     static final BooleanEvent HAS_CAGE_BOOLEAN_EVENT = new BooleanEvent(
             CommandScheduler.getInstance().getActiveButtonLoop(),
             CAGE_SENSOR::getBinaryValue

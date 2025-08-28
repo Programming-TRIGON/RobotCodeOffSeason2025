@@ -68,7 +68,7 @@ public class Climber extends MotorSubsystem {
 
     @Override
     public void sysIDDrive(double targetDrivePower) {
-        motor.setControl(voltageRequest.withOutput(targetDrivePower));
+        setTargetVoltage(targetDrivePower);
     }
 
     public boolean atState(ClimberConstants.ClimberState targetState) {
@@ -85,12 +85,19 @@ public class Climber extends MotorSubsystem {
 
     void setTargetState(ClimberConstants.ClimberState targetState) {
         this.targetState = targetState;
-        setTargetState(targetState.targetPositionRotations, targetState.targetServoPower);
+        setTargetState(targetState.targetPositionRotations, targetState.targetServoPower, targetState.affectedByRobotWeight);
     }
 
-    void setTargetState(double targetPositionRotations, double targetServoPower) {
-        motor.setControl(positionRequest.withPosition(targetPositionRotations));
+    void setTargetState(double targetPositionRotations, double targetServoPower, boolean affectedByRobotWeight) {
+        final MotionMagicVoltage positionRequest = this.positionRequest
+                .withPosition(targetPositionRotations)
+                .withSlot(affectedByRobotWeight ? ClimberConstants.ON_CAGE_PID_SLOT : ClimberConstants.GROUNDED_PID_SLOT);
+        motor.setControl(positionRequest);
         setServos(targetServoPower);
+    }
+
+    void setTargetVoltage(double targetVoltage) {
+        motor.setControl(voltageRequest.withOutput(targetVoltage));
     }
 
     private void setServos(double power) {
