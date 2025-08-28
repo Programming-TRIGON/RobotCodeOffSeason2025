@@ -25,7 +25,7 @@ import java.util.function.DoubleSupplier;
 
 public class ClimberConstants {
     private static final int
-            MOTOR_ID = 20,
+            MOTOR_ID = 18,
             REVERSE_LIMIT_SENSOR_CHANNEL = 0,
             RIGHT_SERVO_CHANNEL = 1,
             LEFT_SERVO_CHANNEL = 2,
