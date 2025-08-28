@@ -38,19 +38,19 @@ public class ArmConstants {
     private static final double ANGLE_ENCODER_GRAVITY_OFFSET = 0;
     private static final boolean SHOULD_FOLLOWER_OPPOSE_MASTER = false;
     static final double
-            DEFAULT_MAXIMUM_VELOCITY = RobotHardwareStats.isSimulation() ? 80 : 20,
-            DEFAULT_MAXIMUM_ACCELERATION = RobotHardwareStats.isSimulation() ? 80 : 50,
-            DEFAULT_MAXIMUM_JERK = RobotHardwareStats.isSimulation() ? 20 : 10;
+            DEFAULT_MAXIMUM_VELOCITY = RobotHardwareStats.isSimulation() ? 0.8 : 0.8,
+            DEFAULT_MAXIMUM_ACCELERATION = RobotHardwareStats.isSimulation() ? 5 : 5,
+            DEFAULT_MAXIMUM_JERK = RobotHardwareStats.isSimulation() ? 50 : 10;
     static final boolean FOC_ENABLED = true;
 
     private static final int MOTOR_AMOUNT = 2;
     private static final DCMotor GEARBOX = DCMotor.getKrakenX60Foc(MOTOR_AMOUNT);
     private static final double
-            ARM_LENGTH_METERS = 1,
+            ARM_LENGTH_METERS = 0.67,
             ARM_MASS_KILOGRAMS = 3.5;
     private static final Rotation2d
             ARM_MINIMUM_ANGLE = new Rotation2d(0),
-            ARM_MAXIMUM_ANGLE = new Rotation2d(360);
+            ARM_MAXIMUM_ANGLE = new Rotation2d(359);
     private static final boolean SHOULD_SIMULATE_GRAVITY = true;
     private static final SingleJointedArmSimulation SIMULATION = new SingleJointedArmSimulation(
             GEARBOX,
@@ -84,6 +84,7 @@ public class ArmConstants {
     static {
         configureMasterMotor();
         configureFollowerMotor();
+        configureEncoder();
     }
 
     private static void configureMasterMotor() {
@@ -94,15 +95,19 @@ public class ArmConstants {
 
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-        config.Feedback.SensorToMechanismRatio = GEAR_RATIO;
+        config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+        config.Feedback.FeedbackRemoteSensorID = 33;            // ENCODER_ID
+        config.Feedback.RotorToSensorRatio = 50;
+        config.Feedback.SensorToMechanismRatio = 1;
+
 
         config.Slot0.kP = RobotHardwareStats.isSimulation() ? 40 : 6.5905;
         config.Slot0.kI = RobotHardwareStats.isSimulation() ? 0 : 0;
         config.Slot0.kD = RobotHardwareStats.isSimulation() ? 0.22774 : 0.2;
-        config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0.066659 : 0.25513;
-        config.Slot0.kV = RobotHardwareStats.isSimulation() ? 0.74502 : 0.52756;
-        config.Slot0.kA = RobotHardwareStats.isSimulation() ? 0 : 0;
-        config.Slot0.kG = RobotHardwareStats.isSimulation() ? 0.30539 : 0.4;
+        config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0.4 : 0.25513;
+        config.Slot0.kV = RobotHardwareStats.isSimulation() ? 6.0 : 0.52756;
+        config.Slot0.kA = RobotHardwareStats.isSimulation() ? 0.38 : 0;
+        config.Slot0.kG = RobotHardwareStats.isSimulation() ? 0.6 : 0.4;
 
         config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
         config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
@@ -151,13 +156,13 @@ public class ArmConstants {
     }
 
     public enum ArmState {
-        REST(new Rotation2d(0)),
-        L1(new Rotation2d(90)),
-        L2(new Rotation2d(110)),
-        L3(new Rotation2d(110)),
-        L4(new Rotation2d(165)),
-        NET(new Rotation2d(165)),
-        PROCESSOR(new Rotation2d(50));
+        REST(Rotation2d.fromDegrees(0)),
+        L1(Rotation2d.fromDegrees(90)),
+        L2(Rotation2d.fromDegrees(110)),
+        L3(Rotation2d.fromDegrees(110)),
+        L4(Rotation2d.fromDegrees(165)),
+        NET(Rotation2d.fromDegrees(160)),
+        PROCESSOR(Rotation2d.fromDegrees(50));
 
         public final Rotation2d targetAngle;
 

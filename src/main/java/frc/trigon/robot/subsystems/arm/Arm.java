@@ -68,7 +68,7 @@ public class Arm extends MotorSubsystem {
     public void updatePeriodically() {
         masterMotor.update();
         encoder.update();
-        Logger.recordOutput("Elevator/CurrentPositionMeters", getAngle());
+        Logger.recordOutput("Arm/CurrentPositionMeters", getAngle());
     }
 
     @Override
