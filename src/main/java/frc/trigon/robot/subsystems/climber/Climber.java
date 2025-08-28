@@ -34,7 +34,7 @@ public class Climber extends MotorSubsystem {
     @Override
     public void updateMechanism() {
         ClimberConstants.MECHANISM.update(
-                Rotation2d.fromRotations(motor.getSignal(TalonFXSignal.POSITION)),
+                Rotation2d.fromRotations(getPositionRotations()),
                 Rotation2d.fromRotations(motor.getSignal(TalonFXSignal.CLOSED_LOOP_REFERENCE))
         );
 
@@ -61,7 +61,7 @@ public class Climber extends MotorSubsystem {
     @Override
     public void updateLog(SysIdRoutineLog log) {
         log.motor("ClimberMotor")
-                .angularPosition(Units.Rotations.of(motor.getSignal(TalonFXSignal.POSITION)))
+                .angularPosition(Units.Rotations.of(getPositionRotations()))
                 .angularVelocity(Units.RotationsPerSecond.of(motor.getSignal(TalonFXSignal.VELOCITY)))
                 .voltage(Units.Volts.of(motor.getSignal(TalonFXSignal.MOTOR_VOLTAGE)));
     }
@@ -76,7 +76,7 @@ public class Climber extends MotorSubsystem {
     }
 
     public boolean atTargetState() {
-        return Math.abs(motor.getSignal(TalonFXSignal.POSITION) - targetState.targetPositionRotations) < ClimberConstants.CLIMBER_TOLERANCE_ROTATIONS;
+        return Math.abs(getPositionRotations() - targetState.targetPositionRotations) < ClimberConstants.CLIMBER_TOLERANCE_ROTATIONS;
     }
 
     public boolean hasCage() {
@@ -108,9 +108,13 @@ public class Climber extends MotorSubsystem {
     private Pose3d calculateVisualizationPose() {
         final Transform3d climberTransform = new Transform3d(
                 new Translation3d(0, 0, 0),
-                new Rotation3d(-Rotation2d.fromRotations(motor.getSignal(TalonFXSignal.POSITION)).getRadians(), 0, 0)
+                new Rotation3d(-Rotation2d.fromRotations(getPositionRotations()).getRadians(), 0, 0)
         );
 
         return ClimberConstants.CLIMBER_VISUALIZATION_ORIGIN_POINT.transformBy(climberTransform);
+    }
+
+    private double getPositionRotations() {
+        return motor.getSignal(TalonFXSignal.POSITION);
     }
 }
