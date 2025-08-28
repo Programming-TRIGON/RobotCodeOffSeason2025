@@ -95,11 +95,10 @@ public class ArmConstants {
 
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-        config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
-        config.Feedback.FeedbackRemoteSensorID = 33;            // ENCODER_ID
-        config.Feedback.RotorToSensorRatio = 50;
-        config.Feedback.SensorToMechanismRatio = 1;
+        config.Feedback.RotorToSensorRatio = GEAR_RATIO;
 
+        config.Feedback.FeedbackRemoteSensorID = MASTER_MOTOR.getID();
+        config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
 
         config.Slot0.kP = RobotHardwareStats.isSimulation() ? 40 : 6.5905;
         config.Slot0.kI = RobotHardwareStats.isSimulation() ? 0 : 0;
