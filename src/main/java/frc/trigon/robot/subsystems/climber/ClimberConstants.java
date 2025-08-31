@@ -34,14 +34,15 @@ public class ClimberConstants {
             MOTOR_NAME = "ClimberMotor",
             REVERSE_LIMIT_SWITCH_NAME = "ClimberReverseLimitSwitch",
             RIGHT_SERVO_NAME = "ClimberRightServo",
-            LEFT_SERVO_NAME = "ClimberLeftServo";
+            LEFT_SERVO_NAME = "ClimberLeftServo",
+            CAGE_SENSOR_NAME = "ClimberCageSensor";
     static final TalonFXMotor MOTOR = new TalonFXMotor(MOTOR_ID, MOTOR_NAME);
     static final Servo
             RIGHT_SERVO = new Servo(RIGHT_SERVO_CHANNEL, RIGHT_SERVO_NAME),
             LEFT_SERVO = new Servo(LEFT_SERVO_CHANNEL, LEFT_SERVO_NAME);
     private static final SimpleSensor
             REVERSE_LIMIT_SENSOR = SimpleSensor.createDigitalSensor(REVERSE_LIMIT_SENSOR_CHANNEL, REVERSE_LIMIT_SWITCH_NAME),
-            CAGE_SENSOR = SimpleSensor.createDigitalSensor(CAGE_SENSOR_CHANNEL, "ClimberCageSensor");
+            CAGE_SENSOR = SimpleSensor.createDigitalSensor(CAGE_SENSOR_CHANNEL, CAGE_SENSOR_NAME);
 
     static final double GEAR_RATIO = 37.5;
     static final int
