@@ -85,7 +85,13 @@ public class Arm extends MotorSubsystem {
 
     void setTargetState(ArmConstants.ArmState targetState) {
         this.targetState = targetState;
-        setTargetAngle(targetState.targetAngle);
+        setTargetState(
+                targetState.targetAngle,
+                targetState.targetVoltage);
+    }
+
+    void setTargetState(Rotation2d targetAngle, double targetVoltage) {
+        setTargetAngle(targetAngle);
     }
 
     private Rotation2d getAngle() {
