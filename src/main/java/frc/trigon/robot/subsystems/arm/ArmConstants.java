@@ -18,6 +18,7 @@ import trigon.hardware.phoenix6.cancoder.CANcoderSignal;
 import trigon.hardware.phoenix6.talonfx.TalonFXMotor;
 import trigon.hardware.phoenix6.talonfx.TalonFXSignal;
 import trigon.hardware.simulation.SingleJointedArmSimulation;
+import trigon.utilities.Conversions;
 import trigon.utilities.mechanisms.SingleJointedArmMechanism2d;
 
 public class ArmConstants {
@@ -36,6 +37,7 @@ public class ArmConstants {
 
     private static final double GEAR_RATIO = 50;
     private static final double ANGLE_ENCODER_GRAVITY_OFFSET = 0;
+    static final double POSITION_OFFSET_FROM_GRAVITY_OFFSET = RobotHardwareStats.isSimulation() ? 0 : 0 + Conversions.degreesToRotations(0) - ANGLE_ENCODER_GRAVITY_OFFSET;
     private static final boolean SHOULD_FOLLOWER_OPPOSE_MASTER = false;
     static final double
             DEFAULT_MAXIMUM_VELOCITY = RobotHardwareStats.isSimulation() ? 0 : 0,

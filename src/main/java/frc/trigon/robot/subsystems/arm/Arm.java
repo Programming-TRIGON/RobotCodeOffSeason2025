@@ -58,7 +58,7 @@ public class Arm extends MotorSubsystem {
         Logger.recordOutput("Poses/Components/ArmPose", calculateComponentPose());
         ArmConstants.MECHANISM.update(
                 getAngle(),
-                targetState.targetAngle
+                Rotation2d.fromRotations(masterMotor.getSignal(TalonFXSignal.CLOSED_LOOP_REFERENCE) + ArmConstants.POSITION_OFFSET_FROM_GRAVITY_OFFSET)
         );
     }
 
