@@ -154,8 +154,6 @@ public abstract class MotorSubsystem extends edu.wpi.first.wpilibj2.command.Subs
         setDefaultCommand(newDefaultCommand);
     }
 
-    public abstract SysIdRoutine.Config getSysIdConfig();
-
     public abstract void stop();
 
     private SysIdRoutine createSysIDRoutine() {
@@ -173,5 +171,4 @@ public abstract class MotorSubsystem extends edu.wpi.first.wpilibj2.command.Subs
         );
     }
 
-    public abstract void sysIdDrive(double targetVoltage);
 }

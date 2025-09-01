@@ -23,7 +23,7 @@ public class Elevator extends MotorSubsystem {
     }
 
     @Override
-    public SysIdRoutine.Config getSysIdConfig() {
+    public SysIdRoutine.Config getSysIDConfig() {
         return ElevatorConstants.SYSID_CONFIG;
     }
 
@@ -47,7 +47,7 @@ public class Elevator extends MotorSubsystem {
     }
 
     @Override
-    public void sysIdDrive(double targetVoltage) {
+    public void sysIDDrive(double targetVoltage) {
         masterMotor.setControl(voltageRequest.withOutput(targetVoltage));
     }
 
