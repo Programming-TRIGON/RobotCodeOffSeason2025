@@ -38,9 +38,9 @@ public class ArmConstants {
     private static final double ANGLE_ENCODER_GRAVITY_OFFSET = 0;
     private static final boolean SHOULD_FOLLOWER_OPPOSE_MASTER = false;
     static final double
-            DEFAULT_MAXIMUM_VELOCITY = RobotHardwareStats.isSimulation() ? 0.8 : 0.8,
-            DEFAULT_MAXIMUM_ACCELERATION = RobotHardwareStats.isSimulation() ? 5 : 5,
-            DEFAULT_MAXIMUM_JERK = RobotHardwareStats.isSimulation() ? 50 : 10;
+            DEFAULT_MAXIMUM_VELOCITY = RobotHardwareStats.isSimulation() ? 0 : 0,
+            DEFAULT_MAXIMUM_ACCELERATION = RobotHardwareStats.isSimulation() ? 0 : 0,
+            DEFAULT_MAXIMUM_JERK = DEFAULT_MAXIMUM_ACCELERATION * 10;
     static final boolean FOC_ENABLED = true;
 
     private static final int MOTOR_AMOUNT = 2;
@@ -79,7 +79,7 @@ public class ArmConstants {
             Color.kBlue
     );
 
-    static final Rotation2d ANGLE_TOLERANCE = new Rotation2d(5);
+    static final Rotation2d ANGLE_TOLERANCE = Rotation2d.fromDegrees(0);
 
     static {
         configureMasterMotor();
@@ -100,13 +100,13 @@ public class ArmConstants {
         config.Feedback.FeedbackRemoteSensorID = MASTER_MOTOR.getID();
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
 
-        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 40 : 6.5905;
+        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 0 : 0;
         config.Slot0.kI = RobotHardwareStats.isSimulation() ? 0 : 0;
-        config.Slot0.kD = RobotHardwareStats.isSimulation() ? 0.22774 : 0.2;
-        config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0.4 : 0.25513;
-        config.Slot0.kV = RobotHardwareStats.isSimulation() ? 6.0 : 0.52756;
-        config.Slot0.kA = RobotHardwareStats.isSimulation() ? 0.38 : 0;
-        config.Slot0.kG = RobotHardwareStats.isSimulation() ? 0.6 : 0.4;
+        config.Slot0.kD = RobotHardwareStats.isSimulation() ? 0 : 0;
+        config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0 : 0;
+        config.Slot0.kV = RobotHardwareStats.isSimulation() ? 0 : 0;
+        config.Slot0.kA = RobotHardwareStats.isSimulation() ? 0 : 0;
+        config.Slot0.kG = RobotHardwareStats.isSimulation() ? 0 : 0;
 
         config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
         config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
