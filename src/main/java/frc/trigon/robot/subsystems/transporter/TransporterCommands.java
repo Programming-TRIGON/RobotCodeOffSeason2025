@@ -8,16 +8,17 @@ import trigon.commands.NetworkTablesCommand;
 import java.util.Set;
 
 public class TransporterCommands {
-    public Command getDebuggingCommand() {
+    public static Command getDebuggingCommand() {
         return new NetworkTablesCommand(
                 RobotContainer.TRANSPORTER::setTargetVoltage,
                 false,
                 Set.of(RobotContainer.TRANSPORTER),
-                "Debugging/TransporterTargetVoltage"
+                "Debugging/TransporterTargetRightMotorVoltage",
+                "Debugging/TransporterTargetLeftMotorVoltage"
         );
     }
 
-    public Command getSetTargetStateCommand(TransporterConstants.TransporterState targetState) {
+    public static Command getSetTargetStateCommand(TransporterConstants.TransporterState targetState) {
         return new StartEndCommand(
                 () -> RobotContainer.TRANSPORTER.setTargetState(targetState),
                 RobotContainer.TRANSPORTER::stop,
@@ -25,9 +26,9 @@ public class TransporterCommands {
         );
     }
 
-    public Command getSetTargetVoltageCommand(double targetVoltage) {
+    public static Command getSetTargetVoltageCommand(double rightMotorVoltage, double leftMotorVoltage) {
         return new StartEndCommand(
-                () -> RobotContainer.TRANSPORTER.setTargetVoltage(targetVoltage),
+                () -> RobotContainer.TRANSPORTER.setTargetVoltage(rightMotorVoltage, leftMotorVoltage),
                 RobotContainer.TRANSPORTER::stop,
                 RobotContainer.TRANSPORTER
         );

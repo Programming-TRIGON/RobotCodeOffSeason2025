@@ -1,10 +1,11 @@
 package frc.trigon.robot.subsystems.transporter;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.event.BooleanEvent;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import trigon.hardware.misc.simplesensor.SimpleSensor;
 import trigon.hardware.phoenix6.talonfx.TalonFXMotor;
 import trigon.hardware.phoenix6.talonfx.TalonFXSignal;
@@ -15,45 +16,58 @@ import java.util.function.DoubleSupplier;
 
 public class TransporterConstants {
     private static final int
-            MASTER_MOTOR_ID = 11,
-            FOLLOWER_MOTOR_ID = 12,
+            RIGHT_MOTOR_ID = 11,
+            LEFT_MOTOR_ID = 12,
             BEAM_BREAK_CHANNEL = 3;
     private static final String
-            MASTER_MOTOR_NAME = "TransporterMasterMotor",
-            FOLLOWER_MOTOR_NAME = "TransporterFollowerMotor",
+            RIGHT_MOTOR_NAME = "TransporterRightMotor",
+            LEFT_MOTOR_NAME = "TransporterLeftMotor",
             BEAM_BREAK_NAME = "TransporterBeamBreak";
     static final TalonFXMotor
-            MASTER_MOTOR = new TalonFXMotor(MASTER_MOTOR_ID, MASTER_MOTOR_NAME),
-            FOLLOWER_MOTOR = new TalonFXMotor(FOLLOWER_MOTOR_ID, FOLLOWER_MOTOR_NAME);
-    static final SimpleSensor BEAM_BREAK = SimpleSensor.createAnalogSensor(BEAM_BREAK_CHANNEL, BEAM_BREAK_NAME);
+            RIGHT_MOTOR = new TalonFXMotor(RIGHT_MOTOR_ID, RIGHT_MOTOR_NAME),
+            LEFT_MOTOR = new TalonFXMotor(LEFT_MOTOR_ID, LEFT_MOTOR_NAME);
+    private static final SimpleSensor BEAM_BREAK = SimpleSensor.createDigitalSensor(BEAM_BREAK_CHANNEL, BEAM_BREAK_NAME);
 
     private static double GEAR_RATIO = 3;
-    private static final boolean SHOULD_FOLLOWER_OPPOSE_MASTER = true;
     static boolean FOC_ENABLED = true;
-
-    private static int MOTOR_AMOUNT = 2;
+    private static int MOTOR_AMOUNT = 1;
     private static DCMotor GEARBOX = DCMotor.getKrakenX60(MOTOR_AMOUNT);
     private static final double MOMENT_OF_INERTIA = 0.003;
-    private static final SimpleMotorSimulation SIMULATION = new SimpleMotorSimulation(
+    private static final SimpleMotorSimulation RIGHT_MOTOR_SIMULATION = new SimpleMotorSimulation(
             GEARBOX,
             GEAR_RATIO,
             MOMENT_OF_INERTIA
-    );
+    ),
+            LEFT_MOTOR_SIMULATION = new SimpleMotorSimulation(
+                    GEARBOX,
+                    GEAR_RATIO,
+                    MOMENT_OF_INERTIA
+            );
     private static final DoubleSupplier BEAM_BREAK_SIMULATION_SUPPLIER = () -> 0; //TODO: implement
 
     private static final double MAXIMUM_DISPLAYABLE_VELOCITY = 12;
-    static final SpeedMechanism2d MECHANISM = new SpeedMechanism2d(
-            "TranporterMechanism",
+    static final SpeedMechanism2d RIGHT_MOTOR_MECHANSIM = new SpeedMechanism2d(
+            "TranporterRightMotorMechanism",
             MAXIMUM_DISPLAYABLE_VELOCITY
-    );
+    ),
+            LEFT_MOTOR_MECHANSIM = new SpeedMechanism2d(
+                    "TranporterLeftMotorMechanism",
+                    MAXIMUM_DISPLAYABLE_VELOCITY
+            );
+
+    private static final double HAS_CORAL_DEBOUNCE_TIME_SECONDS = 0.2;
+    static final BooleanEvent HAS_CORAL_BOOLEAN_EVENT = new BooleanEvent(
+            CommandScheduler.getInstance().getActiveButtonLoop(),
+            BEAM_BREAK::getBinaryValue
+    ).debounce(HAS_CORAL_DEBOUNCE_TIME_SECONDS);
 
     static {
-        configureMasterMotor();
-        configureFollowerMotor();
+        configureMotor(RIGHT_MOTOR, RIGHT_MOTOR_SIMULATION);
+        configureMotor(LEFT_MOTOR, LEFT_MOTOR_SIMULATION);
         configureBeamBreak();
     }
 
-    private static void configureMasterMotor() {
+    private static void configureMotor(TalonFXMotor motor, SimpleMotorSimulation simulation) {
         final TalonFXConfiguration config = new TalonFXConfiguration();
 
         config.Audio.BeepOnBoot = false;
@@ -63,26 +77,11 @@ public class TransporterConstants {
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         config.Feedback.SensorToMechanismRatio = GEAR_RATIO;
 
-        MASTER_MOTOR.applyConfiguration(config);
-        MASTER_MOTOR.setPhysicsSimulation(SIMULATION);
+        motor.applyConfiguration(config);
+        motor.setPhysicsSimulation(simulation);
 
-        MASTER_MOTOR.registerSignal(TalonFXSignal.MOTOR_VOLTAGE, 100);
-        MASTER_MOTOR.registerSignal(TalonFXSignal.STATOR_CURRENT, 100);
-    }
-
-    private static void configureFollowerMotor() {
-        final TalonFXConfiguration config = new TalonFXConfiguration();
-
-        config.Audio.BeepOnBoot = false;
-        config.Audio.BeepOnConfig = false;
-
-        config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-
-        FOLLOWER_MOTOR.applyConfiguration(config);
-
-        final Follower followerRequest = new Follower(MASTER_MOTOR.getID(), SHOULD_FOLLOWER_OPPOSE_MASTER);
-        FOLLOWER_MOTOR.setControl(followerRequest);
+        motor.registerSignal(TalonFXSignal.MOTOR_VOLTAGE, 100);
+        motor.registerSignal(TalonFXSignal.STATOR_CURRENT, 100);
     }
 
 
@@ -91,14 +90,18 @@ public class TransporterConstants {
     }
 
     public enum TransporterState {
-        REST(0),
-        COLLECT(5),
-        EJECT(-5);
+        REST(0, 1),
+        COLLECT(5, 1),
+        ALIGN(5, 1.2),
+        EJECT(-5, 1);
 
-        public double targetVoltage;
+        public double
+                targetVoltage,
+                voltageScalar;
 
-        TransporterState(double targetVoltage) {
+        TransporterState(double targetVoltage, double voltageScalar) {
             this.targetVoltage = targetVoltage;
+            this.voltageScalar = voltageScalar;
         }
     }
 }

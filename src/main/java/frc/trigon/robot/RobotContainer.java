@@ -21,6 +21,8 @@ import frc.trigon.robot.poseestimation.poseestimator.PoseEstimator;
 import frc.trigon.robot.subsystems.MotorSubsystem;
 import frc.trigon.robot.subsystems.swerve.Swerve;
 import frc.trigon.robot.subsystems.transporter.Transporter;
+import frc.trigon.robot.subsystems.transporter.TransporterCommands;
+import frc.trigon.robot.subsystems.transporter.TransporterConstants;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import trigon.utilities.flippable.Flippable;
 
@@ -56,6 +58,7 @@ public class RobotContainer {
 
     private void bindDefaultCommands() {
         SWERVE.setDefaultCommand(GeneralCommands.getFieldRelativeDriveCommand());
+        TRANSPORTER.setDefaultCommand(TransporterCommands.getSetTargetStateCommand(TransporterConstants.TransporterState.REST));
     }
 
     /**

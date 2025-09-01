@@ -6,7 +6,9 @@ import trigon.hardware.phoenix6.talonfx.TalonFXMotor;
 import trigon.hardware.phoenix6.talonfx.TalonFXSignal;
 
 public class Transporter extends MotorSubsystem {
-    private final TalonFXMotor masterMotor = TransporterConstants.MASTER_MOTOR;
+    private final TalonFXMotor
+            rightMotor = TransporterConstants.RIGHT_MOTOR,
+            leftMotor = TransporterConstants.LEFT_MOTOR;
     private final VoltageOut voltageRequest = new VoltageOut(0).withEnableFOC(TransporterConstants.FOC_ENABLED);
     private TransporterConstants.TransporterState targetState = TransporterConstants.TransporterState.REST;
 
@@ -16,25 +18,45 @@ public class Transporter extends MotorSubsystem {
 
     @Override
     public void updatePeriodically() {
-        masterMotor.update();
+        rightMotor.update();
     }
 
     @Override
     public void updateMechanism() {
-        TransporterConstants.MECHANISM.update(masterMotor.getSignal(TalonFXSignal.MOTOR_VOLTAGE));
+        TransporterConstants.RIGHT_MOTOR_MECHANSIM.update(rightMotor.getSignal(TalonFXSignal.MOTOR_VOLTAGE));
+        TransporterConstants.LEFT_MOTOR_MECHANSIM.update(leftMotor.getSignal(TalonFXSignal.MOTOR_VOLTAGE));
     }
 
     @Override
     public void stop() {
-        masterMotor.stopMotor();
+        rightMotor.stopMotor();
+    }
+
+    public TransporterConstants.TransporterState getTargetState() {
+        return targetState;
+    }
+
+    public boolean hasCoral() {
+        return TransporterConstants.HAS_CORAL_BOOLEAN_EVENT.getAsBoolean();
     }
 
     void setTargetState(TransporterConstants.TransporterState targetState) {
         this.targetState = targetState;
-        setTargetVoltage(targetState.targetVoltage);
+        setTargetVoltage(targetState.targetVoltage, targetState.targetVoltage * targetState.voltageScalar);
     }
 
-    void setTargetVoltage(double targetVoltage) {
-        masterMotor.setControl(voltageRequest.withOutput(targetVoltage));
+    void setTargetVoltage(double rightMotorVoltage, double leftMotorVoltage) {
+        setTargetRightMotorVoltage(rightMotorVoltage);
+        setTargetLeftMotorVoltage(leftMotorVoltage);
+    }
+
+    private void setTargetRightMotorVoltage(double targetVoltage) {
+        TransporterConstants.RIGHT_MOTOR_MECHANSIM.setTargetVelocity(targetVoltage);
+        rightMotor.setControl(voltageRequest.withOutput(targetVoltage));
+    }
+
+    private void setTargetLeftMotorVoltage(double targetVoltage) {
+        TransporterConstants.LEFT_MOTOR_MECHANSIM.setTargetVelocity(targetVoltage);
+        leftMotor.setControl(voltageRequest.withOutput(targetVoltage));
     }
 }
