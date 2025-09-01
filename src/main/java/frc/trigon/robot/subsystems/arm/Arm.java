@@ -22,8 +22,8 @@ public class Arm extends MotorSubsystem {
             0,
             ArmConstants.DEFAULT_MAXIMUM_VELOCITY,
             ArmConstants.DEFAULT_MAXIMUM_ACCELERATION,
-            ArmConstants.DEFAULT_MAXIMUM_JERK);
-
+            ArmConstants.DEFAULT_MAXIMUM_JERK
+    );
     private ArmConstants.ArmState targetState = ArmConstants.ArmState.REST;
 
     public Arm() {

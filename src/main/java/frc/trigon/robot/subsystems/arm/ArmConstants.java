@@ -68,15 +68,15 @@ public class ArmConstants {
             Units.Second.of(1000)
     );
 
-    static final Pose3d ARM_VISUALIZATION_ORIGIN_POINT = new Pose3d(
-            new Translation3d(0, 0, 0),
-            new Rotation3d(0, 0, 0)
-    );
-
     static final SingleJointedArmMechanism2d MECHANISM = new SingleJointedArmMechanism2d(
             "ArmMechanism",
             ARM_LENGTH_METERS,
             Color.kBlue
+    );
+
+    static final Pose3d ARM_VISUALIZATION_ORIGIN_POINT = new Pose3d(
+            new Translation3d(0, 0, 0),
+            new Rotation3d(0, 0, 0)
     );
 
     static final Rotation2d ANGLE_TOLERANCE = Rotation2d.fromDegrees(0);
@@ -155,18 +155,26 @@ public class ArmConstants {
     }
 
     public enum ArmState {
-        REST(Rotation2d.fromDegrees(0)),
-        L1(Rotation2d.fromDegrees(90)),
-        L2(Rotation2d.fromDegrees(110)),
-        L3(Rotation2d.fromDegrees(110)),
-        L4(Rotation2d.fromDegrees(165)),
-        NET(Rotation2d.fromDegrees(160)),
-        PROCESSOR(Rotation2d.fromDegrees(50));
+        REST(Rotation2d.fromDegrees(180), 0),
+        SCORE_L1(Rotation2d.fromDegrees(75), 4),
+        SCORE_L2(Rotation2d.fromDegrees(90), 4),
+        SCORE_L3(Rotation2d.fromDegrees(90), 4),
+        SCORE_L4(Rotation2d.fromDegrees(90), 4),
+        SCORE_NET(Rotation2d.fromDegrees(160), 4),
+        SCORE_PROCESSOR(Rotation2d.fromDegrees(90), 4),
+        SCORE_L1_REVERSE(Rotation2d.fromDegrees(-75), 4),
+        SCORE_L2_REVERSE(Rotation2d.fromDegrees(-90), 4),
+        SCORE_L3_REVERSE(Rotation2d.fromDegrees(-90), 4),
+        SCORE_L4_REVERSE(Rotation2d.fromDegrees(-90), 4),
+        SCORE_NET_REVERSE(Rotation2d.fromDegrees(-160), 4),
+        SCORE_PROCESSOR_REVERSE(Rotation2d.fromDegrees(-90), 4);
 
         public final Rotation2d targetAngle;
+        public final double targetVoltage;
 
-        ArmState(Rotation2d targetAngle) {
+        ArmState(Rotation2d targetAngle, double targetVoltage) {
             this.targetAngle = targetAngle;
+            this.targetVoltage = targetVoltage;
         }
     }
 }
