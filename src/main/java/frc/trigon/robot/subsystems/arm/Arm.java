@@ -91,11 +91,23 @@ public class Arm extends MotorSubsystem {
     }
 
     void setTargetState(Rotation2d targetAngle, double targetVoltage) {
-        setTargetAngle(targetAngle);
+        setTargetAngleWithSkibidyLogic(targetAngle);
     }
 
     private Rotation2d getAngle() {
         return Rotation2d.fromRotations(encoder.getSignal(CANcoderSignal.POSITION));
+    }
+
+    private void setTargetAngleWithSkibidyLogic(Rotation2d targetAngle) {
+        if (Math.abs(getAngle().getDegrees() - targetAngle.getDegrees()) > 180) {
+            if (getAngle().getDegrees() < targetAngle.getDegrees())
+                setTargetAngle(Rotation2d.fromDegrees(getAngle().getDegrees() - (360 + getAngle().getDegrees()) - targetAngle.getDegrees()));
+            else if (getAngle().getDegrees() > targetAngle.getDegrees())
+                setTargetAngle(Rotation2d.fromDegrees(getAngle().getDegrees() + (360 + getAngle().getDegrees()) - targetAngle.getDegrees()));
+            else
+                System.out.println("something wrong with the logic");
+        }
+
     }
 
     private void setTargetAngle(Rotation2d targetAngle) {
