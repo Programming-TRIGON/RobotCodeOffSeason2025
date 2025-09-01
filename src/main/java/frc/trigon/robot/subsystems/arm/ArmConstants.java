@@ -51,8 +51,8 @@ public class ArmConstants {
             ARM_LENGTH_METERS = 0.67,
             ARM_MASS_KILOGRAMS = 3.5;
     private static final Rotation2d
-            ARM_MINIMUM_ANGLE = new Rotation2d(0),
-            ARM_MAXIMUM_ANGLE = new Rotation2d(359);
+            ARM_MINIMUM_ANGLE = Rotation2d.fromDegrees(180),
+            ARM_MAXIMUM_ANGLE = Rotation2d.fromDegrees(-179);
     private static final boolean SHOULD_SIMULATE_GRAVITY = true;
     private static final SingleJointedArmSimulation SIMULATION = new SingleJointedArmSimulation(
             GEARBOX,
