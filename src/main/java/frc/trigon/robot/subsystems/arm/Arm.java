@@ -15,8 +15,7 @@ import trigon.hardware.phoenix6.talonfx.TalonFXSignal;
 
 public class Arm extends MotorSubsystem {
     private final TalonFXMotor
-            masterMotor = ArmConstants.MASTER_MOTOR,
-            followerMotor = ArmConstants.FOLLOWER_MOTOR;
+            masterMotor = ArmConstants.MASTER_MOTOR;
     private final CANcoderEncoder encoder = ArmConstants.ENCODER;
     private final VoltageOut voltageRequest = new VoltageOut(0).withEnableFOC(ArmConstants.FOC_ENABLED);
     private final DynamicMotionMagicVoltage positionRequest = new DynamicMotionMagicVoltage(
@@ -39,7 +38,6 @@ public class Arm extends MotorSubsystem {
     @Override
     public void setBrake(boolean brake) {
         masterMotor.setBrake(brake);
-        followerMotor.setBrake(brake);
     }
 
     @Override
