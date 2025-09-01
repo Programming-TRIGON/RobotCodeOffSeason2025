@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.trigon.robot.subsystems.MotorSubsystem;
 import org.littletonrobotics.junction.AutoLogOutput;
-import trigon.hardware.misc.simplesensor.SimpleSensor;
 import trigon.hardware.phoenix6.talonfx.TalonFXMotor;
 import trigon.hardware.phoenix6.talonfx.TalonFXSignal;
 
@@ -16,10 +15,6 @@ public class Intake extends MotorSubsystem {
     private final TalonFXMotor
             intakeMotor = IntakeConstants.INTAKE_MOTOR,
             angleMotor = IntakeConstants.ANGLE_MOTOR;
-    private final SimpleSensor
-            minimumAngleBeamBreak = IntakeConstants.MINIMUM_ANGLE_BEAM_BREAK,
-            maximumAngleBeamBreak = IntakeConstants.MAXIMUM_ANGLE_BEAM_BREAK,
-            distanceSensor = IntakeConstants.DISTANCE_SENSOR;
     private final VoltageOut voltageRequest = new VoltageOut(0).withEnableFOC(IntakeConstants.FOC_ENABLED);
     private final MotionMagicVoltage positionRequest = new MotionMagicVoltage(0).withEnableFOC(IntakeConstants.FOC_ENABLED);
     private IntakeConstants.IntakeState targetState = IntakeConstants.IntakeState.REST;
@@ -55,9 +50,9 @@ public class Intake extends MotorSubsystem {
     public void updatePeriodically() {
         intakeMotor.update();
         angleMotor.update();
-        minimumAngleBeamBreak.updateSensor();
-        maximumAngleBeamBreak.updateSensor();
-        distanceSensor.updateSensor();
+        IntakeConstants.FORWARD_LIMIT_SENSOR.updateSensor();
+        IntakeConstants.REVERSE_LIMIT_SENSOR.updateSensor();
+        IntakeConstants.DISTANCE_SENSOR.updateSensor();
     }
 
     @Override

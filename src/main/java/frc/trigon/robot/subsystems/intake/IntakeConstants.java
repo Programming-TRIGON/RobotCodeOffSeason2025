@@ -11,7 +11,9 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.wpilibj.event.BooleanEvent;
 import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.trigon.robot.misc.simulatedfield.SimulationFieldHandler;
 import trigon.hardware.RobotHardwareStats;
@@ -29,21 +31,21 @@ public class IntakeConstants {
     private static final int
             INTAKE_MOTOR_ID = 9,
             ANGLE_MOTOR_ID = 10,
-            MAXIMUM_ANGLE_BEAM_BREAK_CHANNEL = 0,
-            MINIMUM_ANGLE_BEAM_BREAK_CHANNEL = 1,
+            REVERSE_LIMIT_SENSOR_CHANNEL = 0,
+            FORWARD_LIMIT_CHANNEL = 1,
             DISTANCE_SENSOR_CHANNEL = 2;
     private static final String
             INTAKE_MOTOR_NAME = "IntakeMotor",
             ANGLE_MOTOR_NAME = "IntakeAngleMotor",
-            MAXIMUM_ANGLE_BEAM_BREAK_NAME = "IntakeMaximumAngleBeamBreak",
-            MINIMUM_ANGLE_BEAM_BREAK_NAME = "IntakeMinimumAngleBeamBreak",
+            REVERSE_LIMIT_SWITCH_NAME = "IntakeReverseLimitSwitch",
+            FORWARD_LIMIT_SWITCH_NAME = "IntakeForwardLimitSwitch",
             DISTANCE_SENSOR_NAME = "IntakeDistanceSensor";
     static final TalonFXMotor
             INTAKE_MOTOR = new TalonFXMotor(INTAKE_MOTOR_ID, INTAKE_MOTOR_NAME),
             ANGLE_MOTOR = new TalonFXMotor(ANGLE_MOTOR_ID, ANGLE_MOTOR_NAME);
     static final SimpleSensor
-            MAXIMUM_ANGLE_BEAM_BREAK = SimpleSensor.createDigitalSensor(MAXIMUM_ANGLE_BEAM_BREAK_CHANNEL, MAXIMUM_ANGLE_BEAM_BREAK_NAME),
-            MINIMUM_ANGLE_BEAM_BREAK = SimpleSensor.createDigitalSensor(MINIMUM_ANGLE_BEAM_BREAK_CHANNEL, MINIMUM_ANGLE_BEAM_BREAK_NAME),
+            REVERSE_LIMIT_SENSOR = SimpleSensor.createDigitalSensor(REVERSE_LIMIT_SENSOR_CHANNEL, REVERSE_LIMIT_SWITCH_NAME),
+            FORWARD_LIMIT_SENSOR = SimpleSensor.createDigitalSensor(FORWARD_LIMIT_CHANNEL, FORWARD_LIMIT_SWITCH_NAME),
             DISTANCE_SENSOR = SimpleSensor.createDutyCycleSensor(DISTANCE_SENSOR_CHANNEL, DISTANCE_SENSOR_NAME);
 
     private static final double
@@ -63,11 +65,11 @@ public class IntakeConstants {
 
     private static final double MOMENT_OF_INERTIA = 0.003;
     private static final double
-            INTAKE_LENGTH_METERS = 0.44, //TODO: get actual numbers
-            INTAKE_MASS_KILOGRAMS = 8;
+            INTAKE_LENGTH_METERS = 0.365,
+            INTAKE_MASS_KILOGRAMS = 3.26;
     private static final Rotation2d
-            MINIMUM_ANGLE = Rotation2d.fromDegrees(-15), //TODO: get actual numbers
-            MAXIMUM_ANGLE = Rotation2d.fromDegrees(50);
+            MINIMUM_ANGLE = Rotation2d.fromDegrees(8.34),
+            MAXIMUM_ANGLE = Rotation2d.fromDegrees(70);
     private static final boolean SHOULD_SIMULATE_GRAVITY = true;
     private static final SimpleMotorSimulation INTAKE_SIMULATION = new SimpleMotorSimulation(
             INTAKE_GEARBOX,
@@ -84,9 +86,18 @@ public class IntakeConstants {
             SHOULD_SIMULATE_GRAVITY
     );
     private static final DoubleSupplier
-            MAXIMUM_ANGLE_BEAM_BREAK_SIMULATION_SUPPLIER = () -> 0,
-            MINIMUM_ANGLE_BEAM_BREAK_SIMULATION_SUPPLIER = () -> 0,
+            REVERSE_LIMIT_SENSOR_SIMULATION_SUPPLIER = () -> 0,
+            FORWARD_LIMIT_SENSOR_SIMULATION_SUPPLIER = () -> 0, //TODO: implement
             DISTANCE_SENSOR_SIMULATION_SUPPLIER = () -> SimulationFieldHandler.isHoldingGamePiece() ? 0 : 1000;
+    private static final BooleanEvent
+            REVERSE_LIMIT_SENSOR_BOOLEAN_EVENT = new BooleanEvent(
+            CommandScheduler.getInstance().getActiveButtonLoop(),
+            REVERSE_LIMIT_SENSOR::getBinaryValue
+    ),
+            FORWARD_LIMIT_SENSOR_BOOLEAN_EVENT = new BooleanEvent(
+                    CommandScheduler.getInstance().getActiveButtonLoop(),
+                    FORWARD_LIMIT_SENSOR::getBinaryValue
+            );
 
     static final SysIdRoutine.Config ANGLE_SYSID_CONFIG = new SysIdRoutine.Config(
             Units.Volts.of(1).per(Units.Second),
@@ -95,8 +106,8 @@ public class IntakeConstants {
     );
 
     static final Pose3d INTAKE_VISUALIZATION_ORIGIN_POINT = new Pose3d(
-            new Translation3d(0, 0, 0),
-            new Rotation3d(0, 0, 0) //TODO: get actual numbers
+            new Translation3d(0, 0.29449, 0.32349),
+            new Rotation3d(0, MINIMUM_ANGLE.getRadians(), 0)
     );
     private static final double MAXIMUM_DISPLAYABLE_VELOCITY = 12;
     static final SpeedMechanism2d INTAKE_MECHANISM = new SpeedMechanism2d(
@@ -117,7 +128,8 @@ public class IntakeConstants {
     static {
         configureIntakeMotor();
         configureAngleMotor();
-        configureBeamBreaks();
+        configureLimitSensor(REVERSE_LIMIT_SENSOR, REVERSE_LIMIT_SENSOR_SIMULATION_SUPPLIER, REVERSE_LIMIT_SENSOR_BOOLEAN_EVENT, MINIMUM_ANGLE);
+        configureLimitSensor(FORWARD_LIMIT_SENSOR, FORWARD_LIMIT_SENSOR_SIMULATION_SUPPLIER, FORWARD_LIMIT_SENSOR_BOOLEAN_EVENT, MAXIMUM_ANGLE);
         configureDistanceSensor();
     }
 
@@ -131,6 +143,12 @@ public class IntakeConstants {
         config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         config.Feedback.RotorToSensorRatio = INTAKE_MOTOR_GEAR_RATIO;
         config.CurrentLimits.SupplyCurrentLimit = 60;
+
+        config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+        config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = MINIMUM_ANGLE.getRotations();
+
+        config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+        config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = MAXIMUM_ANGLE.getRotations();
 
         INTAKE_MOTOR.applyConfiguration(config);
         INTAKE_MOTOR.setPhysicsSimulation(INTAKE_SIMULATION);
@@ -155,7 +173,7 @@ public class IntakeConstants {
         config.Slot0.kI = RobotHardwareStats.isSimulation() ? 0 : 0;
         config.Slot0.kD = RobotHardwareStats.isSimulation() ? 0 : 0;
         config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0 : 0;
-        config.Slot0.kV = RobotHardwareStats.isSimulation() ? 0 : 0;
+        config.Slot0.kV = RobotHardwareStats.isSimulation() ? 0.1 : 0;
         config.Slot0.kA = RobotHardwareStats.isSimulation() ? 0 : 0;
         config.Slot0.kG = RobotHardwareStats.isSimulation() ? 0 : 0;
 
@@ -186,9 +204,10 @@ public class IntakeConstants {
         ANGLE_MOTOR.registerSignal(TalonFXSignal.CLOSED_LOOP_REFERENCE, 100);
     }
 
-    private static void configureBeamBreaks() {
-        MINIMUM_ANGLE_BEAM_BREAK.setSimulationSupplier(MINIMUM_ANGLE_BEAM_BREAK_SIMULATION_SUPPLIER);
-        MAXIMUM_ANGLE_BEAM_BREAK.setSimulationSupplier(MAXIMUM_ANGLE_BEAM_BREAK_SIMULATION_SUPPLIER);
+    private static void configureLimitSensor(SimpleSensor limitSensor, DoubleSupplier simulationSupplier, BooleanEvent booleanEvent, Rotation2d resetPosition) {
+        limitSensor.setSimulationSupplier(simulationSupplier);
+
+        booleanEvent.ifHigh(() -> ANGLE_MOTOR.setPosition(resetPosition.getRotations()));
     }
 
     private static void configureDistanceSensor() {
