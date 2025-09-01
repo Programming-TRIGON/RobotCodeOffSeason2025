@@ -105,7 +105,7 @@ public class Arm extends MotorSubsystem {
             else if (getAngle().getDegrees() > targetAngle.getDegrees())
                 setTargetAngle(Rotation2d.fromDegrees(getAngle().getDegrees() + (360 + getAngle().getDegrees()) - targetAngle.getDegrees()));
             else
-                System.out.println("something wrong with the logic");
+                System.out.println("something wrong is with the logic");
         }
 
     }
