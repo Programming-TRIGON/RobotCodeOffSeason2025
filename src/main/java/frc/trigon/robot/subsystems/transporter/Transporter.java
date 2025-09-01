@@ -19,6 +19,8 @@ public class Transporter extends MotorSubsystem {
     @Override
     public void updatePeriodically() {
         rightMotor.update();
+        leftMotor.update();
+        TransporterConstants.BEAM_BREAK.updateSensor();
     }
 
     @Override
@@ -30,6 +32,9 @@ public class Transporter extends MotorSubsystem {
     @Override
     public void stop() {
         rightMotor.stopMotor();
+        leftMotor.stopMotor();
+        TransporterConstants.RIGHT_MOTOR_MECHANSIM.setTargetVelocity(0);
+        TransporterConstants.LEFT_MOTOR_MECHANSIM.setTargetVelocity(0);
     }
 
     public TransporterConstants.TransporterState getTargetState() {
