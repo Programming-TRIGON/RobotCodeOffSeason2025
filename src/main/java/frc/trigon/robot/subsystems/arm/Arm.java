@@ -79,19 +79,17 @@ public class Arm extends MotorSubsystem {
     }
 
     public boolean atTargetState() {
-        if (targetState == null)
-            return false;
         final double currentToTargetStateDifferenceDegrees = Math.abs(targetState.targetAngle.minus(getAngle()).getDegrees());
         return currentToTargetStateDifferenceDegrees < ArmConstants.ANGLE_TOLERANCE.getDegrees();
-    }
-
-    public Rotation2d getAngle() {
-        return Rotation2d.fromRotations(encoder.getSignal(CANcoderSignal.POSITION));
     }
 
     void setTargetState(ArmConstants.ArmState targetState) {
         this.targetState = targetState;
         setTargetAngle(targetState.targetAngle);
+    }
+
+    private Rotation2d getAngle() {
+        return Rotation2d.fromRotations(encoder.getSignal(CANcoderSignal.POSITION));
     }
 
     private void setTargetAngle(Rotation2d targetAngle) {
