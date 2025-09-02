@@ -8,26 +8,35 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.wpilibj.event.BooleanEvent;
 import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import trigon.hardware.RobotHardwareStats;
+import trigon.hardware.misc.simplesensor.SimpleSensor;
 import trigon.hardware.phoenix6.talonfx.TalonFXMotor;
 import trigon.hardware.phoenix6.talonfx.TalonFXSignal;
 import trigon.hardware.simulation.ElevatorSimulation;
 import trigon.utilities.mechanisms.ElevatorMechanism2d;
 
+import java.util.function.DoubleSupplier;
+
 public class ElevatorConstants {
     private static final int
             MASTER_MOTOR_ID = 21,
-            FOLLOWER_MOTOR_ID = 22;
+            FOLLOWER_MOTOR_ID = 22,
+            REVERSE_LIMIT_SENSOR_CHANNEL = 0;
     private static final String
             MASTER_MOTOR_NAME = "ElevatorMasterMotor",
-            FOLLOWER_MOTOR_NAME = "ElevatorFollowerMotor";
+            FOLLOWER_MOTOR_NAME = "ElevatorFollowerMotor",
+            REVERSE_LIMIT_SWITCH_NAME = "ElevatorReverseLimitSwitch";
     static final TalonFXMotor
             MASTER_MOTOR = new TalonFXMotor(MASTER_MOTOR_ID, MASTER_MOTOR_NAME),
             FOLLOWER_MOTOR = new TalonFXMotor(FOLLOWER_MOTOR_ID, FOLLOWER_MOTOR_NAME);
+    private static final SimpleSensor REVERSE_LIMIT_SENSOR = SimpleSensor.createDigitalSensor(REVERSE_LIMIT_SENSOR_CHANNEL, REVERSE_LIMIT_SWITCH_NAME);
 
     private static final double GEAR_RATIO = 4;
+    private static final double REVERSE_LIMIT_SWITCH_RESET_POSITION = 0;
     private static final boolean SHOULD_FOLLOWER_OPPOSE_MASTER = true;
     static final double
             DEFAULT_MAXIMUM_VELOCITY = RobotHardwareStats.isSimulation() ? 0 : 0,
@@ -72,13 +81,13 @@ public class ElevatorConstants {
             Color.kYellow
     );
 
+    private static final DoubleSupplier REVERSE_LIMIT_SWITCH_SIMULATION_SUPPLIER = () -> 0;
     static final double DRUM_DIAMETER_METERS = DRUM_RADIUS_METERS * 2;
-
-
 
     static {
         configureMasterMotor();
         configureFollowerMotor();
+        configureReverseLimitSwitch();
     }
 
     private static void configureMasterMotor() {
@@ -144,6 +153,17 @@ public class ElevatorConstants {
         final Follower followerRequest = new Follower(MASTER_MOTOR.getID(), SHOULD_FOLLOWER_OPPOSE_MASTER);
         FOLLOWER_MOTOR.setControl(followerRequest);
     }
+
+    private static void configureReverseLimitSwitch() {
+        REVERSE_LIMIT_SENSOR.setSimulationSupplier(REVERSE_LIMIT_SWITCH_SIMULATION_SUPPLIER);
+        
+        final BooleanEvent reverseLimitSwitchBooleanEvent = new BooleanEvent(
+                CommandScheduler.getInstance().getActiveButtonLoop(),
+                REVERSE_LIMIT_SENSOR::getBinaryValue
+        );
+    }
+
+
 
     public enum ElevatorState {
         REST(0, 0.7),

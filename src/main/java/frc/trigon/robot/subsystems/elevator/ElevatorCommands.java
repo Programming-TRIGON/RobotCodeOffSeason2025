@@ -25,7 +25,7 @@ public class ElevatorCommands {
         );
     }
 
-    public static Command getSetTargetVoltageCommand(ElevatorConstants.ElevatorState targetState) {
+    public static Command getSetTargetStateCommand(ElevatorConstants.ElevatorState targetState) {
         return new StartEndCommand(
                 () -> RobotContainer.ELEVATOR.setTargetState(targetState),
                 RobotContainer.ELEVATOR::stop,
