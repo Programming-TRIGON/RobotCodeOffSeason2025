@@ -15,7 +15,7 @@ import trigon.hardware.phoenix6.talonfx.TalonFXSignal;
 
 public class Arm extends MotorSubsystem {
     private final TalonFXMotor
-            masterMotor = ArmConstants.MASTER_MOTOR;
+            armMasterMotor = ArmConstants.ARM_MASTER_MOTOR;
     private final CANcoderEncoder encoder = ArmConstants.ENCODER;
     private final VoltageOut voltageRequest = new VoltageOut(0).withEnableFOC(ArmConstants.FOC_ENABLED);
     private final DynamicMotionMagicVoltage positionRequest = new DynamicMotionMagicVoltage(
@@ -37,20 +37,20 @@ public class Arm extends MotorSubsystem {
 
     @Override
     public void setBrake(boolean brake) {
-        masterMotor.setBrake(brake);
+        armMasterMotor.setBrake(brake);
     }
 
     @Override
     public void stop() {
-        masterMotor.stopMotor();
+        armMasterMotor.stopMotor();
     }
 
     @Override
     public void updateLog(SysIdRoutineLog log) {
         log.motor("Arm")
                 .angularPosition(Units.Degrees.of(encoder.getSignal(CANcoderSignal.POSITION)))
-                .angularVelocity(Units.RotationsPerSecond.of(masterMotor.getSignal(TalonFXSignal.VELOCITY)))
-                .voltage(Units.Volts.of(masterMotor.getSignal(TalonFXSignal.MOTOR_VOLTAGE)));
+                .angularVelocity(Units.RotationsPerSecond.of(armMasterMotor.getSignal(TalonFXSignal.VELOCITY)))
+                .voltage(Units.Volts.of(armMasterMotor.getSignal(TalonFXSignal.MOTOR_VOLTAGE)));
     }
 
     @Override
@@ -58,20 +58,20 @@ public class Arm extends MotorSubsystem {
         Logger.recordOutput("Poses/Components/ArmPose", calculateComponentPose());
         ArmConstants.MECHANISM.update(
                 getAngle(),
-                Rotation2d.fromRotations(masterMotor.getSignal(TalonFXSignal.CLOSED_LOOP_REFERENCE) + ArmConstants.POSITION_OFFSET_FROM_GRAVITY_OFFSET)
+                Rotation2d.fromRotations(armMasterMotor.getSignal(TalonFXSignal.CLOSED_LOOP_REFERENCE) + ArmConstants.POSITION_OFFSET_FROM_GRAVITY_OFFSET)
         );
     }
 
     @Override
     public void updatePeriodically() {
-        masterMotor.update();
+        armMasterMotor.update();
         encoder.update();
         Logger.recordOutput("Arm/CurrentPositionMeters", getAngle());
     }
 
     @Override
     public void sysIDDrive(double targetVoltage) {
-        masterMotor.setControl(voltageRequest.withOutput(targetVoltage));
+        armMasterMotor.setControl(voltageRequest.withOutput(targetVoltage));
     }
 
     public boolean atState(ArmConstants.ArmState targetState) {
@@ -111,7 +111,7 @@ public class Arm extends MotorSubsystem {
     }
 
     private void setTargetAngle(Rotation2d targetAngle) {
-        masterMotor.setControl(positionRequest.withPosition(targetAngle.getRotations()));
+        armMasterMotor.setControl(positionRequest.withPosition(targetAngle.getRotations()));
     }
 
     private Pose3d calculateComponentPose() {

@@ -25,17 +25,22 @@ public class ArmConstants {
     private static final int
             MASTER_MOTOR_ID = 13,
             FOLLOWER_MOTOR_ID = 14,
+            END_EFFECTOR_MOTOR_ID = 15,
             ENCODER_ID = 13;
     private static final String
             MASTER_MOTOR_NAME = "ArmMasterMotor",
             FOLLOWER_MOTOR_NAME = "ArmFollowerMotor",
+            END_EFFECTOR_MOTOR_NAME = "EndEffectorMotor",
             ENCODER_NAME = "ArmEncoder";
     static final TalonFXMotor
-            MASTER_MOTOR = new TalonFXMotor(MASTER_MOTOR_ID, MASTER_MOTOR_NAME),
-            FOLLOWER_MOTOR = new TalonFXMotor(FOLLOWER_MOTOR_ID, FOLLOWER_MOTOR_NAME);
+            ARM_MASTER_MOTOR = new TalonFXMotor(MASTER_MOTOR_ID, MASTER_MOTOR_NAME),
+            ARM_FOLLOWER_MOTOR = new TalonFXMotor(FOLLOWER_MOTOR_ID, FOLLOWER_MOTOR_NAME),
+            END_EFFECTOR_MOTOR = new TalonFXMotor(END_EFFECTOR_MOTOR_ID, END_EFFECTOR_MOTOR_NAME);
     static final CANcoderEncoder ENCODER = new CANcoderEncoder(ENCODER_ID, ENCODER_NAME);
 
-    private static final double GEAR_RATIO = 50;
+    private static final double
+            ARM_GEAR_RATIO = 50,
+            END_EFFECTOR_GEAR_RATIO = 17;
     private static final double ANGLE_ENCODER_GRAVITY_OFFSET = 0;
     static final double POSITION_OFFSET_FROM_GRAVITY_OFFSET = RobotHardwareStats.isSimulation() ? 0 : 0 + Conversions.degreesToRotations(0) - ANGLE_ENCODER_GRAVITY_OFFSET;
     private static final boolean SHOULD_FOLLOWER_OPPOSE_MASTER = false;
@@ -56,7 +61,7 @@ public class ArmConstants {
     private static final boolean SHOULD_SIMULATE_GRAVITY = true;
     private static final SingleJointedArmSimulation SIMULATION = new SingleJointedArmSimulation(
             GEARBOX,
-            GEAR_RATIO,
+            ARM_GEAR_RATIO,
             ARM_LENGTH_METERS,
             ARM_MASS_KILOGRAMS,
             ARM_MINIMUM_ANGLE,
@@ -97,9 +102,9 @@ public class ArmConstants {
 
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-        config.Feedback.RotorToSensorRatio = GEAR_RATIO;
+        config.Feedback.RotorToSensorRatio = ARM_GEAR_RATIO;
 
-        config.Feedback.FeedbackRemoteSensorID = MASTER_MOTOR.getID();
+        config.Feedback.FeedbackRemoteSensorID = ARM_MASTER_MOTOR.getID();
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
 
         config.Slot0.kP = RobotHardwareStats.isSimulation() ? 0 : 0;
@@ -117,14 +122,14 @@ public class ArmConstants {
         config.MotionMagic.MotionMagicAcceleration = DEFAULT_MAXIMUM_ACCELERATION;
         config.MotionMagic.MotionMagicJerk = config.MotionMagic.MotionMagicAcceleration * 10;
 
-        MASTER_MOTOR.applyConfiguration(config);
-        MASTER_MOTOR.setPhysicsSimulation(SIMULATION);
+        ARM_MASTER_MOTOR.applyConfiguration(config);
+        ARM_MASTER_MOTOR.setPhysicsSimulation(SIMULATION);
 
-        MASTER_MOTOR.registerSignal(TalonFXSignal.POSITION, 100);
-        MASTER_MOTOR.registerSignal(TalonFXSignal.VELOCITY, 100);
-        MASTER_MOTOR.registerSignal(TalonFXSignal.MOTOR_VOLTAGE, 100);
-        MASTER_MOTOR.registerSignal(TalonFXSignal.CLOSED_LOOP_REFERENCE, 100);
-        MASTER_MOTOR.registerSignal(TalonFXSignal.STATOR_CURRENT, 100);
+        ARM_MASTER_MOTOR.registerSignal(TalonFXSignal.POSITION, 100);
+        ARM_MASTER_MOTOR.registerSignal(TalonFXSignal.VELOCITY, 100);
+        ARM_MASTER_MOTOR.registerSignal(TalonFXSignal.MOTOR_VOLTAGE, 100);
+        ARM_MASTER_MOTOR.registerSignal(TalonFXSignal.CLOSED_LOOP_REFERENCE, 100);
+        ARM_MASTER_MOTOR.registerSignal(TalonFXSignal.STATOR_CURRENT, 100);
     }
 
     private static void configureFollowerMotor() {
@@ -136,10 +141,10 @@ public class ArmConstants {
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
-        FOLLOWER_MOTOR.applyConfiguration(config);
+        ARM_FOLLOWER_MOTOR.applyConfiguration(config);
 
-        final Follower followerRequest = new Follower(MASTER_MOTOR.getID(), SHOULD_FOLLOWER_OPPOSE_MASTER);
-        FOLLOWER_MOTOR.setControl(followerRequest);
+        final Follower followerRequest = new Follower(ARM_MASTER_MOTOR.getID(), SHOULD_FOLLOWER_OPPOSE_MASTER);
+        ARM_FOLLOWER_MOTOR.setControl(followerRequest);
     }
 
     private static void configureEncoder() {
@@ -150,7 +155,7 @@ public class ArmConstants {
         config.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
 
         ENCODER.applyConfiguration(config);
-        ENCODER.setSimulationInputsFromTalonFX(MASTER_MOTOR);
+        ENCODER.setSimulationInputsFromTalonFX(ARM_MASTER_MOTOR);
 
         ENCODER.registerSignal(CANcoderSignal.POSITION, 100);
         ENCODER.registerSignal(CANcoderSignal.VELOCITY, 100);
