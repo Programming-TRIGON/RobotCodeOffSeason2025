@@ -73,6 +73,7 @@ public class Intake extends MotorSubsystem {
 
     @Override
     public void stop() {
+        IntakeConstants.INTAKE_MECHANISM.setTargetVelocity(0);
         intakeMotor.stopMotor();
         angleMotor.stopMotor();
     }
@@ -102,6 +103,7 @@ public class Intake extends MotorSubsystem {
     }
 
     private void setTargetVoltage(double voltage) {
+        IntakeConstants.INTAKE_MECHANISM.setTargetVelocity(voltage);
         intakeMotor.setControl(voltageRequest.withOutput(voltage));
     }
 
