@@ -5,6 +5,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -44,12 +45,17 @@ public class ClimberConstants {
             REVERSE_LIMIT_SENSOR = SimpleSensor.createDigitalSensor(REVERSE_LIMIT_SENSOR_CHANNEL, REVERSE_LIMIT_SWITCH_NAME),
             CAGE_SENSOR = SimpleSensor.createDigitalSensor(CAGE_SENSOR_CHANNEL, CAGE_SENSOR_NAME);
 
-    static final double GEAR_RATIO = 37.5;
+    private static final double
+            MOTOR_TO_SPOOL_GEAR_RATIO = 37.5,
+            SPOOL_DIAMETER_METERS = 0.05,
+            ROPE_ATTACHMENT_TO_ROTATION_CENTER_METERS = 0.3,
+            GEAR_RATIO = MOTOR_TO_SPOOL_GEAR_RATIO * ROPE_ATTACHMENT_TO_ROTATION_CENTER_METERS / (Math.PI * SPOOL_DIAMETER_METERS);
     static final int
             GROUNDED_PID_SLOT = 0,
             ON_CAGE_PID_SLOT = 1;
-    private static final double REVERSE_LIMIT_SENSOR_RESET_POSITION = 0;
-    private static final double FORWARD_SOFT_LIMIT_POSITION_ROTATIONS = 3;
+    private static final Rotation2d
+            REVERSE_LIMIT_SENSOR_RESET_POSITION = Rotation2d.fromDegrees(0),
+            FORWARD_SOFT_LIMIT_POSITION_ROTATIONS = Rotation2d.fromDegrees(90);
     static final boolean FOC_ENABLED = true;
 
     private static final int MOTOR_AMOUNT = 1;
@@ -118,12 +124,13 @@ public class ClimberConstants {
         config.MotionMagic.MotionMagicJerk = config.MotionMagic.MotionMagicAcceleration * 10;
 
         config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-        config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = FORWARD_SOFT_LIMIT_POSITION_ROTATIONS;
+        config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = FORWARD_SOFT_LIMIT_POSITION_ROTATIONS.getRotations();
 
         config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-        config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = REVERSE_LIMIT_SENSOR_RESET_POSITION;
+        config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = REVERSE_LIMIT_SENSOR_RESET_POSITION.getRotations();
 
         config.Feedback.SensorToMechanismRatio = GEAR_RATIO;
+        System.out.println(GEAR_RATIO);
 
         MOTOR.applyConfiguration(config);
         MOTOR.setPhysicsSimulation(MOTOR_SIMULATION);
@@ -144,20 +151,20 @@ public class ClimberConstants {
                 CommandScheduler.getInstance().getActiveButtonLoop(),
                 REVERSE_LIMIT_SENSOR::getBinaryValue
         );
-        reverseLimitSwitchBooleanEvent.ifHigh(() -> MOTOR.setPosition(REVERSE_LIMIT_SENSOR_RESET_POSITION));
+        reverseLimitSwitchBooleanEvent.ifHigh(() -> MOTOR.setPosition(REVERSE_LIMIT_SENSOR_RESET_POSITION.getRotations()));
     }
 
     public enum ClimberState {
-        REST(0, 0, false),
-        PREPARE_FOR_CLIMB(3, 1, false),
-        CLIMB(0, 0, true);
+        REST(Rotation2d.fromDegrees(0), 0, false),
+        PREPARE_FOR_CLIMB(Rotation2d.fromDegrees(85), 1, false),
+        CLIMB(Rotation2d.fromDegrees(0), 0, true);
 
-        public final double targetPositionRotations;
+        public final Rotation2d targetAngle;
         public final double targetServoPower;
         public final boolean affectedByRobotWeight;
 
-        ClimberState(double targetPositionRotations, double targetServoPower, boolean affectedByRobotWeight) {
-            this.targetPositionRotations = targetPositionRotations;
+        ClimberState(Rotation2d targetAngle, double targetServoPower, boolean affectedByRobotWeight) {
+            this.targetAngle = targetAngle;
             this.targetServoPower = targetServoPower;
             this.affectedByRobotWeight = affectedByRobotWeight;
         }

@@ -34,7 +34,7 @@ public class Climber extends MotorSubsystem {
     @Override
     public void updateMechanism() {
         ClimberConstants.MECHANISM.update(
-                Rotation2d.fromRotations(getPositionRotations()),
+                getCurrentAngle(),
                 Rotation2d.fromRotations(motor.getSignal(TalonFXSignal.CLOSED_LOOP_REFERENCE))
         );
 
@@ -61,7 +61,7 @@ public class Climber extends MotorSubsystem {
     @Override
     public void updateLog(SysIdRoutineLog log) {
         log.motor("ClimberMotor")
-                .angularPosition(Units.Rotations.of(getPositionRotations()))
+                .angularPosition(Units.Rotations.of(getCurrentAngle().getRotations()))
                 .angularVelocity(Units.RotationsPerSecond.of(motor.getSignal(TalonFXSignal.VELOCITY)))
                 .voltage(Units.Volts.of(motor.getSignal(TalonFXSignal.MOTOR_VOLTAGE)));
     }
@@ -76,7 +76,7 @@ public class Climber extends MotorSubsystem {
     }
 
     public boolean atTargetState() {
-        return Math.abs(getPositionRotations() - targetState.targetPositionRotations) < ClimberConstants.CLIMBER_TOLERANCE_ROTATIONS;
+        return Math.abs(getCurrentAngle().minus(targetState.targetAngle).getDegrees()) < ClimberConstants.CLIMBER_TOLERANCE_ROTATIONS;
     }
 
     public boolean hasCage() {
@@ -85,12 +85,12 @@ public class Climber extends MotorSubsystem {
 
     void setTargetState(ClimberConstants.ClimberState targetState) {
         this.targetState = targetState;
-        setTargetState(targetState.targetPositionRotations, targetState.targetServoPower, targetState.affectedByRobotWeight);
+        setTargetState(targetState.targetAngle, targetState.targetServoPower, targetState.affectedByRobotWeight);
     }
 
-    void setTargetState(double targetPositionRotations, double targetServoPower, boolean affectedByRobotWeight) {
+    void setTargetState(Rotation2d targetAngle, double targetServoPower, boolean affectedByRobotWeight) {
         final MotionMagicVoltage positionRequest = this.positionRequest
-                .withPosition(targetPositionRotations)
+                .withPosition(targetAngle.getRotations())
                 .withSlot(affectedByRobotWeight ? ClimberConstants.ON_CAGE_PID_SLOT : ClimberConstants.GROUNDED_PID_SLOT);
         motor.setControl(positionRequest);
         setServos(targetServoPower);
@@ -108,13 +108,13 @@ public class Climber extends MotorSubsystem {
     private Pose3d calculateVisualizationPose() {
         final Transform3d climberTransform = new Transform3d(
                 new Translation3d(0, 0, 0),
-                new Rotation3d(-Rotation2d.fromRotations(getPositionRotations()).getRadians(), 0, 0)
+                new Rotation3d(-getCurrentAngle().getRadians(), 0, 0)
         );
 
         return ClimberConstants.CLIMBER_VISUALIZATION_ORIGIN_POINT.transformBy(climberTransform);
     }
 
-    private double getPositionRotations() {
-        return motor.getSignal(TalonFXSignal.POSITION);
+    private Rotation2d getCurrentAngle() {
+        return Rotation2d.fromRotations(motor.getSignal(TalonFXSignal.POSITION));
     }
 }
