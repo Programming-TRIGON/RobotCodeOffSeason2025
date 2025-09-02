@@ -15,7 +15,8 @@ import trigon.hardware.phoenix6.talonfx.TalonFXSignal;
 
 public class Arm extends MotorSubsystem {
     private final TalonFXMotor
-            armMasterMotor = ArmConstants.ARM_MASTER_MOTOR;
+            armMasterMotor = ArmConstants.ARM_MASTER_MOTOR,
+            endEffectorMotor = ArmConstants.END_EFFECTOR_MOTOR;
     private final CANcoderEncoder encoder = ArmConstants.ENCODER;
     private final VoltageOut voltageRequest = new VoltageOut(0).withEnableFOC(ArmConstants.FOC_ENABLED);
     private final DynamicMotionMagicVoltage positionRequest = new DynamicMotionMagicVoltage(
@@ -43,6 +44,7 @@ public class Arm extends MotorSubsystem {
     @Override
     public void stop() {
         armMasterMotor.stopMotor();
+        endEffectorMotor.stopMotor();
     }
 
     @Override
@@ -56,15 +58,19 @@ public class Arm extends MotorSubsystem {
     @Override
     public void updateMechanism() {
         Logger.recordOutput("Poses/Components/ArmPose", calculateComponentPose());
-        ArmConstants.MECHANISM.update(
+        ArmConstants.ARM_MECHANISM.update(
                 getAngle(),
                 Rotation2d.fromRotations(armMasterMotor.getSignal(TalonFXSignal.CLOSED_LOOP_REFERENCE) + ArmConstants.POSITION_OFFSET_FROM_GRAVITY_OFFSET)
+        );
+        ArmConstants.END_EFFECTOR_MECHANISM.update(
+                endEffectorMotor.getSignal(TalonFXSignal.MOTOR_VOLTAGE)
         );
     }
 
     @Override
     public void updatePeriodically() {
         armMasterMotor.update();
+        endEffectorMotor.update();
         encoder.update();
         Logger.recordOutput("Arm/CurrentPositionMeters", getAngle());
     }
@@ -92,6 +98,7 @@ public class Arm extends MotorSubsystem {
 
     void setTargetState(Rotation2d targetAngle, double targetVoltage) {
         setTargetAngleWithSkibidyLogic(targetAngle);
+        setTargetVoltage(targetVoltage);
     }
 
     private Rotation2d getAngle() {
@@ -112,6 +119,10 @@ public class Arm extends MotorSubsystem {
 
     private void setTargetAngle(Rotation2d targetAngle) {
         armMasterMotor.setControl(positionRequest.withPosition(targetAngle.getRotations()));
+    }
+
+    private void setTargetVoltage(double targetVoltage) {
+        endEffectorMotor.setControl(voltageRequest.withOutput(targetVoltage));
     }
 
     private Pose3d calculateComponentPose() {

@@ -17,9 +17,11 @@ import trigon.hardware.phoenix6.cancoder.CANcoderEncoder;
 import trigon.hardware.phoenix6.cancoder.CANcoderSignal;
 import trigon.hardware.phoenix6.talonfx.TalonFXMotor;
 import trigon.hardware.phoenix6.talonfx.TalonFXSignal;
+import trigon.hardware.simulation.SimpleMotorSimulation;
 import trigon.hardware.simulation.SingleJointedArmSimulation;
 import trigon.utilities.Conversions;
 import trigon.utilities.mechanisms.SingleJointedArmMechanism2d;
+import trigon.utilities.mechanisms.SpeedMechanism2d;
 
 public class ArmConstants {
     private static final int
@@ -50,23 +52,34 @@ public class ArmConstants {
             DEFAULT_MAXIMUM_JERK = DEFAULT_MAXIMUM_ACCELERATION * 10;
     static final boolean FOC_ENABLED = true;
 
-    private static final int MOTOR_AMOUNT = 2;
-    private static final DCMotor GEARBOX = DCMotor.getKrakenX60Foc(MOTOR_AMOUNT);
+    private static final int
+            ARM_MOTOR_AMOUNT = 2,
+            END_EFFECTOR_MOTOR_AMOUNT = 1;
+    private static final DCMotor
+            ARM_GEARBOX = DCMotor.getKrakenX60Foc(ARM_MOTOR_AMOUNT),
+            END_EFFECTOR_GEARBOX = DCMotor.getKrakenX60Foc(END_EFFECTOR_MOTOR_AMOUNT);
     private static final double
             ARM_LENGTH_METERS = 0.67,
-            ARM_MASS_KILOGRAMS = 3.5;
+            ARM_MASS_KILOGRAMS = 3.5,
+            END_EFFECTOR_MOMENT_OF_INERTIA = 0.003,
+            END_EFFECTOR_MAXIMUM_DISPLAYABLE_VELOCITY = 12;
     private static final Rotation2d
             ARM_MINIMUM_ANGLE = Rotation2d.fromDegrees(-180),
             ARM_MAXIMUM_ANGLE = Rotation2d.fromDegrees(180);
     private static final boolean SHOULD_SIMULATE_GRAVITY = true;
-    private static final SingleJointedArmSimulation SIMULATION = new SingleJointedArmSimulation(
-            GEARBOX,
+    private static final SingleJointedArmSimulation ARM_SIMULATION = new SingleJointedArmSimulation(
+            ARM_GEARBOX,
             ARM_GEAR_RATIO,
             ARM_LENGTH_METERS,
             ARM_MASS_KILOGRAMS,
             ARM_MINIMUM_ANGLE,
             ARM_MAXIMUM_ANGLE,
             SHOULD_SIMULATE_GRAVITY
+    );
+    private static final SimpleMotorSimulation END_EFFECTOR_SIMULATION = new SimpleMotorSimulation(
+            END_EFFECTOR_GEARBOX,
+            END_EFFECTOR_GEAR_RATIO,
+            END_EFFECTOR_MOMENT_OF_INERTIA
     );
 
     static final SysIdRoutine.Config SYSID_CONFIG = new SysIdRoutine.Config(
@@ -75,10 +88,14 @@ public class ArmConstants {
             Units.Second.of(1000)
     );
 
-    static final SingleJointedArmMechanism2d MECHANISM = new SingleJointedArmMechanism2d(
+    static final SingleJointedArmMechanism2d ARM_MECHANISM = new SingleJointedArmMechanism2d(
             "ArmMechanism",
             ARM_LENGTH_METERS,
             Color.kBlue
+    );
+    static final SpeedMechanism2d END_EFFECTOR_MECHANISM = new SpeedMechanism2d(
+            "EndEffectorMechanism",
+            END_EFFECTOR_MAXIMUM_DISPLAYABLE_VELOCITY
     );
 
     static final Pose3d ARM_VISUALIZATION_ORIGIN_POINT = new Pose3d(
@@ -89,12 +106,13 @@ public class ArmConstants {
     static final Rotation2d ANGLE_TOLERANCE = Rotation2d.fromDegrees(0);
 
     static {
-        configureMasterMotor();
-        configureFollowerMotor();
+        configureArmMasterMotor();
+        configureArmFollowerMotor();
+        configureEndEffectorMotor();
         configureEncoder();
     }
 
-    private static void configureMasterMotor() {
+    private static void configureArmMasterMotor() {
         final TalonFXConfiguration config = new TalonFXConfiguration();
 
         config.Audio.BeepOnBoot = false;
@@ -123,7 +141,7 @@ public class ArmConstants {
         config.MotionMagic.MotionMagicJerk = config.MotionMagic.MotionMagicAcceleration * 10;
 
         ARM_MASTER_MOTOR.applyConfiguration(config);
-        ARM_MASTER_MOTOR.setPhysicsSimulation(SIMULATION);
+        ARM_MASTER_MOTOR.setPhysicsSimulation(ARM_SIMULATION);
 
         ARM_MASTER_MOTOR.registerSignal(TalonFXSignal.POSITION, 100);
         ARM_MASTER_MOTOR.registerSignal(TalonFXSignal.VELOCITY, 100);
@@ -132,7 +150,7 @@ public class ArmConstants {
         ARM_MASTER_MOTOR.registerSignal(TalonFXSignal.STATOR_CURRENT, 100);
     }
 
-    private static void configureFollowerMotor() {
+    private static void configureArmFollowerMotor() {
         final TalonFXConfiguration config = new TalonFXConfiguration();
 
         config.Audio.BeepOnBoot = false;
@@ -145,6 +163,25 @@ public class ArmConstants {
 
         final Follower followerRequest = new Follower(ARM_MASTER_MOTOR.getID(), SHOULD_FOLLOWER_OPPOSE_MASTER);
         ARM_FOLLOWER_MOTOR.setControl(followerRequest);
+    }
+
+    private static void configureEndEffectorMotor() {
+        final TalonFXConfiguration config = new TalonFXConfiguration();
+        config.Audio.BeepOnBoot = false;
+        config.Audio.BeepOnConfig = false;
+
+        config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        config.Feedback.RotorToSensorRatio = END_EFFECTOR_GEAR_RATIO;
+
+        END_EFFECTOR_MOTOR.applyConfiguration(config);
+        END_EFFECTOR_MOTOR.setPhysicsSimulation(END_EFFECTOR_SIMULATION);
+
+        END_EFFECTOR_MOTOR.registerSignal(TalonFXSignal.POSITION, 100);
+        END_EFFECTOR_MOTOR.registerSignal(TalonFXSignal.VELOCITY, 100);
+        END_EFFECTOR_MOTOR.registerSignal(TalonFXSignal.MOTOR_VOLTAGE, 100);
+        END_EFFECTOR_MOTOR.registerSignal(TalonFXSignal.CLOSED_LOOP_REFERENCE, 100);
+        END_EFFECTOR_MOTOR.registerSignal(TalonFXSignal.STATOR_CURRENT, 100);
     }
 
     private static void configureEncoder() {
