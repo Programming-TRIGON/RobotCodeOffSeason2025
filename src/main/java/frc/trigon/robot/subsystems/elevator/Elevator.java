@@ -11,9 +11,7 @@ import trigon.hardware.phoenix6.talonfx.TalonFXSignal;
 import trigon.utilities.Conversions;
 
 public class Elevator extends MotorSubsystem {
-    private final TalonFXMotor
-            masterMotor = ElevatorConstants.MASTER_MOTOR,
-            followerMotor = ElevatorConstants.FOLLOWER_MOTOR;
+    private final TalonFXMotor masterMotor = ElevatorConstants.MASTER_MOTOR;
     private final VoltageOut voltageRequest = new VoltageOut(0).withEnableFOC(ElevatorConstants.FOC_ENABLED);
     private final DynamicMotionMagicVoltage positionRequest = new DynamicMotionMagicVoltage(0, ElevatorConstants.DEFAULT_MAXIMUM_VELOCITY, ElevatorConstants.DEFAULT_MAXIMUM_ACCELERATION, ElevatorConstants.DEFAULT_MAXIMUM_ACCELERATION * 10).withEnableFOC(ElevatorConstants.FOC_ENABLED);
     private ElevatorConstants.ElevatorState targetState = ElevatorConstants.ElevatorState.REST;
@@ -30,7 +28,6 @@ public class Elevator extends MotorSubsystem {
     @Override
     public void setBrake(boolean brake) {
         masterMotor.setBrake(brake);
-        followerMotor.setBrake(brake);
     }
 
     @Override
@@ -83,11 +80,11 @@ public class Elevator extends MotorSubsystem {
         masterMotor.setControl(positionRequest.withPosition(targetPositionRotations));
     }
 
-    private double getPositionRotations() {
-        return masterMotor.getSignal(TalonFXSignal.POSITION);
-    }
-
     private double getPositionsMeters() {
         return rotationsToMeters(getPositionRotations());
+    }
+
+    private double getPositionRotations() {
+        return masterMotor.getSignal(TalonFXSignal.POSITION);
     }
 }

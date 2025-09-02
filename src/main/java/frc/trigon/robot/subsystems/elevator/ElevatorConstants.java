@@ -37,17 +37,17 @@ public class ElevatorConstants {
 
     private static final double GEAR_RATIO = 4;
     private static final double REVERSE_LIMIT_SWITCH_RESET_POSITION = 0;
-    private static final boolean SHOULD_FOLLOWER_OPPOSE_MASTER = true;
+    private static final boolean SHOULD_FOLLOWER_OPPOSE_MASTER = false;
     static final double
             DEFAULT_MAXIMUM_VELOCITY = RobotHardwareStats.isSimulation() ? 0 : 0,
             DEFAULT_MAXIMUM_ACCELERATION = RobotHardwareStats.isSimulation() ? 0 : 0;
     static final boolean FOC_ENABLED = true;
 
     private static final int MOTOR_AMOUNT = 2;
-    private static final DCMotor GEARBOX = DCMotor.getFalcon500Foc(MOTOR_AMOUNT);
+    private static final DCMotor GEARBOX = DCMotor.getKrakenX60(MOTOR_AMOUNT);
     private static final double
             ELEVATOR_MASS_KILOGRAMS = 7,
-            DRUM_RADIUS_METERS = 0.050,
+            DRUM_RADIUS_METERS = 0.05,
             MINIMUM_ELEVATOR_HEIGHT_METERS = 0.73,
             MAXIMUM_ELEVATOR_HEIGHT_METERS = 1.8;
     private static final boolean SHOULD_SIMULATE_GRAVITY = true;
@@ -146,7 +146,7 @@ public class ElevatorConstants {
         config.Audio.BeepOnConfig = false;
 
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
         FOLLOWER_MOTOR.applyConfiguration(config);
 
@@ -156,7 +156,7 @@ public class ElevatorConstants {
 
     private static void configureReverseLimitSwitch() {
         REVERSE_LIMIT_SENSOR.setSimulationSupplier(REVERSE_LIMIT_SWITCH_SIMULATION_SUPPLIER);
-        
+
         final BooleanEvent reverseLimitSwitchBooleanEvent = new BooleanEvent(
                 CommandScheduler.getInstance().getActiveButtonLoop(),
                 REVERSE_LIMIT_SENSOR::getBinaryValue
