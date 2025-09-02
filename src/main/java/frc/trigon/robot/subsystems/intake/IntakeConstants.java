@@ -123,6 +123,12 @@ public class IntakeConstants {
             Color.kRed
     );
 
+    private static final double COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS = 0.2;
+    private static final double COLLECTION_DETECTION_DISTANCE_CENTIMETERS = 10;
+    static final BooleanEvent COLLECTION_DETECTION_BOOLEAN_EVENT = new BooleanEvent(
+            CommandScheduler.getInstance().getActiveButtonLoop(),
+            () -> DISTANCE_SENSOR.getScaledValue() < COLLECTION_DETECTION_DISTANCE_CENTIMETERS
+    ).debounce(COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS);
     static final Rotation2d ANGLE_TOLERANCE = Rotation2d.fromDegrees(1.5);
 
     static {
@@ -141,7 +147,7 @@ public class IntakeConstants {
 
         config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-        
+
         config.Feedback.RotorToSensorRatio = INTAKE_MOTOR_GEAR_RATIO;
         config.CurrentLimits.SupplyCurrentLimit = 60;
 

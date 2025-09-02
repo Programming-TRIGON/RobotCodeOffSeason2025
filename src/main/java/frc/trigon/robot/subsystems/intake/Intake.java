@@ -92,6 +92,10 @@ public class Intake extends MotorSubsystem {
         return angleDifferenceFromTargetAngleDegrees < IntakeConstants.ANGLE_TOLERANCE.getDegrees();
     }
 
+    public boolean hasGamePiece() {
+        return IntakeConstants.COLLECTION_DETECTION_BOOLEAN_EVENT.getAsBoolean();
+    }
+
     void setTargetState(IntakeConstants.IntakeState targetState) {
         this.targetState = targetState;
         setTargetState(targetState.targetAngle, targetState.targetVoltage);
