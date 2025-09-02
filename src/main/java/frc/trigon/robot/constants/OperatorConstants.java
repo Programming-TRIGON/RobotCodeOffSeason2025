@@ -8,6 +8,9 @@ import trigon.hardware.misc.XboxController;
 
 public class OperatorConstants {
     public static final double DRIVER_CONTROLLER_DEADBAND = 0.07;
+    public static final double
+            RUMBLE_DURATION_SECONDS = 0.7,
+            RUMBLE_POWER = 1;
     private static final int DRIVER_CONTROLLER_PORT = 0;
     private static final int
             DRIVER_CONTROLLER_RIGHT_STICK_EXPONENT = 1,

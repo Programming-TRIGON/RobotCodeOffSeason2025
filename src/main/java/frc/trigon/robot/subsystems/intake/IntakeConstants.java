@@ -89,15 +89,18 @@ public class IntakeConstants {
             REVERSE_LIMIT_SENSOR_SIMULATION_SUPPLIER = () -> 0,
             FORWARD_LIMIT_SENSOR_SIMULATION_SUPPLIER = () -> 0, //TODO: implement
             DISTANCE_SENSOR_SIMULATION_SUPPLIER = () -> SimulationFieldHandler.isHoldingGamePiece() ? 0 : 1000;
+    private static final double
+            REVERSE_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS = 0.1,
+            FORWARD_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS = 0.1;
     private static final BooleanEvent
             REVERSE_LIMIT_SENSOR_BOOLEAN_EVENT = new BooleanEvent(
             CommandScheduler.getInstance().getActiveButtonLoop(),
             REVERSE_LIMIT_SENSOR::getBinaryValue
-    ),
+    ).debounce(REVERSE_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS),
             FORWARD_LIMIT_SENSOR_BOOLEAN_EVENT = new BooleanEvent(
                     CommandScheduler.getInstance().getActiveButtonLoop(),
                     FORWARD_LIMIT_SENSOR::getBinaryValue
-            );
+            ).debounce(FORWARD_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS);
 
     static final SysIdRoutine.Config ANGLE_SYSID_CONFIG = new SysIdRoutine.Config(
             Units.Volts.of(1).per(Units.Second),
@@ -120,9 +123,6 @@ public class IntakeConstants {
             Color.kRed
     );
 
-    public static final double
-            COLLECTION_RUMBLE_DURATION_SECONDS = 0.7,
-            COLLECTION_RUMBLE_POWER = 1;
     static final Rotation2d ANGLE_TOLERANCE = Rotation2d.fromDegrees(1.5);
 
     static {
@@ -141,6 +141,7 @@ public class IntakeConstants {
 
         config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        
         config.Feedback.RotorToSensorRatio = INTAKE_MOTOR_GEAR_RATIO;
         config.CurrentLimits.SupplyCurrentLimit = 60;
 

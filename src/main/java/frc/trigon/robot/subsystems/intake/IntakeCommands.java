@@ -11,7 +11,7 @@ import java.util.Set;
 public class IntakeCommands {
     public static Command getDebuggingCommand() {
         return new NetworkTablesCommand(
-                (targetVoltage, targetAngleDegrees) -> RobotContainer.INTAKE.setTargetState(targetVoltage, Rotation2d.fromDegrees(targetAngleDegrees)),
+                (targetAngleDegrees, targetVoltage) -> RobotContainer.INTAKE.setTargetState(Rotation2d.fromDegrees(targetAngleDegrees), targetVoltage),
                 false,
                 Set.of(RobotContainer.INTAKE),
                 "Debugging/IntakeTargetAngleDegrees",
@@ -27,9 +27,9 @@ public class IntakeCommands {
         );
     }
 
-    public static Command getSetTargetStateCommand(double targetVoltage, Rotation2d targetAngle) {
+    public static Command getSetTargetStateCommand(Rotation2d targetAngle, double targetVoltage) {
         return new StartEndCommand(
-                () -> RobotContainer.INTAKE.setTargetState(targetVoltage, targetAngle),
+                () -> RobotContainer.INTAKE.setTargetState(targetAngle, targetVoltage),
                 RobotContainer.INTAKE::stop,
                 RobotContainer.INTAKE
         );
