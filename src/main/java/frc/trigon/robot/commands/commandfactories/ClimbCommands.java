@@ -13,21 +13,25 @@ import frc.trigon.robot.subsystems.swerve.SwerveCommands;
 public class ClimbCommands {
     public static boolean IS_CLIMBING = false;
 
-    public static Command getClimbCommand() {
+    public static Command getClimbCommand() {//TODO: Set other component positions
         return new SequentialCommandGroup(
                 new InstantCommand(() -> IS_CLIMBING = true),
                 ClimberCommands.getSetTargetStateCommand(ClimberConstants.ClimberState.PREPARE_FOR_CLIMB)
                         .until(() -> RobotContainer.CLIMBER.hasCage() || OperatorConstants.CONTINUE_TRIGGER.getAsBoolean()),
                 ClimberCommands.getSetTargetStateCommand(ClimberConstants.ClimberState.CLIMB)
                         .until(RobotContainer.CLIMBER::atTargetState),
-                new ParallelCommandGroup(
-                        ClimberCommands.getSetTargetSpeedCommand(OperatorConstants.DRIVER_CONTROLLER.getRightY()),
-                        SwerveCommands.getClosedLoopSelfRelativeDriveCommand(
-                                () -> 0,
-                                () -> 0,
-                                () -> 0
-                        )
-                )
+                getAdjustClimbManuallyCommand()
         ).finallyDo(() -> IS_CLIMBING = false);
+    }
+
+    private static Command getAdjustClimbManuallyCommand() {
+        return new ParallelCommandGroup(
+                ClimberCommands.getSetTargetSpeedCommand(OperatorConstants.DRIVER_CONTROLLER.getRightY()),
+                SwerveCommands.getClosedLoopSelfRelativeDriveCommand(
+                        () -> 0,
+                        () -> 0,
+                        () -> 0
+                )
+        );
     }
 }

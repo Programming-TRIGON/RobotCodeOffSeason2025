@@ -7,8 +7,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import org.littletonrobotics.junction.Logger;
 import trigon.hardware.RobotHardwareStats;
 import trigon.hardware.phoenix6.Phoenix6Inputs;
-import trigon.hardware.phoenix6.talonfx.TalonFXIO;
-import trigon.hardware.phoenix6.talonfx.TalonFXSignal;
 import trigon.hardware.phoenix6.talonfx.io.RealTalonFXIO;
 import trigon.hardware.phoenix6.talonfx.io.SimulationTalonFXIO;
 import trigon.hardware.simulation.MotorPhysicsSimulation;

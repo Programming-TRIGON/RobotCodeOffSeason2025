@@ -48,7 +48,7 @@ public class ClimberConstants {
     static final int
             GROUNDED_PID_SLOT = 0,
             ON_CAGE_PID_SLOT = 1;
-    private static final double REVERSE_LIMIT_SWITCH_RESET_POSITION = 0;
+    private static final double REVERSE_LIMIT_SENSOR_RESET_POSITION = 0;
     private static final double FORWARD_SOFT_LIMIT_POSITION_ROTATIONS = 3;
     static final boolean FOC_ENABLED = true;
 
@@ -78,10 +78,11 @@ public class ClimberConstants {
     );
 
     public static final double MAXIMUM_MANUAL_CONTROL_VOLTAGE = 4;
+    private static final double HAS_CAGE_DEBOUNCE_TIME_SECONDS = 0.5;
     static final BooleanEvent HAS_CAGE_BOOLEAN_EVENT = new BooleanEvent(
             CommandScheduler.getInstance().getActiveButtonLoop(),
             CAGE_SENSOR::getBinaryValue
-    );
+    ).debounce(HAS_CAGE_DEBOUNCE_TIME_SECONDS);
     private static final DoubleSupplier REVERSE_LIMIT_SWITCH_SIMULATION_SUPPLIER = () -> 0;
     static final double CLIMBER_TOLERANCE_ROTATIONS = 0.01;
 
@@ -120,7 +121,7 @@ public class ClimberConstants {
         config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = FORWARD_SOFT_LIMIT_POSITION_ROTATIONS;
 
         config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-        config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = REVERSE_LIMIT_SWITCH_RESET_POSITION;
+        config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = REVERSE_LIMIT_SENSOR_RESET_POSITION;
 
         config.Feedback.SensorToMechanismRatio = GEAR_RATIO;
 
@@ -143,7 +144,7 @@ public class ClimberConstants {
                 CommandScheduler.getInstance().getActiveButtonLoop(),
                 REVERSE_LIMIT_SENSOR::getBinaryValue
         );
-        reverseLimitSwitchBooleanEvent.ifHigh(() -> MOTOR.setPosition(REVERSE_LIMIT_SWITCH_RESET_POSITION));
+        reverseLimitSwitchBooleanEvent.ifHigh(() -> MOTOR.setPosition(REVERSE_LIMIT_SENSOR_RESET_POSITION));
     }
 
     public enum ClimberState {

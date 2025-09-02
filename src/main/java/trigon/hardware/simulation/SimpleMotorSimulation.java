@@ -5,7 +5,6 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import trigon.hardware.RobotHardwareStats;
-import trigon.hardware.simulation.MotorPhysicsSimulation;
 
 /**
  * A class that represents a simulation of a simple motor mechanism, such as flywheel and turret mechanisms.
