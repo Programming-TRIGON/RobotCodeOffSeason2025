@@ -107,7 +107,7 @@ public class Arm extends MotorSubsystem {
             else
                 System.out.println("something wrong is with the logic");
         }
-
+        setTargetAngle(targetAngle);
     }
 
     private void setTargetAngle(Rotation2d targetAngle) {
