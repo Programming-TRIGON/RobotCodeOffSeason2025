@@ -23,8 +23,8 @@ import java.util.function.DoubleSupplier;
 
 public class ElevatorConstants {
     private static final int
-            MASTER_MOTOR_ID = 21,
-            FOLLOWER_MOTOR_ID = 22,
+            MASTER_MOTOR_ID = 16,
+            FOLLOWER_MOTOR_ID = 17,
             REVERSE_LIMIT_SENSOR_CHANNEL = 0;
     private static final String
             MASTER_MOTOR_NAME = "ElevatorMasterMotor",
@@ -39,8 +39,8 @@ public class ElevatorConstants {
     private static final double REVERSE_LIMIT_SWITCH_RESET_POSITION = 0;
     private static final boolean SHOULD_FOLLOWER_OPPOSE_MASTER = false;
     static final double
-            DEFAULT_MAXIMUM_VELOCITY = RobotHardwareStats.isSimulation() ? 0 : 0,
-            DEFAULT_MAXIMUM_ACCELERATION = RobotHardwareStats.isSimulation() ? 0 : 0;
+            DEFAULT_MAXIMUM_VELOCITY = RobotHardwareStats.isSimulation() ? 80 : 20,
+            DEFAULT_MAXIMUM_ACCELERATION = RobotHardwareStats.isSimulation() ? 80 : 20;
     static final boolean FOC_ENABLED = true;
 
     private static final int MOTOR_AMOUNT = 2;
@@ -82,6 +82,7 @@ public class ElevatorConstants {
     );
 
     private static final DoubleSupplier REVERSE_LIMIT_SWITCH_SIMULATION_SUPPLIER = () -> 0;
+    static final double FIRST_ELEVATOR_COMPONENT_EXTENDED_LENGTH_METERS = 0.6;
     static final double DRUM_DIAMETER_METERS = DRUM_RADIUS_METERS * 2;
 
     static {
@@ -100,13 +101,13 @@ public class ElevatorConstants {
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         config.Feedback.SensorToMechanismRatio = GEAR_RATIO;
 
-        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 0:0;
+        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 0.15526:0;
         config.Slot0.kI = RobotHardwareStats.isSimulation() ? 0:0;
         config.Slot0.kD = RobotHardwareStats.isSimulation() ? 0:0;
-        config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0:0;
-        config.Slot0.kV = RobotHardwareStats.isSimulation() ? 0:0;
-        config.Slot0.kA = RobotHardwareStats.isSimulation() ? 0:0;
-        config.Slot0.kG = RobotHardwareStats.isSimulation() ? 0:0;
+        config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0.020957:0;
+        config.Slot0.kV = RobotHardwareStats.isSimulation() ? 0.47532:0;
+        config.Slot0.kA = RobotHardwareStats.isSimulation() ? 0.02273:0;
+        config.Slot0.kG = RobotHardwareStats.isSimulation() ? 0.72511:0;
 
         config.Slot0.GravityType = GravityTypeValue.Elevator_Static;
         config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;

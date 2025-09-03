@@ -1,11 +1,17 @@
 package frc.trigon.robot.subsystems.elevator;
 
 import com.ctre.phoenix6.controls.DynamicMotionMagicVoltage;
+import com.ctre.phoenix6.controls.FireAnimation;
 import com.ctre.phoenix6.controls.VoltageOut;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.trigon.robot.subsystems.MotorSubsystem;
+import org.littletonrobotics.junction.Logger;
 import trigon.hardware.phoenix6.talonfx.TalonFXMotor;
 import trigon.hardware.phoenix6.talonfx.TalonFXSignal;
 import trigon.utilities.Conversions;
@@ -50,10 +56,19 @@ public class Elevator extends MotorSubsystem {
 
     @Override
     public void updateMechanism() {
+        Logger.recordOutput("Poses/Components/ElevatorFirstPose", getFirstStageComponentPose());
+        Logger.recordOutput("Poses/Components/ElevatorSecondPose", getSecondStageComponentPose());
+
         ElevatorConstants.MECHANISM.update(
                 getPositionsMeters(),
                 rotationsToMeters(masterMotor.getSignal(TalonFXSignal.CLOSED_LOOP_REFERENCE))
         );
+    }
+
+    @Override
+    public void updatePeriodically() {
+        masterMotor.update();
+        Logger.recordOutput("Elevator/CurrentPositionMeters", getPositionsMeters());
     }
 
     public double rotationsToMeters(double positionsRotations) {
@@ -69,6 +84,40 @@ public class Elevator extends MotorSubsystem {
         scalePositionRequestSpeed(targetState.speedScalar);
         setTargetPositionRotations(metersToRotations(targetState.targetPositionMeters));
     }
+
+    public Pose3d getFirstStageComponentPose() {
+            return calculateCurrentElevatorPoseFromOrigin(ElevatorConstants.FIRST_STAGE_VISUALIZATION_ORIGIN_POINT);
+    }
+
+    public Pose3d getSecondStageComponentPose() {
+        return calculateComponentPose(getSecondPoseHeight(), ElevatorConstants.SECOND_STAGE_VISUALIZATION_ORIGIN_POINT);
+    }
+
+    private double getSecondPoseHeight() {
+        if (firstComponentLimitReached())
+            return getPositionsMeters() - ElevatorConstants.FIRST_ELEVATOR_COMPONENT_EXTENDED_LENGTH_METERS;
+        return 0;
+    }
+
+    private boolean firstComponentLimitReached() {
+        return getPositionsMeters() > ElevatorConstants.FIRST_ELEVATOR_COMPONENT_EXTENDED_LENGTH_METERS;
+    }
+
+    private Pose3d calculateCurrentElevatorPoseFromOrigin(Pose3d originPoint) {
+        return calculateComponentPose(getPositionsMeters(), originPoint);
+    }
+
+    private Pose3d calculateComponentPose(double poseHeight, Pose3d originPoint) {
+        final Transform3d elevatorTransform = new Transform3d(
+                new Translation3d(0, 0, poseHeight),
+                new Rotation3d()
+        );
+        return originPoint.transformBy(elevatorTransform);
+    }
+
+
+
+
 
     private void scalePositionRequestSpeed(double speedScalar) {
         positionRequest.Velocity = ElevatorConstants.DEFAULT_MAXIMUM_VELOCITY;
