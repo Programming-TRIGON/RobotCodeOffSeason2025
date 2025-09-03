@@ -82,16 +82,15 @@ public class ClimberConstants {
     private static final double
             HAS_CAGE_DEBOUNCE_TIME_SECONDS = 0.5,
             REVERSE_LIMIT_DEBOUNCE_TIME_SECONDS = 0.1;
-    static final BooleanEvent HAS_CAGE_BOOLEAN_EVENT = new BooleanEvent(
+    static final BooleanEvent
+            HAS_CAGE_BOOLEAN_EVENT = new BooleanEvent(
             CommandScheduler.getInstance().getActiveButtonLoop(),
             CAGE_SENSOR::getBinaryValue
-    ).debounce(HAS_CAGE_DEBOUNCE_TIME_SECONDS);
-
-
-    final BooleanEvent REVERSE_LIMIT_SENSOR_BOOLEAN_EVENT = new BooleanEvent(
-            CommandScheduler.getInstance().getActiveButtonLoop(),
-            REVERSE_LIMIT_SENSOR::getBinaryValue
-    ).debounce(REVERSE_LIMIT_DEBOUNCE_TIME_SECONDS);
+    ).debounce(HAS_CAGE_DEBOUNCE_TIME_SECONDS),
+            REVERSE_LIMIT_SENSOR_BOOLEAN_EVENT = new BooleanEvent(
+                    CommandScheduler.getInstance().getActiveButtonLoop(),
+                    REVERSE_LIMIT_SENSOR::getBinaryValue
+            ).debounce(REVERSE_LIMIT_DEBOUNCE_TIME_SECONDS);
     private static final DoubleSupplier REVERSE_LIMIT_SWITCH_SIMULATION_SUPPLIER = () -> 0;
     static final double CLIMBER_TOLERANCE_ROTATIONS = 0.01;
 
