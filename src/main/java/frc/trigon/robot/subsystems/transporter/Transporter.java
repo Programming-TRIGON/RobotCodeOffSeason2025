@@ -47,7 +47,7 @@ public class Transporter extends MotorSubsystem {
 
     void setTargetState(TransporterConstants.TransporterState targetState) {
         this.targetState = targetState;
-        setTargetVoltage(targetState.targetVoltage, targetState.targetVoltage * targetState.voltageScalar);
+        setTargetVoltage(targetState.targetRightMotorVoltage, targetState.targetLeftMotorVoltage);
     }
 
     void setTargetVoltage(double rightMotorVoltage, double leftMotorVoltage) {

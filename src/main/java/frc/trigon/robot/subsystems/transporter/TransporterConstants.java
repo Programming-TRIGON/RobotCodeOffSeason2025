@@ -90,18 +90,18 @@ public class TransporterConstants {
     }
 
     public enum TransporterState {
-        REST(0, 1),
-        COLLECT(5, 1),
-        ALIGN(5, 1.2),
-        EJECT(-5, 1);
+        REST(0, 0),
+        COLLECT(5, 5),
+        ALIGN(5, 6),
+        EJECT(-5, -5);
 
-        public double
-                targetVoltage,
-                voltageScalar;
+        public final double
+                targetRightMotorVoltage,
+                targetLeftMotorVoltage;
 
-        TransporterState(double targetVoltage, double voltageScalar) {
-            this.targetVoltage = targetVoltage;
-            this.voltageScalar = voltageScalar;
+        TransporterState(double targetRightMotorVoltage, double targetLeftMotorVoltage) {
+            this.targetRightMotorVoltage = targetRightMotorVoltage;
+            this.targetLeftMotorVoltage = targetLeftMotorVoltage;
         }
     }
 }
