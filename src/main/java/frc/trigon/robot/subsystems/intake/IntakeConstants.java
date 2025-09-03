@@ -103,8 +103,8 @@ public class IntakeConstants {
             ).debounce(FORWARD_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS);
 
     static final SysIdRoutine.Config ANGLE_SYSID_CONFIG = new SysIdRoutine.Config(
-            Units.Volts.of(1).per(Units.Second),
-            Units.Volts.of(3),
+            Units.Volts.of(0.2).per(Units.Second),
+            Units.Volts.of(0.6),
             Units.Second.of(1000)
     );
 
@@ -170,13 +170,13 @@ public class IntakeConstants {
 
         config.Feedback.RotorToSensorRatio = ANGLE_MOTOR_GEAR_RATIO;
 
-        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 1 : 0; //TODO: calibrate
+        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 500 : 0;
         config.Slot0.kI = RobotHardwareStats.isSimulation() ? 0 : 0;
         config.Slot0.kD = RobotHardwareStats.isSimulation() ? 0 : 0;
-        config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0 : 0;
-        config.Slot0.kV = RobotHardwareStats.isSimulation() ? 0.1 : 0;
-        config.Slot0.kA = RobotHardwareStats.isSimulation() ? 0 : 0;
-        config.Slot0.kG = RobotHardwareStats.isSimulation() ? 0 : 0;
+        config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0.0054454 : 0;
+        config.Slot0.kV = RobotHardwareStats.isSimulation() ? 3.3247 : 0;
+        config.Slot0.kA = RobotHardwareStats.isSimulation() ? 0.047542 : 0;
+        config.Slot0.kG = RobotHardwareStats.isSimulation() ? 0.35427 : 0.32151;
 
         config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
         config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
