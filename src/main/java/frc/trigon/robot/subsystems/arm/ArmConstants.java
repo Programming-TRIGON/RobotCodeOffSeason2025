@@ -10,9 +10,13 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.wpilibj.event.BooleanEvent;
 import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.trigon.robot.misc.simulatedfield.SimulationFieldHandler;
 import trigon.hardware.RobotHardwareStats;
+import trigon.hardware.misc.simplesensor.SimpleSensor;
 import trigon.hardware.phoenix6.cancoder.CANcoderEncoder;
 import trigon.hardware.phoenix6.cancoder.CANcoderSignal;
 import trigon.hardware.phoenix6.talonfx.TalonFXMotor;
@@ -23,22 +27,27 @@ import trigon.utilities.Conversions;
 import trigon.utilities.mechanisms.SingleJointedArmMechanism2d;
 import trigon.utilities.mechanisms.SpeedMechanism2d;
 
+import java.util.function.DoubleSupplier;
+
 public class ArmConstants {
     private static final int
             MASTER_MOTOR_ID = 13,
             FOLLOWER_MOTOR_ID = 14,
             END_EFFECTOR_MOTOR_ID = 15,
-            ENCODER_ID = 13;
+            ENCODER_ID = 13,
+            DISTANCE_SENSOR_CHANNEL = 3;
     private static final String
             MASTER_MOTOR_NAME = "ArmMasterMotor",
             FOLLOWER_MOTOR_NAME = "ArmFollowerMotor",
             END_EFFECTOR_MOTOR_NAME = "EndEffectorMotor",
-            ENCODER_NAME = "ArmEncoder";
+            ENCODER_NAME = "ArmEncoder",
+            DISTANCE_SENSOR_NAME = "EndEffectorDistanceSensor";
     static final TalonFXMotor
             ARM_MASTER_MOTOR = new TalonFXMotor(MASTER_MOTOR_ID, MASTER_MOTOR_NAME),
             ARM_FOLLOWER_MOTOR = new TalonFXMotor(FOLLOWER_MOTOR_ID, FOLLOWER_MOTOR_NAME),
             END_EFFECTOR_MOTOR = new TalonFXMotor(END_EFFECTOR_MOTOR_ID, END_EFFECTOR_MOTOR_NAME);
     static final CANcoderEncoder ENCODER = new CANcoderEncoder(ENCODER_ID, ENCODER_NAME);
+    static final SimpleSensor DISTANCE_SENSOR = SimpleSensor.createDigitalSensor(DISTANCE_SENSOR_CHANNEL, DISTANCE_SENSOR_NAME);
 
     private static final double
             ARM_GEAR_RATIO = 50,
@@ -82,6 +91,8 @@ public class ArmConstants {
             END_EFFECTOR_MOMENT_OF_INERTIA
     );
 
+    private static final DoubleSupplier DISTANCE_SENSOR_SIMULATION_SUPPLIER = () -> SimulationFieldHandler.isHoldingGamePiece() ? 0 : 1;
+
     static final SysIdRoutine.Config ARM_SYSID_CONFIG = new SysIdRoutine.Config(
             Units.Volts.of(1.5).per(Units.Seconds),
             Units.Volts.of(1.5),
@@ -105,11 +116,18 @@ public class ArmConstants {
 
     static final Rotation2d ANGLE_TOLERANCE = Rotation2d.fromDegrees(0);
 
+    private static final double COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS = 0.2;
+    static final BooleanEvent COLLECTION_DETECTION_BOOLEAN_EVENT = new BooleanEvent(
+            CommandScheduler.getInstance().getActiveButtonLoop(),
+            DISTANCE_SENSOR::getBinaryValue
+    ).debounce(COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS);
+
     static {
         configureArmMasterMotor();
         configureArmFollowerMotor();
         configureEndEffectorMotor();
         configureEncoder();
+        configureDistanceSensor();
     }
 
     private static void configureArmMasterMotor() {
@@ -196,6 +214,10 @@ public class ArmConstants {
 
         ENCODER.registerSignal(CANcoderSignal.POSITION, 100);
         ENCODER.registerSignal(CANcoderSignal.VELOCITY, 100);
+    }
+
+    private static void configureDistanceSensor() {
+        DISTANCE_SENSOR.setSimulationSupplier(DISTANCE_SENSOR_SIMULATION_SUPPLIER);
     }
 
     public enum ArmState {
