@@ -151,12 +151,6 @@ public class IntakeConstants {
         config.Feedback.RotorToSensorRatio = INTAKE_MOTOR_GEAR_RATIO;
         config.CurrentLimits.SupplyCurrentLimit = 60;
 
-        config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-        config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = MINIMUM_ANGLE.getRotations();
-
-        config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-        config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = MAXIMUM_ANGLE.getRotations();
-
         INTAKE_MOTOR.applyConfiguration(config);
         INTAKE_MOTOR.setPhysicsSimulation(INTAKE_SIMULATION);
 
