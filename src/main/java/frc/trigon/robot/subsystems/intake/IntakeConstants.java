@@ -46,14 +46,11 @@ public class IntakeConstants {
     static final SimpleSensor
             REVERSE_LIMIT_SENSOR = SimpleSensor.createDigitalSensor(REVERSE_LIMIT_SENSOR_CHANNEL, REVERSE_LIMIT_SWITCH_NAME),
             FORWARD_LIMIT_SENSOR = SimpleSensor.createDigitalSensor(FORWARD_LIMIT_CHANNEL, FORWARD_LIMIT_SWITCH_NAME),
-            DISTANCE_SENSOR = SimpleSensor.createDutyCycleSensor(DISTANCE_SENSOR_CHANNEL, DISTANCE_SENSOR_NAME);
+            DISTANCE_SENSOR = SimpleSensor.createDigitalSensor(DISTANCE_SENSOR_CHANNEL, DISTANCE_SENSOR_NAME);
 
     private static final double
             INTAKE_MOTOR_GEAR_RATIO = 4,
             ANGLE_MOTOR_GEAR_RATIO = 28;
-    private static final double
-            DISTANCE_SENSOR_SCALING_SLOPE = 0.0002,
-            DISTANCE_SENSOR_SCALING_INTERCEPT_POINT = -200;
     static final boolean FOC_ENABLED = true;
 
     private static final int
@@ -62,7 +59,6 @@ public class IntakeConstants {
     private static final DCMotor
             INTAKE_GEARBOX = DCMotor.getFalcon500(INTAKE_MOTOR_AMOUNT),
             ANGLE_GEARBOX = DCMotor.getKrakenX60(ANGLE_MOTOR_AMOUNT);
-
     private static final double MOMENT_OF_INERTIA = 0.003;
     private static final double
             INTAKE_LENGTH_METERS = 0.365,
@@ -87,20 +83,8 @@ public class IntakeConstants {
     );
     private static final DoubleSupplier
             REVERSE_LIMIT_SENSOR_SIMULATION_SUPPLIER = () -> 0,
-            FORWARD_LIMIT_SENSOR_SIMULATION_SUPPLIER = () -> 0, //TODO: implement
-            DISTANCE_SENSOR_SIMULATION_SUPPLIER = () -> SimulationFieldHandler.isHoldingGamePiece() ? 0 : 1000;
-    private static final double
-            REVERSE_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS = 0.1,
-            FORWARD_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS = 0.1;
-    private static final BooleanEvent
-            REVERSE_LIMIT_SENSOR_BOOLEAN_EVENT = new BooleanEvent(
-            CommandScheduler.getInstance().getActiveButtonLoop(),
-            REVERSE_LIMIT_SENSOR::getBinaryValue
-    ).debounce(REVERSE_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS),
-            FORWARD_LIMIT_SENSOR_BOOLEAN_EVENT = new BooleanEvent(
-                    CommandScheduler.getInstance().getActiveButtonLoop(),
-                    FORWARD_LIMIT_SENSOR::getBinaryValue
-            ).debounce(FORWARD_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS);
+            FORWARD_LIMIT_SENSOR_SIMULATION_SUPPLIER = () -> 0,
+            DISTANCE_SENSOR_SIMULATION_SUPPLIER = () -> SimulationFieldHandler.isHoldingGamePiece() ? 0 : 1;
 
     static final SysIdRoutine.Config ANGLE_SYSID_CONFIG = new SysIdRoutine.Config(
             Units.Volts.of(0.2).per(Units.Second),
@@ -123,13 +107,24 @@ public class IntakeConstants {
             Color.kRed
     );
 
+    static final Rotation2d ANGLE_TOLERANCE = Rotation2d.fromDegrees(1.5);
     private static final double COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS = 0.2;
-    private static final double COLLECTION_DETECTION_DISTANCE_CENTIMETERS = 10;
     static final BooleanEvent COLLECTION_DETECTION_BOOLEAN_EVENT = new BooleanEvent(
             CommandScheduler.getInstance().getActiveButtonLoop(),
-            () -> DISTANCE_SENSOR.getScaledValue() < COLLECTION_DETECTION_DISTANCE_CENTIMETERS
+            DISTANCE_SENSOR::getBinaryValue
     ).debounce(COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS);
-    static final Rotation2d ANGLE_TOLERANCE = Rotation2d.fromDegrees(1.5);
+    private static final double
+            REVERSE_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS = 0.1,
+            FORWARD_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS = 0.1;
+    private static final BooleanEvent
+            REVERSE_LIMIT_SENSOR_BOOLEAN_EVENT = new BooleanEvent(
+            CommandScheduler.getInstance().getActiveButtonLoop(),
+            REVERSE_LIMIT_SENSOR::getBinaryValue
+    ).debounce(REVERSE_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS),
+            FORWARD_LIMIT_SENSOR_BOOLEAN_EVENT = new BooleanEvent(
+                    CommandScheduler.getInstance().getActiveButtonLoop(),
+                    FORWARD_LIMIT_SENSOR::getBinaryValue
+            ).debounce(FORWARD_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS);
 
     static {
         configureIntakeMotor();
@@ -213,7 +208,6 @@ public class IntakeConstants {
 
     private static void configureDistanceSensor() {
         DISTANCE_SENSOR.setSimulationSupplier(DISTANCE_SENSOR_SIMULATION_SUPPLIER);
-        DISTANCE_SENSOR.setScalingConstants(DISTANCE_SENSOR_SCALING_SLOPE, DISTANCE_SENSOR_SCALING_INTERCEPT_POINT);
     }
 
     public enum IntakeState {

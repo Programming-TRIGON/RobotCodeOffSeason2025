@@ -2,10 +2,7 @@ package frc.trigon.robot.subsystems.intake;
 
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -34,7 +31,7 @@ public class Intake extends MotorSubsystem {
 
     @Override
     public void updateLog(SysIdRoutineLog log) {
-        log.motor("CoralAngleMotor")
+        log.motor("IntakeAngleMotor")
                 .angularPosition(Units.Rotations.of(getCurrentAngle().getRotations()))
                 .angularVelocity(Units.RotationsPerSecond.of(angleMotor.getSignal(TalonFXSignal.VELOCITY)))
                 .voltage(Units.Volts.of(angleMotor.getSignal(TalonFXSignal.MOTOR_VOLTAGE)));
@@ -63,12 +60,11 @@ public class Intake extends MotorSubsystem {
     public void updateMechanism() {
         IntakeConstants.INTAKE_MECHANISM.update(intakeMotor.getSignal(TalonFXSignal.MOTOR_VOLTAGE));
         IntakeConstants.ANGLE_MECHANISM.update(
-                Rotation2d.fromRotations(getCurrentAngle().getRotations()),
+                getCurrentAngle(),
                 Rotation2d.fromRotations(angleMotor.getSignal(TalonFXSignal.CLOSED_LOOP_REFERENCE))
         );
 
-        Transform3d transform = new Transform3d(new Translation3d(), new Rotation3d(0, getCurrentAngle().getRadians(), 0));
-        Logger.recordOutput("Poses/Components/IntakePose", IntakeConstants.INTAKE_VISUALIZATION_ORIGIN_POINT.transformBy(transform));
+        Logger.recordOutput("Poses/Components/IntakePose", calculateVisualizationPose());
     }
 
     @Override
@@ -76,10 +72,6 @@ public class Intake extends MotorSubsystem {
         IntakeConstants.INTAKE_MECHANISM.setTargetVelocity(0);
         intakeMotor.stopMotor();
         angleMotor.stopMotor();
-    }
-
-    public IntakeConstants.IntakeState getTargetState() {
-        return targetState;
     }
 
     public boolean atState(IntakeConstants.IntakeState targetState) {
@@ -113,6 +105,11 @@ public class Intake extends MotorSubsystem {
 
     private void setTargetAngle(Rotation2d targetAngle) {
         angleMotor.setControl(positionRequest.withPosition(targetAngle.getRotations()));
+    }
+
+    private Pose3d calculateVisualizationPose() {
+        Transform3d transform = new Transform3d(new Translation3d(), new Rotation3d(0, getCurrentAngle().getRadians(), 0));
+        return IntakeConstants.INTAKE_VISUALIZATION_ORIGIN_POINT.transformBy(transform);
     }
 
     private Rotation2d getCurrentAngle() {
