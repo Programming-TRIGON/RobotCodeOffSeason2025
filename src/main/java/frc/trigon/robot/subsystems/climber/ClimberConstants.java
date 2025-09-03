@@ -98,24 +98,24 @@ public class ClimberConstants {
         config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
-        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 0 : 0;
+        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 22.373 : 0;
         config.Slot0.kI = RobotHardwareStats.isSimulation() ? 0 : 0;
-        config.Slot0.kD = RobotHardwareStats.isSimulation() ? 0 : 0;
-        config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0 : 0;
-        config.Slot0.kV = RobotHardwareStats.isSimulation() ? 0 : 0;
-        config.Slot0.kA = RobotHardwareStats.isSimulation() ? 0 : 0;
+        config.Slot0.kD = RobotHardwareStats.isSimulation() ? 0.33014 : 0;
+        config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0.016057 : 0;
+        config.Slot0.kV = RobotHardwareStats.isSimulation() ? 4.3932 : 0;
+        config.Slot0.kA = RobotHardwareStats.isSimulation() ? 0.074561 : 0;
         config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
 
-        config.Slot1.kP = RobotHardwareStats.isSimulation() ? 0 : 0;
+        config.Slot1.kP = RobotHardwareStats.isSimulation() ? 22.373 : 0;
         config.Slot1.kI = RobotHardwareStats.isSimulation() ? 0 : 0;
-        config.Slot1.kD = RobotHardwareStats.isSimulation() ? 0 : 0;
-        config.Slot1.kS = RobotHardwareStats.isSimulation() ? 0 : 0;
-        config.Slot1.kV = RobotHardwareStats.isSimulation() ? 0 : 0;
-        config.Slot1.kA = RobotHardwareStats.isSimulation() ? 0 : 0;
+        config.Slot1.kD = RobotHardwareStats.isSimulation() ? 0.33014 : 0;
+        config.Slot1.kS = RobotHardwareStats.isSimulation() ? 0.016057 : 0;
+        config.Slot1.kV = RobotHardwareStats.isSimulation() ? 4.3932 : 0;
+        config.Slot1.kA = RobotHardwareStats.isSimulation() ? 0.074561 : 0;
         config.Slot1.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
 
-        config.MotionMagic.MotionMagicCruiseVelocity = RobotHardwareStats.isSimulation() ? 0 : 0;
-        config.MotionMagic.MotionMagicAcceleration = RobotHardwareStats.isSimulation() ? 0 : 0;
+        config.MotionMagic.MotionMagicCruiseVelocity = RobotHardwareStats.isSimulation() ? 2 : 0;
+        config.MotionMagic.MotionMagicAcceleration = RobotHardwareStats.isSimulation() ? 10 : 0;
         config.MotionMagic.MotionMagicJerk = config.MotionMagic.MotionMagicAcceleration * 10;
 
         config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
