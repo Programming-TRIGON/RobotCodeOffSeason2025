@@ -34,8 +34,8 @@ public class Climber extends MotorSubsystem {
     @Override
     public void updateMechanism() {
         ClimberConstants.MECHANISM.update(
-                Rotation2d.fromRotations(getPositionRotations()),
-                Rotation2d.fromRotations(motor.getSignal(TalonFXSignal.CLOSED_LOOP_REFERENCE))
+                Rotation2d.fromRotations(getPositionRotations() * ClimberConstants.CLIMBER_VISUALIZATION_POSITION_SCALAR),
+                Rotation2d.fromRotations(motor.getSignal(TalonFXSignal.CLOSED_LOOP_REFERENCE) * ClimberConstants.CLIMBER_VISUALIZATION_POSITION_SCALAR)
         );
 
         Logger.recordOutput("Poses/Components/ClimberPose", calculateVisualizationPose());
@@ -108,7 +108,7 @@ public class Climber extends MotorSubsystem {
     private Pose3d calculateVisualizationPose() {
         final Transform3d climberTransform = new Transform3d(
                 new Translation3d(0, 0, 0),
-                new Rotation3d(-Rotation2d.fromRotations(getPositionRotations()).getRadians(), 0, 0)
+                new Rotation3d(-Rotation2d.fromRotations(getPositionRotations()).getRadians() * ClimberConstants.CLIMBER_VISUALIZATION_POSITION_SCALAR, 0, 0)
         );
 
         return ClimberConstants.CLIMBER_VISUALIZATION_ORIGIN_POINT.transformBy(climberTransform);

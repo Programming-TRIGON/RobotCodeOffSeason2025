@@ -44,10 +44,10 @@ public class ClimberConstants {
             REVERSE_LIMIT_SENSOR = SimpleSensor.createDigitalSensor(REVERSE_LIMIT_SENSOR_CHANNEL, REVERSE_LIMIT_SWITCH_NAME),
             CAGE_SENSOR = SimpleSensor.createDigitalSensor(CAGE_SENSOR_CHANNEL, CAGE_SENSOR_NAME);
 
-    static final double GEAR_RATIO = 37.5;
     static final int
             GROUNDED_PID_SLOT = 0,
             ON_CAGE_PID_SLOT = 1;
+    private static final double GEAR_RATIO = 37.5;
     private static final double REVERSE_LIMIT_SENSOR_RESET_POSITION = 0;
     private static final double FORWARD_SOFT_LIMIT_POSITION_ROTATIONS = 3;
     static final boolean FOC_ENABLED = true;
@@ -72,6 +72,7 @@ public class ClimberConstants {
             new Translation3d(0, 0, 0),
             new Rotation3d(0, 0, 0)
     );
+    static final double CLIMBER_VISUALIZATION_POSITION_SCALAR = 0.1;
     static final SingleJointedArmMechanism2d MECHANISM = new SingleJointedArmMechanism2d(
             "ClimberMechanism",
             Color.kGreen
