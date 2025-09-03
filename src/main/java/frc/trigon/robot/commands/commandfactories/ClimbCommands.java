@@ -5,10 +5,12 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.trigon.robot.RobotContainer;
+import frc.trigon.robot.constants.LEDConstants;
 import frc.trigon.robot.constants.OperatorConstants;
 import frc.trigon.robot.subsystems.climber.ClimberCommands;
 import frc.trigon.robot.subsystems.climber.ClimberConstants;
 import frc.trigon.robot.subsystems.swerve.SwerveCommands;
+import trigon.hardware.misc.leds.LEDCommands;
 
 public class ClimbCommands {
     public static boolean IS_CLIMBING = false;
@@ -21,7 +23,11 @@ public class ClimbCommands {
                 ClimberCommands.getSetTargetStateCommand(ClimberConstants.ClimberState.CLIMB)
                         .until(RobotContainer.CLIMBER::atTargetState),
                 getAdjustClimbManuallyCommand()
-        ).finallyDo(() -> IS_CLIMBING = false);
+        ).alongWith(getClimbLEDCommand()).finallyDo(() -> IS_CLIMBING = false);
+    }
+
+    private static Command getClimbLEDCommand() {
+        return LEDCommands.getAnimateCommand(LEDConstants.CLIMB_ANIMATION_SETTINGS);//TODO: Add LEDStrip
     }
 
     private static Command getAdjustClimbManuallyCommand() {
