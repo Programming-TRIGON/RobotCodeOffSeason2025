@@ -18,7 +18,8 @@ public class Arm extends MotorSubsystem {
             armMasterMotor = ArmConstants.ARM_MASTER_MOTOR,
             endEffectorMotor = ArmConstants.END_EFFECTOR_MOTOR;
     private final CANcoderEncoder encoder = ArmConstants.ENCODER;
-    private final VoltageOut voltageRequest = new VoltageOut(0).withEnableFOC(ArmConstants.FOC_ENABLED);
+    private final VoltageOut armVoltageRequest = new VoltageOut(0).withEnableFOC(ArmConstants.FOC_ENABLED);
+    private final VoltageOut endEffectorVoltageRequest = new VoltageOut(0).withEnableFOC(ArmConstants.FOC_ENABLED);
     private final DynamicMotionMagicVoltage positionRequest = new DynamicMotionMagicVoltage(
             0,
             ArmConstants.DEFAULT_MAXIMUM_VELOCITY,
@@ -59,7 +60,7 @@ public class Arm extends MotorSubsystem {
     public void updateMechanism() {
         Logger.recordOutput("Poses/Components/ArmPose", calculateComponentPose());
         ArmConstants.ARM_MECHANISM.update(
-                getAngle(),
+                Rotation2d.fromRotations(getAngle().getRotations() + ArmConstants.POSITION_OFFSET_FROM_GRAVITY_OFFSET),
                 Rotation2d.fromRotations(armMasterMotor.getSignal(TalonFXSignal.CLOSED_LOOP_REFERENCE) + ArmConstants.POSITION_OFFSET_FROM_GRAVITY_OFFSET)
         );
         ArmConstants.END_EFFECTOR_MECHANISM.update(
@@ -77,7 +78,7 @@ public class Arm extends MotorSubsystem {
 
     @Override
     public void sysIDDrive(double targetVoltage) {
-        armMasterMotor.setControl(voltageRequest.withOutput(targetVoltage));
+        armMasterMotor.setControl(armVoltageRequest.withOutput(targetVoltage));
     }
 
     public boolean atState(ArmConstants.ArmState targetState) {
@@ -97,7 +98,7 @@ public class Arm extends MotorSubsystem {
     }
 
     void setTargetState(Rotation2d targetAngle, double targetVoltage) {
-        setTargetAngleWithSkibidyLogic(targetAngle);
+        setTargetAngle(targetAngle);
         setTargetVoltage(targetVoltage);
     }
 
@@ -105,24 +106,12 @@ public class Arm extends MotorSubsystem {
         return Rotation2d.fromRotations(encoder.getSignal(CANcoderSignal.POSITION));
     }
 
-    private void setTargetAngleWithSkibidyLogic(Rotation2d targetAngle) {
-        if (Math.abs(getAngle().getDegrees() - targetAngle.getDegrees()) > 180) {
-            if (getAngle().getDegrees() < targetAngle.getDegrees())
-                setTargetAngle(Rotation2d.fromDegrees(getAngle().getDegrees() - (360 + getAngle().getDegrees()) - targetAngle.getDegrees()));
-            else if (getAngle().getDegrees() > targetAngle.getDegrees())
-                setTargetAngle(Rotation2d.fromDegrees(getAngle().getDegrees() + (360 + getAngle().getDegrees()) - targetAngle.getDegrees()));
-            else
-                System.out.println("something wrong is with the logic");
-        }
-        setTargetAngle(targetAngle);
-    }
-
     private void setTargetAngle(Rotation2d targetAngle) {
         armMasterMotor.setControl(positionRequest.withPosition(targetAngle.getRotations()));
     }
 
     private void setTargetVoltage(double targetVoltage) {
-        endEffectorMotor.setControl(voltageRequest.withOutput(targetVoltage));
+        endEffectorMotor.setControl(endEffectorVoltageRequest.withOutput(targetVoltage));
     }
 
     private Pose3d calculateComponentPose() {

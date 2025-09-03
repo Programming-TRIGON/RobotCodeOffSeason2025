@@ -44,11 +44,11 @@ public class ArmConstants {
             ARM_GEAR_RATIO = 50,
             END_EFFECTOR_GEAR_RATIO = 17;
     private static final double ANGLE_ENCODER_GRAVITY_OFFSET = 0;
-    static final double POSITION_OFFSET_FROM_GRAVITY_OFFSET = RobotHardwareStats.isSimulation() ? 0 : 0 + Conversions.degreesToRotations(0) - ANGLE_ENCODER_GRAVITY_OFFSET;
+    static final double POSITION_OFFSET_FROM_GRAVITY_OFFSET = RobotHardwareStats.isSimulation() ? 0 + Conversions.degreesToRotations(-90) : 0 + Conversions.degreesToRotations(0) - ANGLE_ENCODER_GRAVITY_OFFSET;
     private static final boolean SHOULD_FOLLOWER_OPPOSE_MASTER = false;
     static final double
-            DEFAULT_MAXIMUM_VELOCITY = RobotHardwareStats.isSimulation() ? 0 : 0,
-            DEFAULT_MAXIMUM_ACCELERATION = RobotHardwareStats.isSimulation() ? 0 : 0,
+            DEFAULT_MAXIMUM_VELOCITY = RobotHardwareStats.isSimulation() ? 0.50 : 0,
+            DEFAULT_MAXIMUM_ACCELERATION = RobotHardwareStats.isSimulation() ? 1.50 : 0,
             DEFAULT_MAXIMUM_JERK = DEFAULT_MAXIMUM_ACCELERATION * 10;
     static final boolean FOC_ENABLED = true;
 
@@ -64,8 +64,8 @@ public class ArmConstants {
             END_EFFECTOR_MOMENT_OF_INERTIA = 0.003,
             END_EFFECTOR_MAXIMUM_DISPLAYABLE_VELOCITY = 12;
     private static final Rotation2d
-            ARM_MINIMUM_ANGLE = Rotation2d.fromDegrees(-180),
-            ARM_MAXIMUM_ANGLE = Rotation2d.fromDegrees(180);
+            ARM_MINIMUM_ANGLE = Rotation2d.fromDegrees(0),
+            ARM_MAXIMUM_ANGLE = Rotation2d.fromDegrees(360);
     private static final boolean SHOULD_SIMULATE_GRAVITY = true;
     private static final SingleJointedArmSimulation ARM_SIMULATION = new SingleJointedArmSimulation(
             ARM_GEARBOX,
@@ -125,13 +125,13 @@ public class ArmConstants {
         config.Feedback.FeedbackRemoteSensorID = ARM_MASTER_MOTOR.getID();
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
 
-        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 0 : 0;
+        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 10 : 0;
         config.Slot0.kI = RobotHardwareStats.isSimulation() ? 0 : 0;
         config.Slot0.kD = RobotHardwareStats.isSimulation() ? 0 : 0;
-        config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0 : 0;
-        config.Slot0.kV = RobotHardwareStats.isSimulation() ? 0 : 0;
-        config.Slot0.kA = RobotHardwareStats.isSimulation() ? 0 : 0;
-        config.Slot0.kG = RobotHardwareStats.isSimulation() ? 0 : 0;
+        config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0.25 : 0;
+        config.Slot0.kV = RobotHardwareStats.isSimulation() ? 5.7 : 0;
+        config.Slot0.kA = RobotHardwareStats.isSimulation() ? 0.6 : 0;
+        config.Slot0.kG = RobotHardwareStats.isSimulation() ? 0.4 : 0;
 
         config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
         config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
@@ -189,7 +189,7 @@ public class ArmConstants {
 
         config.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
         config.MagnetSensor.MagnetOffset = ANGLE_ENCODER_GRAVITY_OFFSET;
-        config.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
+        config.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 1;
 
         ENCODER.applyConfiguration(config);
         ENCODER.setSimulationInputsFromTalonFX(ARM_MASTER_MOTOR);
@@ -199,19 +199,19 @@ public class ArmConstants {
     }
 
     public enum ArmState {
-        REST(Rotation2d.fromDegrees(180), 0),
+        REST(Rotation2d.fromDegrees(0), 0),
         SCORE_L1(Rotation2d.fromDegrees(75), 4),
         SCORE_L2(Rotation2d.fromDegrees(90), 4),
         SCORE_L3(Rotation2d.fromDegrees(90), 4),
         SCORE_L4(Rotation2d.fromDegrees(90), 4),
         SCORE_NET(Rotation2d.fromDegrees(160), 4),
         SCORE_PROCESSOR(Rotation2d.fromDegrees(90), 4),
-        SCORE_L1_REVERSE(Rotation2d.fromDegrees(-75), 4),
-        SCORE_L2_REVERSE(Rotation2d.fromDegrees(-90), 4),
-        SCORE_L3_REVERSE(Rotation2d.fromDegrees(-90), 4),
-        SCORE_L4_REVERSE(Rotation2d.fromDegrees(-90), 4),
-        SCORE_NET_REVERSE(Rotation2d.fromDegrees(-160), 4),
-        SCORE_PROCESSOR_REVERSE(Rotation2d.fromDegrees(-90), 4);
+        SCORE_L1_REVERSE(Rotation2d.fromDegrees(360-75), 4),
+        SCORE_L2_REVERSE(Rotation2d.fromDegrees(360-90), 4),
+        SCORE_L3_REVERSE(Rotation2d.fromDegrees(360-90), 4),
+        SCORE_L4_REVERSE(Rotation2d.fromDegrees(360-90), 4),
+        SCORE_NET_REVERSE(Rotation2d.fromDegrees(360-160), 4),
+        SCORE_PROCESSOR_REVERSE(Rotation2d.fromDegrees(360-90), 4);
 
         public final Rotation2d targetAngle;
         public final double targetVoltage;
