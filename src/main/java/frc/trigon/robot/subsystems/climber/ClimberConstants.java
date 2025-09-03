@@ -54,7 +54,7 @@ public class ClimberConstants {
 
     private static final int MOTOR_AMOUNT = 1;
     private static final DCMotor
-            GEARBOX = DCMotor.getFalcon500Foc(MOTOR_AMOUNT);//TODO: KrakenX44
+            GEARBOX = DCMotor.getFalcon500Foc(MOTOR_AMOUNT);//KrakenX44
     private static final double MOMENT_OF_INERTIA = 0.003;
     private static final SimpleMotorSimulation MOTOR_SIMULATION = new SimpleMotorSimulation(
             GEARBOX,
@@ -121,8 +121,8 @@ public class ClimberConstants {
         config.Slot1.kA = RobotHardwareStats.isSimulation() ? 0.074561 : 0;
         config.Slot1.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
 
-        config.MotionMagic.MotionMagicCruiseVelocity = RobotHardwareStats.isSimulation() ? 2 : 0;
-        config.MotionMagic.MotionMagicAcceleration = RobotHardwareStats.isSimulation() ? 10 : 0;
+        config.MotionMagic.MotionMagicCruiseVelocity = RobotHardwareStats.isSimulation() ? 2 : 2;
+        config.MotionMagic.MotionMagicAcceleration = RobotHardwareStats.isSimulation() ? 10 : 10;
         config.MotionMagic.MotionMagicJerk = config.MotionMagic.MotionMagicAcceleration * 10;
 
         config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
