@@ -32,7 +32,7 @@ public class ClimbCommands {
 
     private static Command getAdjustClimbManuallyCommand() {
         return new ParallelCommandGroup(
-                ClimberCommands.getSetTargetSpeedCommand(OperatorConstants.DRIVER_CONTROLLER.getRightY()),
+                ClimberCommands.getSetTargetSpeedCommand(OperatorConstants.DRIVER_CONTROLLER::getRightY),
                 SwerveCommands.getClosedLoopSelfRelativeDriveCommand(
                         () -> 0,
                         () -> 0,

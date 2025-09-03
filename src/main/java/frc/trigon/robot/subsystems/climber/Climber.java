@@ -28,7 +28,7 @@ public class Climber extends MotorSubsystem {
     @Override
     public void stop() {
         motor.stopMotor();
-        setServos(0);
+        setServoPowers(0);
     }
 
     @Override
@@ -85,22 +85,22 @@ public class Climber extends MotorSubsystem {
 
     void setTargetState(ClimberConstants.ClimberState targetState) {
         this.targetState = targetState;
-        setTargetState(targetState.targetPositionRotations, targetState.targetServoPower, targetState.affectedByRobotWeight);
+        setTargetState(targetState.targetPositionRotations, targetState.targetServoPower, targetState.isAffectedByRobotWeight);
     }
 
-    void setTargetState(double targetPositionRotations, double targetServoPower, boolean affectedByRobotWeight) {
+    void setTargetState(double targetPositionRotations, double targetServoPower, boolean isAffectedByRobotWeight) {
         final MotionMagicVoltage positionRequest = this.positionRequest
                 .withPosition(targetPositionRotations)
-                .withSlot(affectedByRobotWeight ? ClimberConstants.ON_CAGE_PID_SLOT : ClimberConstants.GROUNDED_PID_SLOT);
+                .withSlot(isAffectedByRobotWeight ? ClimberConstants.ON_CAGE_PID_SLOT : ClimberConstants.GROUNDED_PID_SLOT);
         motor.setControl(positionRequest);
-        setServos(targetServoPower);
+        setServoPowers(targetServoPower);
     }
 
     void setTargetVoltage(double targetVoltage) {
         motor.setControl(voltageRequest.withOutput(targetVoltage));
     }
 
-    private void setServos(double power) {
+    private void setServoPowers(double power) {
         rightServo.set(power);
         leftServo.set(-power);
     }

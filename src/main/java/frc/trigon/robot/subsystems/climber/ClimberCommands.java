@@ -7,6 +7,7 @@ import trigon.commands.ExecuteEndCommand;
 import trigon.commands.NetworkTablesCommand;
 
 import java.util.Set;
+import java.util.function.DoubleSupplier;
 
 public class ClimberCommands {
     public static Command getDebuggingCommand() {
@@ -27,17 +28,17 @@ public class ClimberCommands {
         );
     }
 
-    public static Command getSetTargetStateCommand(double targetPositionRotations, double targetServoSpeed, boolean affectedByRobotWeight) {
+    public static Command getSetTargetStateCommand(double targetPositionRotations, double targetServoPower, boolean affectedByRobotWeight) {
         return new StartEndCommand(
-                () -> RobotContainer.CLIMBER.setTargetState(targetPositionRotations, targetServoSpeed, affectedByRobotWeight),
+                () -> RobotContainer.CLIMBER.setTargetState(targetPositionRotations, targetServoPower, affectedByRobotWeight),
                 RobotContainer.CLIMBER::stop,
                 RobotContainer.CLIMBER
         );
     }
 
-    public static Command getSetTargetSpeedCommand(double targetSpeed) {
+    public static Command getSetTargetSpeedCommand(DoubleSupplier targetSpeed) {
         return new ExecuteEndCommand(
-                () -> RobotContainer.CLIMBER.setTargetVoltage(targetSpeed * ClimberConstants.MAXIMUM_MANUAL_CONTROL_VOLTAGE),
+                () -> RobotContainer.CLIMBER.setTargetVoltage(targetSpeed.getAsDouble() * ClimberConstants.MAXIMUM_MANUAL_CONTROL_VOLTAGE),
                 RobotContainer.CLIMBER::stop,
                 RobotContainer.CLIMBER
         );

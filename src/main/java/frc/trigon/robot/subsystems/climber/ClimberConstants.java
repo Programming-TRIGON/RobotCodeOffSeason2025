@@ -79,11 +79,19 @@ public class ClimberConstants {
     );
 
     public static final double MAXIMUM_MANUAL_CONTROL_VOLTAGE = 4;
-    private static final double HAS_CAGE_DEBOUNCE_TIME_SECONDS = 0.5;
+    private static final double
+            HAS_CAGE_DEBOUNCE_TIME_SECONDS = 0.5,
+            REVERSE_LIMIT_DEBOUNCE_TIME_SECONDS = 0.1;
     static final BooleanEvent HAS_CAGE_BOOLEAN_EVENT = new BooleanEvent(
             CommandScheduler.getInstance().getActiveButtonLoop(),
             CAGE_SENSOR::getBinaryValue
     ).debounce(HAS_CAGE_DEBOUNCE_TIME_SECONDS);
+
+
+    final BooleanEvent REVERSE_LIMIT_SENSOR_BOOLEAN_EVENT = new BooleanEvent(
+            CommandScheduler.getInstance().getActiveButtonLoop(),
+            REVERSE_LIMIT_SENSOR::getBinaryValue
+    ).debounce(REVERSE_LIMIT_DEBOUNCE_TIME_SECONDS);
     private static final DoubleSupplier REVERSE_LIMIT_SWITCH_SIMULATION_SUPPLIER = () -> 0;
     static final double CLIMBER_TOLERANCE_ROTATIONS = 0.01;
 
@@ -140,12 +148,7 @@ public class ClimberConstants {
 
     private static void configureReverseLimitSwitch() {
         REVERSE_LIMIT_SENSOR.setSimulationSupplier(REVERSE_LIMIT_SWITCH_SIMULATION_SUPPLIER);
-
-        final BooleanEvent reverseLimitSwitchBooleanEvent = new BooleanEvent(
-                CommandScheduler.getInstance().getActiveButtonLoop(),
-                REVERSE_LIMIT_SENSOR::getBinaryValue
-        );
-        reverseLimitSwitchBooleanEvent.ifHigh(() -> MOTOR.setPosition(REVERSE_LIMIT_SENSOR_RESET_POSITION));
+        REVERSE_LIMIT_SENSOR_BOOLEAN_EVENT.ifHigh(() -> MOTOR.setPosition(REVERSE_LIMIT_SENSOR_RESET_POSITION));
     }
 
     public enum ClimberState {
@@ -155,12 +158,12 @@ public class ClimberConstants {
 
         public final double targetPositionRotations;
         public final double targetServoPower;
-        public final boolean affectedByRobotWeight;
+        public final boolean isAffectedByRobotWeight;
 
-        ClimberState(double targetPositionRotations, double targetServoPower, boolean affectedByRobotWeight) {
+        ClimberState(double targetPositionRotations, double targetServoPower, boolean isAffectedByRobotWeight) {
             this.targetPositionRotations = targetPositionRotations;
             this.targetServoPower = targetServoPower;
-            this.affectedByRobotWeight = affectedByRobotWeight;
+            this.isAffectedByRobotWeight = isAffectedByRobotWeight;
         }
     }
 }
