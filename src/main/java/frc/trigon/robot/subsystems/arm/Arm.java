@@ -22,9 +22,9 @@ public class Arm extends MotorSubsystem {
     private final VoltageOut endEffectorVoltageRequest = new VoltageOut(0).withEnableFOC(ArmConstants.FOC_ENABLED);
     private final DynamicMotionMagicVoltage positionRequest = new DynamicMotionMagicVoltage(
             0,
-            ArmConstants.DEFAULT_MAXIMUM_VELOCITY,
-            ArmConstants.DEFAULT_MAXIMUM_ACCELERATION,
-            ArmConstants.DEFAULT_MAXIMUM_JERK
+            ArmConstants.ARM_DEFAULT_MAXIMUM_VELOCITY,
+            ArmConstants.ARM_DEFAULT_MAXIMUM_ACCELERATION,
+            ArmConstants.ARM_DEFAULT_MAXIMUM_JERK
     );
     private ArmConstants.ArmState targetState = ArmConstants.ArmState.REST;
 
@@ -34,7 +34,7 @@ public class Arm extends MotorSubsystem {
 
     @Override
     public SysIdRoutine.Config getSysIDConfig() {
-        return ArmConstants.SYSID_CONFIG;
+        return ArmConstants.ARM_SYSID_CONFIG;
     }
 
     @Override
@@ -58,14 +58,12 @@ public class Arm extends MotorSubsystem {
 
     @Override
     public void updateMechanism() {
-        Logger.recordOutput("Poses/Components/ArmPose", calculateComponentPose());
+        Logger.recordOutput("Poses/Components/ArmPose", calculateVisualizationPose());
         ArmConstants.ARM_MECHANISM.update(
                 Rotation2d.fromRotations(getAngle().getRotations() + ArmConstants.POSITION_OFFSET_FROM_GRAVITY_OFFSET),
                 Rotation2d.fromRotations(armMasterMotor.getSignal(TalonFXSignal.CLOSED_LOOP_REFERENCE) + ArmConstants.POSITION_OFFSET_FROM_GRAVITY_OFFSET)
         );
-        ArmConstants.END_EFFECTOR_MECHANISM.update(
-                endEffectorMotor.getSignal(TalonFXSignal.MOTOR_VOLTAGE)
-        );
+        ArmConstants.END_EFFECTOR_MECHANISM.update(endEffectorMotor.getSignal(TalonFXSignal.MOTOR_VOLTAGE));
     }
 
     @Override
@@ -73,7 +71,7 @@ public class Arm extends MotorSubsystem {
         armMasterMotor.update();
         endEffectorMotor.update();
         encoder.update();
-        Logger.recordOutput("Arm/CurrentPositionMeters", getAngle());
+        Logger.recordOutput("Arm/CurrentPositionDegrees", getAngle().getDegrees());
     }
 
     @Override
@@ -94,7 +92,8 @@ public class Arm extends MotorSubsystem {
         this.targetState = targetState;
         setTargetState(
                 targetState.targetAngle,
-                targetState.targetVoltage);
+                targetState.targetVoltage
+        );
     }
 
     void setTargetState(Rotation2d targetAngle, double targetVoltage) {
@@ -114,7 +113,7 @@ public class Arm extends MotorSubsystem {
         endEffectorMotor.setControl(endEffectorVoltageRequest.withOutput(targetVoltage));
     }
 
-    private Pose3d calculateComponentPose() {
+    private Pose3d calculateVisualizationPose() {
         final Transform3d armTransform = new Transform3d(
                 new Translation3d(),
                 new Rotation3d(0, getAngle().getRadians(), 0)

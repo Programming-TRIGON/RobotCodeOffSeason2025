@@ -45,11 +45,11 @@ public class ArmConstants {
             END_EFFECTOR_GEAR_RATIO = 17;
     private static final double ANGLE_ENCODER_GRAVITY_OFFSET = 0;
     static final double POSITION_OFFSET_FROM_GRAVITY_OFFSET = RobotHardwareStats.isSimulation() ? 0 + Conversions.degreesToRotations(-90) : 0 + Conversions.degreesToRotations(0) - ANGLE_ENCODER_GRAVITY_OFFSET;
-    private static final boolean SHOULD_FOLLOWER_OPPOSE_MASTER = false;
+    private static final boolean SHOULD_ARM_FOLLOWER_OPPOSE_MASTER = false;
     static final double
-            DEFAULT_MAXIMUM_VELOCITY = RobotHardwareStats.isSimulation() ? 0.6 : 0,
-            DEFAULT_MAXIMUM_ACCELERATION = RobotHardwareStats.isSimulation() ? 1.5 : 0,
-            DEFAULT_MAXIMUM_JERK = DEFAULT_MAXIMUM_ACCELERATION * 10;
+            ARM_DEFAULT_MAXIMUM_VELOCITY = RobotHardwareStats.isSimulation() ? 0.6 : 0,
+            ARM_DEFAULT_MAXIMUM_ACCELERATION = RobotHardwareStats.isSimulation() ? 1.5 : 0,
+            ARM_DEFAULT_MAXIMUM_JERK = ARM_DEFAULT_MAXIMUM_ACCELERATION * 10;
     static final boolean FOC_ENABLED = true;
 
     private static final int
@@ -82,7 +82,7 @@ public class ArmConstants {
             END_EFFECTOR_MOMENT_OF_INERTIA
     );
 
-    static final SysIdRoutine.Config SYSID_CONFIG = new SysIdRoutine.Config(
+    static final SysIdRoutine.Config ARM_SYSID_CONFIG = new SysIdRoutine.Config(
             Units.Volts.of(1.5).per(Units.Seconds),
             Units.Volts.of(1.5),
             Units.Second.of(1000)
@@ -136,8 +136,8 @@ public class ArmConstants {
         config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
         config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
 
-        config.MotionMagic.MotionMagicCruiseVelocity = DEFAULT_MAXIMUM_VELOCITY;
-        config.MotionMagic.MotionMagicAcceleration = DEFAULT_MAXIMUM_ACCELERATION;
+        config.MotionMagic.MotionMagicCruiseVelocity = ARM_DEFAULT_MAXIMUM_VELOCITY;
+        config.MotionMagic.MotionMagicAcceleration = ARM_DEFAULT_MAXIMUM_ACCELERATION;
         config.MotionMagic.MotionMagicJerk = config.MotionMagic.MotionMagicAcceleration * 10;
 
         ARM_MASTER_MOTOR.applyConfiguration(config);
@@ -161,7 +161,7 @@ public class ArmConstants {
 
         ARM_FOLLOWER_MOTOR.applyConfiguration(config);
 
-        final Follower followerRequest = new Follower(ARM_MASTER_MOTOR.getID(), SHOULD_FOLLOWER_OPPOSE_MASTER);
+        final Follower followerRequest = new Follower(ARM_MASTER_MOTOR.getID(), SHOULD_ARM_FOLLOWER_OPPOSE_MASTER);
         ARM_FOLLOWER_MOTOR.setControl(followerRequest);
     }
 
@@ -206,12 +206,12 @@ public class ArmConstants {
         SCORE_L4(Rotation2d.fromDegrees(90), 4),
         SCORE_NET(Rotation2d.fromDegrees(160), 4),
         SCORE_PROCESSOR(Rotation2d.fromDegrees(90), 4),
-        SCORE_L1_REVERSE(Rotation2d.fromDegrees(360-75), 4),
-        SCORE_L2_REVERSE(Rotation2d.fromDegrees(360-90), 4),
-        SCORE_L3_REVERSE(Rotation2d.fromDegrees(360-90), 4),
-        SCORE_L4_REVERSE(Rotation2d.fromDegrees(360-90), 4),
-        SCORE_NET_REVERSE(Rotation2d.fromDegrees(360-160), 4),
-        SCORE_PROCESSOR_REVERSE(Rotation2d.fromDegrees(360-90), 4);
+        SCORE_L1_REVERSE(Rotation2d.fromDegrees(360 - SCORE_L1.targetAngle.getDegrees()), 4),
+        SCORE_L2_REVERSE(Rotation2d.fromDegrees(360 - SCORE_L2.targetAngle.getDegrees()), 4),
+        SCORE_L3_REVERSE(Rotation2d.fromDegrees(360 - SCORE_L3.targetAngle.getDegrees()), 4),
+        SCORE_L4_REVERSE(Rotation2d.fromDegrees(360 - SCORE_L4.targetAngle.getDegrees()), 4),
+        SCORE_NET_REVERSE(Rotation2d.fromDegrees(360 - SCORE_NET.targetAngle.getDegrees()), 4),
+        SCORE_PROCESSOR_REVERSE(Rotation2d.fromDegrees(360 - SCORE_PROCESSOR.targetAngle.getDegrees()), 4);
 
         public final Rotation2d targetAngle;
         public final double targetVoltage;

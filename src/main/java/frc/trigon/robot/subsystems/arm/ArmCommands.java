@@ -11,13 +11,14 @@ import java.util.Set;
 public class ArmCommands {
     public static Command getDebuggingCommand() {
         return new NetworkTablesCommand(
-                (Double[] targetStates) -> RobotContainer.ARM.setTargetState(
-                        Rotation2d.fromDegrees(targetStates[0]),
-                        targetStates[1]
+                ( targetAngleDegrees,  targetVoltage) -> RobotContainer.ARM.setTargetState(
+                        Rotation2d.fromDegrees(targetAngleDegrees),
+                        targetVoltage
                 ),
                 false,
                 Set.of(RobotContainer.ARM),
-                "Debugging/ElevatorTargetPositionRotations"
+                "Debugging/ArmTargetPositionDegrees",
+                "Debugging/EndEffectorTargetVoltage"
         );
     }
 
