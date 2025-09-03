@@ -51,7 +51,7 @@ public class Arm extends MotorSubsystem {
     @Override
     public void updateLog(SysIdRoutineLog log) {
         log.motor("Arm")
-                .angularPosition(Units.Degrees.of(encoder.getSignal(CANcoderSignal.POSITION)))
+                .angularPosition(Units.Rotations.of(encoder.getSignal(CANcoderSignal.POSITION)))
                 .angularVelocity(Units.RotationsPerSecond.of(armMasterMotor.getSignal(TalonFXSignal.VELOCITY)))
                 .voltage(Units.Volts.of(armMasterMotor.getSignal(TalonFXSignal.MOTOR_VOLTAGE)));
     }
