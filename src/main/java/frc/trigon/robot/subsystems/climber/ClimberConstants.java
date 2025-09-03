@@ -121,8 +121,8 @@ public class ClimberConstants {
         config.Slot1.kA = RobotHardwareStats.isSimulation() ? 0.074561 : 0;
         config.Slot1.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
 
-        config.MotionMagic.MotionMagicCruiseVelocity = RobotHardwareStats.isSimulation() ? 2 : 0;
-        config.MotionMagic.MotionMagicAcceleration = RobotHardwareStats.isSimulation() ? 10 : 0;
+        config.MotionMagic.MotionMagicCruiseVelocity = RobotHardwareStats.isSimulation() ? 2 : 2;
+        config.MotionMagic.MotionMagicAcceleration = RobotHardwareStats.isSimulation() ? 10 : 10;
         config.MotionMagic.MotionMagicJerk = config.MotionMagic.MotionMagicAcceleration * 10;
 
         config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
