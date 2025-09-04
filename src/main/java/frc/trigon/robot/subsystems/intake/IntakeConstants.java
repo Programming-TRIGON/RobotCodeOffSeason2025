@@ -5,10 +5,7 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.event.BooleanEvent;
@@ -84,7 +81,7 @@ public class IntakeConstants {
     private static final DoubleSupplier
             REVERSE_LIMIT_SENSOR_SIMULATION_SUPPLIER = () -> 0,
             FORWARD_LIMIT_SENSOR_SIMULATION_SUPPLIER = () -> 0,
-            DISTANCE_SENSOR_SIMULATION_SUPPLIER = () -> SimulationFieldHandler.isHoldingGamePiece() ? 0 : 1;
+            DISTANCE_SENSOR_SIMULATION_SUPPLIER = () -> SimulationFieldHandler.isHoldingCoral() ? 0 : 1;
 
     static final SysIdRoutine.Config ANGLE_SYSID_CONFIG = new SysIdRoutine.Config(
             Units.Volts.of(0.2).per(Units.Second),
@@ -125,6 +122,9 @@ public class IntakeConstants {
                     CommandScheduler.getInstance().getActiveButtonLoop(),
                     FORWARD_LIMIT_SENSOR::getBinaryValue
             ).debounce(FORWARD_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS);
+    static final Transform3d
+            INTAKE_ORIGIN_POINT_TO_CORAL_COLLECTION_TRANSFORM = new Transform3d(),
+            INTAKE_ORIGIN_POINT_TO_CORAL_VISUALIZATION_TRANSFORM = new Transform3d(); //TODO: get actual values
 
     static {
         configureIntakeMotor();

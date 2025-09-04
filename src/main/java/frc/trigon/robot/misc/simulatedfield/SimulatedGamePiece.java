@@ -40,6 +40,13 @@ public class SimulatedGamePiece {
         updateIsTouchingGround();
     }
 
+    public void release() {
+        poseAtRelease = fieldRelativePose;
+        timestampAtRelease = Timer.getTimestamp();
+
+        updateIsTouchingGround();
+    }
+
     public void updatePose(Pose3d fieldRelativePose) {
         this.fieldRelativePose = fieldRelativePose;
     }
