@@ -71,6 +71,7 @@ public class Arm extends MotorSubsystem {
         armMasterMotor.update();
         endEffectorMotor.update();
         encoder.update();
+        ArmConstants.DISTANCE_SENSOR.updateSensor();
         Logger.recordOutput("Arm/CurrentPositionDegrees", getAngle().getDegrees());
     }
 
