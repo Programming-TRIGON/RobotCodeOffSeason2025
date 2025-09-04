@@ -10,7 +10,7 @@ import java.util.Set;
 public class TransporterCommands {
     public static Command getDebuggingCommand() {
         return new NetworkTablesCommand(
-                RobotContainer.TRANSPORTER::setTargetVoltage,
+                RobotContainer.TRANSPORTER::setTargetState,
                 false,
                 Set.of(RobotContainer.TRANSPORTER),
                 "Debugging/TransporterTargetRightMotorVoltage",
@@ -26,9 +26,9 @@ public class TransporterCommands {
         );
     }
 
-    public static Command getSetTargetVoltageCommand(double rightMotorVoltage, double leftMotorVoltage) {
+    public static Command getSetTargetStateCommand(double rightMotorVoltage, double leftMotorVoltage) {
         return new StartEndCommand(
-                () -> RobotContainer.TRANSPORTER.setTargetVoltage(rightMotorVoltage, leftMotorVoltage),
+                () -> RobotContainer.TRANSPORTER.setTargetState(rightMotorVoltage, leftMotorVoltage),
                 RobotContainer.TRANSPORTER::stop,
                 RobotContainer.TRANSPORTER
         );
