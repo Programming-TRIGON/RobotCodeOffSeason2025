@@ -97,6 +97,8 @@ public abstract class LEDStrip extends SubsystemBase {
 
     protected abstract void rainbow(double brightness, double speed, boolean inverted);
 
+    protected abstract void singleFade(Color color, double speed);
+
     protected abstract void setSingleLEDColor(int index, Color color);
 
     private void addLEDStripToLEDStripsArray(LEDStrip ledStrip) {

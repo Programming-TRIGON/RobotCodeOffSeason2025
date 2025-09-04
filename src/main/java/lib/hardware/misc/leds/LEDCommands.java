@@ -319,6 +319,25 @@ public class LEDCommands {
     }
 
     /**
+     * Gets a command that sets the LED strips to fade a single color in and out.
+     *
+     * @param color     the color to fade in and out
+     * @param speed     the time it takes to fade in or out in seconds
+     * @param ledStrips the LED strips to animate
+     * @return the command
+     */
+    public static Command getSingleFadeCommand(Color color, double speed, lib.hardware.misc.leds.LEDStrip... ledStrips) {
+        return new StartEndCommand(
+                () -> {
+                    runForLEDs(lib.hardware.misc.leds.LEDStrip::clearLEDColors, ledStrips);
+                    runForLEDs(ledStrip -> ledStrip.setCurrentAnimation(() -> ledStrip.singleFade(color, speed)), ledStrips);
+                },
+                () -> runForLEDs(lib.hardware.misc.leds.LEDStrip::clearLEDColors, ledStrips),
+                ledStrips
+        ).ignoringDisable(true);
+    }
+
+    /**
      * Gets a command that sets an LED board to display an image
      *
      * @param filePath the path to the image to display

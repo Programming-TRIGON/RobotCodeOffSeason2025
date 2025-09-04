@@ -107,4 +107,17 @@ public class LEDStripAnimationSettings {
             ledStrip.rainbow(brightness, speed, inverted);
         }
     }
+
+    /**
+     * The settings for a command that animates an LED strip to fade a single color in and out.
+     *
+     * @param color the color to fade in and out
+     * @param speed the time it takes to fade in or out in seconds
+     */
+    public record SingleFadeSettings(Color color, double speed) implements LEDAnimationSettings {
+        @Override
+        public void apply(LEDStrip ledStrip) {
+            ledStrip.singleFade(color, speed);
+        }
+    }
 }
