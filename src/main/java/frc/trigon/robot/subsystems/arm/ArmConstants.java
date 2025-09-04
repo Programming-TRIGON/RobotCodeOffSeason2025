@@ -31,29 +31,30 @@ import java.util.function.DoubleSupplier;
 
 public class ArmConstants {
     private static final int
-            MASTER_MOTOR_ID = 13,
-            FOLLOWER_MOTOR_ID = 14,
+            ARM_MASTER_MOTOR_ID = 13,
+            ARM_FOLLOWER_MOTOR_ID = 14,
             END_EFFECTOR_MOTOR_ID = 15,
-            ENCODER_ID = 13,
+            ANGLE_ENCODER_ID = 13,
             DISTANCE_SENSOR_CHANNEL = 3;
     private static final String
-            MASTER_MOTOR_NAME = "ArmMasterMotor",
-            FOLLOWER_MOTOR_NAME = "ArmFollowerMotor",
+            ARM_MASTER_MOTOR_NAME = "ArmMasterMotor",
+            ARM_FOLLOWER_MOTOR_NAME = "ArmFollowerMotor",
             END_EFFECTOR_MOTOR_NAME = "EndEffectorMotor",
-            ENCODER_NAME = "ArmEncoder",
+            ANGLE_ENCODER_NAME = "ArmEncoder",
             DISTANCE_SENSOR_NAME = "EndEffectorDistanceSensor";
     static final TalonFXMotor
-            ARM_MASTER_MOTOR = new TalonFXMotor(MASTER_MOTOR_ID, MASTER_MOTOR_NAME),
-            ARM_FOLLOWER_MOTOR = new TalonFXMotor(FOLLOWER_MOTOR_ID, FOLLOWER_MOTOR_NAME),
+            ARM_MASTER_MOTOR = new TalonFXMotor(ARM_MASTER_MOTOR_ID, ARM_MASTER_MOTOR_NAME),
+            ARM_FOLLOWER_MOTOR = new TalonFXMotor(ARM_FOLLOWER_MOTOR_ID, ARM_FOLLOWER_MOTOR_NAME),
             END_EFFECTOR_MOTOR = new TalonFXMotor(END_EFFECTOR_MOTOR_ID, END_EFFECTOR_MOTOR_NAME);
-    static final CANcoderEncoder ENCODER = new CANcoderEncoder(ENCODER_ID, ENCODER_NAME);
+    static final CANcoderEncoder ANGLE_ENCODER = new CANcoderEncoder(ANGLE_ENCODER_ID, ANGLE_ENCODER_NAME);
     static final SimpleSensor DISTANCE_SENSOR = SimpleSensor.createDigitalSensor(DISTANCE_SENSOR_CHANNEL, DISTANCE_SENSOR_NAME);
 
     private static final double
             ARM_GEAR_RATIO = 50,
             END_EFFECTOR_GEAR_RATIO = 17;
+    private static final double ARM_MOTOR_CURRENT_LIMIT = 50;
     private static final double ANGLE_ENCODER_GRAVITY_OFFSET = 0;
-    static final double POSITION_OFFSET_FROM_GRAVITY_OFFSET = RobotHardwareStats.isSimulation() ? 0 + Conversions.degreesToRotations(-90) : 0 + Conversions.degreesToRotations(0) - ANGLE_ENCODER_GRAVITY_OFFSET;
+    static final double POSITION_OFFSET_FROM_GRAVITY_OFFSET = RobotHardwareStats.isSimulation() ? 0 - Conversions.degreesToRotations(90) : 0 + Conversions.degreesToRotations(0) - ANGLE_ENCODER_GRAVITY_OFFSET;
     private static final boolean SHOULD_ARM_FOLLOWER_OPPOSE_MASTER = false;
     static final double
             ARM_DEFAULT_MAXIMUM_VELOCITY = RobotHardwareStats.isSimulation() ? 0.6 : 0,
@@ -90,7 +91,6 @@ public class ArmConstants {
             END_EFFECTOR_GEAR_RATIO,
             END_EFFECTOR_MOMENT_OF_INERTIA
     );
-
     private static final DoubleSupplier DISTANCE_SENSOR_SIMULATION_SUPPLIER = () -> SimulationFieldHandler.isHoldingGamePiece() ? 0 : 1;
 
     static final SysIdRoutine.Config ARM_SYSID_CONFIG = new SysIdRoutine.Config(
@@ -120,13 +120,12 @@ public class ArmConstants {
             CommandScheduler.getInstance().getActiveButtonLoop(),
             DISTANCE_SENSOR::getBinaryValue
     ).debounce(COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS);
-    private static final double ARM_MOTOR_CURRENT_LIMIT = 50;
 
     static {
         configureArmMasterMotor();
         configureArmFollowerMotor();
         configureEndEffectorMotor();
-        configureEncoder();
+        configureAngleEncoder();
         configureDistanceSensor();
     }
 
@@ -138,8 +137,8 @@ public class ArmConstants {
 
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-        config.Feedback.RotorToSensorRatio = ARM_GEAR_RATIO;
 
+        config.Feedback.RotorToSensorRatio = ARM_GEAR_RATIO;
         config.Feedback.FeedbackRemoteSensorID = ARM_MASTER_MOTOR.getID();
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
 
@@ -208,18 +207,18 @@ public class ArmConstants {
         END_EFFECTOR_MOTOR.registerSignal(TalonFXSignal.STATOR_CURRENT, 100);
     }
 
-    private static void configureEncoder() {
+    private static void configureAngleEncoder() {
         final CANcoderConfiguration config = new CANcoderConfiguration();
 
         config.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
         config.MagnetSensor.MagnetOffset = ANGLE_ENCODER_GRAVITY_OFFSET;
         config.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 1;
 
-        ENCODER.applyConfiguration(config);
-        ENCODER.setSimulationInputsFromTalonFX(ARM_MASTER_MOTOR);
+        ANGLE_ENCODER.applyConfiguration(config);
+        ANGLE_ENCODER.setSimulationInputsFromTalonFX(ARM_MASTER_MOTOR);
 
-        ENCODER.registerSignal(CANcoderSignal.POSITION, 100);
-        ENCODER.registerSignal(CANcoderSignal.VELOCITY, 100);
+        ANGLE_ENCODER.registerSignal(CANcoderSignal.POSITION, 100);
+        ANGLE_ENCODER.registerSignal(CANcoderSignal.VELOCITY, 100);
     }
 
     private static void configureDistanceSensor() {
@@ -239,18 +238,18 @@ public class ArmConstants {
         PREPARE_PROCESSOR_SCORE(Rotation2d.fromDegrees(90), HOLD_ALGAE.targetVoltage),
         SCORE_PROCESSOR(Rotation2d.fromDegrees(90), 4),
         COLLECT_ALGAE_L2(Rotation2d.fromDegrees(90), -4),
-        COLLECT_ALGAE_L3(Rotation2d.fromDegrees(90), -4),
-        HOLD_ALGAE_REVERSE(Rotation2d.fromDegrees(360 - HOLD_ALGAE.targetAngle.getDegrees()), HOLD_ALGAE.targetVoltage),
-        SCORE_L1_REVERSE(Rotation2d.fromDegrees(360 - SCORE_L1.targetAngle.getDegrees()), SCORE_L1.targetVoltage),
-        SCORE_L2_REVERSE(Rotation2d.fromDegrees(360 - SCORE_L2.targetAngle.getDegrees()), SCORE_L2.targetVoltage),
-        SCORE_L3_REVERSE(Rotation2d.fromDegrees(360 - SCORE_L3.targetAngle.getDegrees()), SCORE_L3.targetVoltage),
-        SCORE_L4_REVERSE(Rotation2d.fromDegrees(360 - SCORE_L4.targetAngle.getDegrees()), SCORE_L4.targetVoltage),
-        PREPARE_NET_SCORE_REVERSE(Rotation2d.fromDegrees(360 - PREPARE_NET_SCORE.targetAngle.getDegrees()), HOLD_ALGAE.targetVoltage),
-        SCORE_NET_REVERSE(Rotation2d.fromDegrees(360 - SCORE_NET.targetAngle.getDegrees()), SCORE_NET.targetVoltage),
-        PREPARE_PROCESSOR_SCORE_REVERSE(Rotation2d.fromDegrees(360 - PREPARE_PROCESSOR_SCORE.targetAngle.getDegrees()), HOLD_ALGAE.targetVoltage),
-        SCORE_PROCESSOR_REVERSE(Rotation2d.fromDegrees(360 - SCORE_PROCESSOR.targetAngle.getDegrees()), SCORE_PROCESSOR.targetVoltage),
-        COLLECT_ALGAE_L2_REVERSE(Rotation2d.fromDegrees(360 - COLLECT_ALGAE_L2.targetAngle.getDegrees()), COLLECT_ALGAE_L2.targetVoltage),
-        COLLECT_ALGAE_L3_REVERSE(Rotation2d.fromDegrees(360 - COLLECT_ALGAE_L3.targetAngle.getDegrees()), COLLECT_ALGAE_L3.targetVoltage);
+        COLLECT_ALGAE_L3(Rotation2d.fromDegrees(90), -4);
+//        HOLD_ALGAE_REVERSE(Rotation2d.fromDegrees(360 - HOLD_ALGAE.targetAngle.getDegrees()), HOLD_ALGAE.targetVoltage),
+//        SCORE_L1_REVERSE(Rotation2d.fromDegrees(360 - SCORE_L1.targetAngle.getDegrees()), SCORE_L1.targetVoltage),
+//        SCORE_L2_REVERSE(Rotation2d.fromDegrees(360 - SCORE_L2.targetAngle.getDegrees()), SCORE_L2.targetVoltage),
+//        SCORE_L3_REVERSE(Rotation2d.fromDegrees(360 - SCORE_L3.targetAngle.getDegrees()), SCORE_L3.targetVoltage),
+//        SCORE_L4_REVERSE(Rotation2d.fromDegrees(360 - SCORE_L4.targetAngle.getDegrees()), SCORE_L4.targetVoltage),
+//        PREPARE_NET_SCORE_REVERSE(Rotation2d.fromDegrees(360 - PREPARE_NET_SCORE.targetAngle.getDegrees()), HOLD_ALGAE.targetVoltage),
+//        SCORE_NET_REVERSE(Rotation2d.fromDegrees(360 - SCORE_NET.targetAngle.getDegrees()), SCORE_NET.targetVoltage),
+//        PREPARE_PROCESSOR_SCORE_REVERSE(Rotation2d.fromDegrees(360 - PREPARE_PROCESSOR_SCORE.targetAngle.getDegrees()), HOLD_ALGAE.targetVoltage),
+//        SCORE_PROCESSOR_REVERSE(Rotation2d.fromDegrees(360 - SCORE_PROCESSOR.targetAngle.getDegrees()), SCORE_PROCESSOR.targetVoltage),
+//        COLLECT_ALGAE_L2_REVERSE(Rotation2d.fromDegrees(360 - COLLECT_ALGAE_L2.targetAngle.getDegrees()), COLLECT_ALGAE_L2.targetVoltage),
+//        COLLECT_ALGAE_L3_REVERSE(Rotation2d.fromDegrees(360 - COLLECT_ALGAE_L3.targetAngle.getDegrees()), COLLECT_ALGAE_L3.targetVoltage);
 
         public final Rotation2d targetAngle;
         public final double targetVoltage;

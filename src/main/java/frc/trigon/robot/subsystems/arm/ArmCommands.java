@@ -26,15 +26,15 @@ public class ArmCommands {
     public static Command getGearRatioCalulationCommand() {
         return new GearRatioCalculationCommand(
                 ArmConstants.ARM_MASTER_MOTOR,
-                ArmConstants.ENCODER,
+                ArmConstants.ANGLE_ENCODER,
                 0.5,
                 RobotContainer.ARM
         );
     }
 
-    public static Command getSetTargetStateCommand(ArmConstants.ArmState targetState) {
+    public static Command getSetTargetStateCommand(ArmConstants.ArmState targetState, boolean reverseState) {
         return new StartEndCommand(
-                () -> RobotContainer.ARM.setTargetState(targetState),
+                () -> RobotContainer.ARM.setTargetStateWithReverseStates(targetState, reverseState),
                 RobotContainer.ARM::stop,
                 RobotContainer.ARM
         );

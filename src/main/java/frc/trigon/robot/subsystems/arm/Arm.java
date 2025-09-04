@@ -17,15 +17,14 @@ public class Arm extends MotorSubsystem {
     private final TalonFXMotor
             armMasterMotor = ArmConstants.ARM_MASTER_MOTOR,
             endEffectorMotor = ArmConstants.END_EFFECTOR_MOTOR;
-    private final CANcoderEncoder encoder = ArmConstants.ENCODER;
-    private final VoltageOut armVoltageRequest = new VoltageOut(0).withEnableFOC(ArmConstants.FOC_ENABLED);
-    private final VoltageOut endEffectorVoltageRequest = new VoltageOut(0).withEnableFOC(ArmConstants.FOC_ENABLED);
+    private final CANcoderEncoder encoder = ArmConstants.ANGLE_ENCODER;
+    private final VoltageOut voltageRequest = new VoltageOut(0).withEnableFOC(ArmConstants.FOC_ENABLED);
     private final DynamicMotionMagicVoltage positionRequest = new DynamicMotionMagicVoltage(
             0,
             ArmConstants.ARM_DEFAULT_MAXIMUM_VELOCITY,
             ArmConstants.ARM_DEFAULT_MAXIMUM_ACCELERATION,
             ArmConstants.ARM_DEFAULT_MAXIMUM_JERK
-    );
+    ).withEnableFOC(ArmConstants.FOC_ENABLED);
     private ArmConstants.ArmState targetState = ArmConstants.ArmState.REST;
 
     public Arm() {
@@ -77,20 +76,31 @@ public class Arm extends MotorSubsystem {
 
     @Override
     public void sysIDDrive(double targetVoltage) {
-        armMasterMotor.setControl(armVoltageRequest.withOutput(targetVoltage));
+        armMasterMotor.setControl(voltageRequest.withOutput(targetVoltage));
     }
 
     public boolean atState(ArmConstants.ArmState targetState) {
-        return this.targetState == targetState && atTargetState();
+        return this.targetState == targetState && atTargetAngle();
     }
 
-    public boolean atTargetState() {
+    public boolean atTargetAngle() {
         final double currentToTargetStateDifferenceDegrees = Math.abs(targetState.targetAngle.minus(getAngle()).getDegrees());
         return currentToTargetStateDifferenceDegrees < ArmConstants.ANGLE_TOLERANCE.getDegrees();
     }
 
     public boolean hasGamePiece() {
         return ArmConstants.COLLECTION_DETECTION_BOOLEAN_EVENT.getAsBoolean();
+    }
+
+    void setTargetStateWithReverseStates(ArmConstants.ArmState targetState, boolean reverseState) {
+        if (reverseState) {
+            setTargetState(
+                    Rotation2d.fromDegrees(360 - targetState.targetAngle.getDegrees())
+                    , targetState.targetVoltage
+            );
+            return;
+        }
+        setTargetState(targetState);
     }
 
     void setTargetState(ArmConstants.ArmState targetState) {
@@ -115,7 +125,7 @@ public class Arm extends MotorSubsystem {
     }
 
     private void setTargetVoltage(double targetVoltage) {
-        endEffectorMotor.setControl(endEffectorVoltageRequest.withOutput(targetVoltage));
+        endEffectorMotor.setControl(voltageRequest.withOutput(targetVoltage));
     }
 
     private Pose3d calculateVisualizationPose() {
