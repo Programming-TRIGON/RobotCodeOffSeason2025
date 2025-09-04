@@ -1,10 +1,12 @@
 package lib.hardware.misc.leds;
 
 import com.ctre.phoenix.led.LarsonAnimation;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
+import lib.utilities.RGBUtils;
 
 import java.util.function.Supplier;
 
@@ -147,6 +149,26 @@ public class AddressableLEDStrip extends LEDStrip {
         }
         rainbowFirstPixelHue += hueIncrement;
         rainbowFirstPixelHue %= 180;
+    }
+
+    @Override
+    protected void singleFade(Color color, double speed) {
+        final double currentTime = Timer.getTimestamp();
+        final int[] hsv = RGBUtils.rgbToHSV(color);
+        final double currentBrightness = (currentTime - lastLEDAnimationChangeTime) / speed;
+
+        for (int i = 0; i < numberOfLEDs; i++)
+            LED_BUFFER.setHSV(
+                    i + indexOffset,
+                    hsv[0],
+                    hsv[1],
+                    (int) MathUtil.clamp((isLEDAnimationChanged ? currentBrightness : 1 - currentBrightness) * 255, 0, 255)
+            );
+
+        if (currentTime - lastLEDAnimationChangeTime > speed) {
+            lastLEDAnimationChangeTime = currentTime;
+            isLEDAnimationChanged = !isLEDAnimationChanged;
+        }
     }
 
     @Override

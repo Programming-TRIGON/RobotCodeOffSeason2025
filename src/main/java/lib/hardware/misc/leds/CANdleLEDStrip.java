@@ -160,6 +160,23 @@ public class CANdleLEDStrip extends LEDStrip {
     }
 
     @Override
+    protected void singleFade(Color color, double speed) {
+        shouldRunPeriodically = false;
+        CANDLE.animate(
+                new SingleFadeAnimation(
+                        (int) (color.red * 255),
+                        (int) (color.green * 255),
+                        (int) (color.blue * 255),
+                        0,
+                        speed,
+                        this.numberOfLEDs,
+                        indexOffset
+                ),
+                animationSlot
+        );
+    }
+
+    @Override
     protected void sectionColor(Supplier<Color>[] colors) {
         shouldRunPeriodically = true;
         final int ledsPerSection = (int) Math.floor((double) numberOfLEDs / colors.length);

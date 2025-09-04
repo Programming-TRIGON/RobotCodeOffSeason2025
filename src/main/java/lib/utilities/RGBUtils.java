@@ -1,5 +1,7 @@
 package lib.utilities;
 
+import edu.wpi.first.wpilibj.util.Color;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -9,7 +11,7 @@ import java.io.IOException;
 /**
  * A class that contains utilities for arrays of rgb values.
  */
-public class RGBArrayUtils {
+public class RGBUtils {
     /**
      * Converts a png image into a resized array of rgb values.
      *
@@ -58,6 +60,39 @@ public class RGBArrayUtils {
             }
         }
         return separateRgbArray;
+    }
+
+    /**
+     * Converts an RGB color to HSV values.
+     *
+     * @param color the color to convert
+     * @return the hsv values from 0-255
+     */
+    public static int[] rgbToHSV(Color color) {
+        double r = color.red;
+        double g = color.green;
+        double b = color.blue;
+
+        double maxValue = Math.max(r, Math.max(g, b));
+        double minValue = Math.min(r, Math.min(g, b));
+        double valueDelta = maxValue - minValue;
+
+        double h = 0;
+
+        if (valueDelta != 0) {
+            if (maxValue == r)
+                h = 60 * (((g - b) / valueDelta) % 6);
+            else if (maxValue == g)
+                h = 60 * (((b - r) / valueDelta) + 2);
+            else
+                h = 60 * (((r - g) / valueDelta) + 4);
+        }
+
+        if (h < 0)
+            h += 360;
+
+        double s = maxValue == 0 ? 0 : valueDelta / maxValue;
+        return new int[]{(int) h, (int) (s * 255), (int) (maxValue * 255)};
     }
 
     private static int[] unpackPixel(int packedPixel) {

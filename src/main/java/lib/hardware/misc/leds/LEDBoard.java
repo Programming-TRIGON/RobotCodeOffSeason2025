@@ -3,7 +3,7 @@ package lib.hardware.misc.leds;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import lib.utilities.RGBArrayUtils;
+import lib.utilities.RGBUtils;
 
 import java.io.IOException;
 
@@ -44,7 +44,7 @@ public class LEDBoard extends SubsystemBase {
     void setImage(String filePath) {
         int[][][] rgbArray;
         try {
-            rgbArray = RGBArrayUtils.convertPngToRgbArray(filePath, ledStrips[0].getNumberOfLEDS(), ledStrips.length);
+            rgbArray = RGBUtils.convertPngToRgbArray(filePath, ledStrips[0].getNumberOfLEDS(), ledStrips.length);
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Couldn't find file at " + filePath);
