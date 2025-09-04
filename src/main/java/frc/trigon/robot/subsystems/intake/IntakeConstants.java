@@ -89,7 +89,7 @@ public class IntakeConstants {
     static final SysIdRoutine.Config ANGLE_SYSID_CONFIG = new SysIdRoutine.Config(
             Units.Volts.of(0.2).per(Units.Second),
             Units.Volts.of(0.6),
-            Units.Second.of(1000)
+            null
     );
 
     static final Pose3d INTAKE_VISUALIZATION_ORIGIN_POINT = new Pose3d(
@@ -108,19 +108,19 @@ public class IntakeConstants {
     );
 
     static final Rotation2d ANGLE_TOLERANCE = Rotation2d.fromDegrees(1.5);
-    private static final double COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS = 0.2;
-    static final BooleanEvent COLLECTION_DETECTION_BOOLEAN_EVENT = new BooleanEvent(
-            CommandScheduler.getInstance().getActiveButtonLoop(),
-            DISTANCE_SENSOR::getBinaryValue
-    ).debounce(COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS);
     private static final double
+            COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS = 0.2,
             REVERSE_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS = 0.1,
             FORWARD_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS = 0.1;
     private static final BooleanEvent
-            REVERSE_LIMIT_SENSOR_BOOLEAN_EVENT = new BooleanEvent(
+            COLLECTION_DETECTION_BOOLEAN_EVENT = new BooleanEvent(
             CommandScheduler.getInstance().getActiveButtonLoop(),
-            REVERSE_LIMIT_SENSOR::getBinaryValue
-    ).debounce(REVERSE_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS),
+            DISTANCE_SENSOR::getBinaryValue
+    ).debounce(COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS),
+            REVERSE_LIMIT_SENSOR_BOOLEAN_EVENT = new BooleanEvent(
+                    CommandScheduler.getInstance().getActiveButtonLoop(),
+                    REVERSE_LIMIT_SENSOR::getBinaryValue
+            ).debounce(REVERSE_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS),
             FORWARD_LIMIT_SENSOR_BOOLEAN_EVENT = new BooleanEvent(
                     CommandScheduler.getInstance().getActiveButtonLoop(),
                     FORWARD_LIMIT_SENSOR::getBinaryValue
