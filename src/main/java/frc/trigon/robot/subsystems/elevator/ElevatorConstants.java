@@ -107,9 +107,9 @@ public class ElevatorConstants {
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         config.Feedback.SensorToMechanismRatio = GEAR_RATIO;
 
-        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 6:0;
+        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 4:0;
         config.Slot0.kI = RobotHardwareStats.isSimulation() ? 0:0;
-        config.Slot0.kD = RobotHardwareStats.isSimulation() ? 0.3:0;
+        config.Slot0.kD = RobotHardwareStats.isSimulation() ? 0:0;
         config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0.016527:0;
         config.Slot0.kV = RobotHardwareStats.isSimulation() ? 0.4771:0;
         config.Slot0.kA = RobotHardwareStats.isSimulation() ? 0.014197:0;
