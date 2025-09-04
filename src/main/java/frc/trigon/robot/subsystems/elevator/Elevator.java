@@ -56,13 +56,13 @@ public class Elevator extends MotorSubsystem {
 
     @Override
     public void updateMechanism() {
-        Logger.recordOutput("Poses/Components/ElevatorFirstPose", getFirstStageComponentPose());
-        Logger.recordOutput("Poses/Components/ElevatorSecondPose", getSecondStageComponentPose());
-
         ElevatorConstants.MECHANISM.update(
                 getPositionsMeters(),
                 rotationsToMeters(masterMotor.getSignal(TalonFXSignal.CLOSED_LOOP_REFERENCE))
         );
+
+        Logger.recordOutput("Poses/Components/ElevatorFirstPose", getFirstStageComponentPose());
+        Logger.recordOutput("Poses/Components/ElevatorSecondPose", getSecondStageComponentPose());
     }
 
     @Override
@@ -71,26 +71,22 @@ public class Elevator extends MotorSubsystem {
         Logger.recordOutput("Elevator/CurrentPositionMeters", getPositionsMeters());
     }
 
-    public double rotationsToMeters(double positionsRotations) {
-        return Conversions.rotationsToDistance(positionsRotations, ElevatorConstants.DRUM_DIAMETER_METERS);
-    }
-
-    public double metersToRotations(double positionsMeters) {
-        return Conversions.distanceToRotations(positionsMeters, ElevatorConstants.DRUM_DIAMETER_METERS);
-    }
-
     void setTargetState(ElevatorConstants.ElevatorState targetState) {
         this.targetState = targetState;
         scalePositionRequestSpeed(targetState.speedScalar);
         setTargetPositionRotations(metersToRotations(targetState.targetPositionMeters));
     }
 
-    public Pose3d getFirstStageComponentPose() {
+    void setTargetPositionRotations(double targetPositionRotations) {
+        masterMotor.setControl(positionRequest.withPosition(targetPositionRotations));
+    }
+
+    private Pose3d getFirstStageComponentPose() {
             return calculateCurrentElevatorPoseFromOrigin(ElevatorConstants.FIRST_STAGE_VISUALIZATION_ORIGIN_POINT);
     }
 
-    public Pose3d getSecondStageComponentPose() {
-        return calculateComponentPose(getSecondPoseHeight(), ElevatorConstants.SECOND_STAGE_VISUALIZATION_ORIGIN_POINT);
+    private Pose3d getSecondStageComponentPose() {
+        return calculateComponentPose(ElevatorConstants.SECOND_STAGE_VISUALIZATION_ORIGIN_POINT, getSecondPoseHeight());
     }
 
     private double getSecondPoseHeight() {
@@ -104,10 +100,10 @@ public class Elevator extends MotorSubsystem {
     }
 
     private Pose3d calculateCurrentElevatorPoseFromOrigin(Pose3d originPoint) {
-        return calculateComponentPose(getPositionsMeters(), originPoint);
+        return calculateComponentPose(originPoint, getPositionsMeters());
     }
 
-    private Pose3d calculateComponentPose(double poseHeight, Pose3d originPoint) {
+    private Pose3d calculateComponentPose(Pose3d originPoint, double poseHeight) {
         final Transform3d elevatorTransform = new Transform3d(
                 new Translation3d(0, 0, poseHeight),
                 new Rotation3d()
@@ -115,22 +111,22 @@ public class Elevator extends MotorSubsystem {
         return originPoint.transformBy(elevatorTransform);
     }
 
-
-
-
-
     private void scalePositionRequestSpeed(double speedScalar) {
-        positionRequest.Velocity = ElevatorConstants.DEFAULT_MAXIMUM_VELOCITY;
-        positionRequest.Acceleration = ElevatorConstants.DEFAULT_MAXIMUM_ACCELERATION;
+        positionRequest.Velocity = ElevatorConstants.DEFAULT_MAXIMUM_VELOCITY * speedScalar;
+        positionRequest.Acceleration = ElevatorConstants.DEFAULT_MAXIMUM_ACCELERATION * speedScalar;
         positionRequest.Jerk = positionRequest.Acceleration * 10;
-    }
-
-    void setTargetPositionRotations(double targetPositionRotations) {
-        masterMotor.setControl(positionRequest.withPosition(targetPositionRotations));
     }
 
     private double getPositionsMeters() {
         return rotationsToMeters(getPositionRotations());
+    }
+
+    private double rotationsToMeters(double positionsRotations) {
+        return Conversions.rotationsToDistance(positionsRotations, ElevatorConstants.DRUM_DIAMETER_METERS);
+    }
+
+    private double metersToRotations(double positionsMeters) {
+        return Conversions.distanceToRotations(positionsMeters, ElevatorConstants.DRUM_DIAMETER_METERS);
     }
 
     private double getPositionRotations() {

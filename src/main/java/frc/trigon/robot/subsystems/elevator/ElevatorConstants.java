@@ -47,9 +47,9 @@ public class ElevatorConstants {
     private static final DCMotor GEARBOX = DCMotor.getKrakenX60(MOTOR_AMOUNT);
     private static final double
             ELEVATOR_MASS_KILOGRAMS = 7,
-            DRUM_RADIUS_METERS = 0.05,
-            MINIMUM_ELEVATOR_HEIGHT_METERS = 0.73,
-            MAXIMUM_ELEVATOR_HEIGHT_METERS = 1.8;
+            DRUM_RADIUS_METERS = 0.04,
+            MINIMUM_ELEVATOR_HEIGHT_METERS = 0.78,
+            MAXIMUM_ELEVATOR_HEIGHT_METERS = 1.752;
     private static final boolean SHOULD_SIMULATE_GRAVITY = true;
     private static final ElevatorSimulation SIMULATION = new ElevatorSimulation(
             GEARBOX,
@@ -81,8 +81,14 @@ public class ElevatorConstants {
             Color.kYellow
     );
 
+    private static final double REVERSE_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS = 0.1;
+    private static final BooleanEvent REVERSE_LIMIT_SENSOR_BOOLEAN_EVENT = new BooleanEvent(
+            CommandScheduler.getInstance().getActiveButtonLoop(),
+            REVERSE_LIMIT_SENSOR::getBinaryValue
+    ).debounce(REVERSE_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS);
+
     private static final DoubleSupplier REVERSE_LIMIT_SWITCH_SIMULATION_SUPPLIER = () -> 0;
-    static final double FIRST_ELEVATOR_COMPONENT_EXTENDED_LENGTH_METERS = 0.6;
+    static final double FIRST_ELEVATOR_COMPONENT_EXTENDED_LENGTH_METERS = 0.78;
     static final double DRUM_DIAMETER_METERS = DRUM_RADIUS_METERS * 2;
 
     static {
@@ -101,24 +107,16 @@ public class ElevatorConstants {
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         config.Feedback.SensorToMechanismRatio = GEAR_RATIO;
 
-        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 0.15526:0;
+        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 6:0;
         config.Slot0.kI = RobotHardwareStats.isSimulation() ? 0:0;
-        config.Slot0.kD = RobotHardwareStats.isSimulation() ? 0:0;
-        config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0.020957:0;
-        config.Slot0.kV = RobotHardwareStats.isSimulation() ? 0.47532:0;
-        config.Slot0.kA = RobotHardwareStats.isSimulation() ? 0.02273:0;
-        config.Slot0.kG = RobotHardwareStats.isSimulation() ? 0.72511:0;
+        config.Slot0.kD = RobotHardwareStats.isSimulation() ? 0.3:0;
+        config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0.016527:0;
+        config.Slot0.kV = RobotHardwareStats.isSimulation() ? 0.4771:0;
+        config.Slot0.kA = RobotHardwareStats.isSimulation() ? 0.014197:0;
+        config.Slot0.kG = RobotHardwareStats.isSimulation() ? 0.58959:0;
 
         config.Slot0.GravityType = GravityTypeValue.Elevator_Static;
         config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
-
-        config.HardwareLimitSwitch.ReverseLimitEnable = true;
-        config.HardwareLimitSwitch.ReverseLimitType = ReverseLimitTypeValue.NormallyOpen;
-        config.HardwareLimitSwitch.ReverseLimitSource = ReverseLimitSourceValue.LimitSwitchPin;
-        config.HardwareLimitSwitch.ReverseLimitAutosetPositionEnable = true;
-        config.HardwareLimitSwitch.ForwardLimitAutosetPositionValue = 0;
-
-        config.HardwareLimitSwitch.ForwardLimitEnable = false;
 
         config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
         config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0;
@@ -157,14 +155,8 @@ public class ElevatorConstants {
 
     private static void configureReverseLimitSwitch() {
         REVERSE_LIMIT_SENSOR.setSimulationSupplier(REVERSE_LIMIT_SWITCH_SIMULATION_SUPPLIER);
-
-        final BooleanEvent reverseLimitSwitchBooleanEvent = new BooleanEvent(
-                CommandScheduler.getInstance().getActiveButtonLoop(),
-                REVERSE_LIMIT_SENSOR::getBinaryValue
-        );
+        REVERSE_LIMIT_SENSOR_BOOLEAN_EVENT.ifHigh(() -> MASTER_MOTOR.setPosition(REVERSE_LIMIT_SWITCH_RESET_POSITION));
     }
-
-
 
     public enum ElevatorState {
         REST(0, 0.7),
