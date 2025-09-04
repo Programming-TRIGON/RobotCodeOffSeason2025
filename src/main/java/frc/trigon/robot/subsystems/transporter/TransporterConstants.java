@@ -33,7 +33,8 @@ public class TransporterConstants {
     private static int MOTOR_AMOUNT = 1;
     private static DCMotor GEARBOX = DCMotor.getKrakenX60(MOTOR_AMOUNT);
     private static final double MOMENT_OF_INERTIA = 0.003;
-    private static final SimpleMotorSimulation RIGHT_MOTOR_SIMULATION = new SimpleMotorSimulation(
+    private static final SimpleMotorSimulation
+            RIGHT_MOTOR_SIMULATION = new SimpleMotorSimulation(
             GEARBOX,
             GEAR_RATIO,
             MOMENT_OF_INERTIA
@@ -46,7 +47,8 @@ public class TransporterConstants {
     private static final DoubleSupplier BEAM_BREAK_SIMULATION_SUPPLIER = () -> 0; //TODO: implement
 
     private static final double MAXIMUM_DISPLAYABLE_VELOCITY = 12;
-    static final SpeedMechanism2d RIGHT_MOTOR_MECHANSIM = new SpeedMechanism2d(
+    static final SpeedMechanism2d
+            RIGHT_MOTOR_MECHANSIM = new SpeedMechanism2d(
             "TranporterRightMotorMechanism",
             MAXIMUM_DISPLAYABLE_VELOCITY
     ),
