@@ -92,7 +92,7 @@ public class Arm extends MotorSubsystem {
         return ArmConstants.COLLECTION_DETECTION_BOOLEAN_EVENT.getAsBoolean();
     }
 
-    void setTargetStateWithReversedStates(ArmConstants.ArmState targetState, boolean isStateReversed) {
+    void setTargetState(ArmConstants.ArmState targetState, boolean isStateReversed) {
         if (isStateReversed) {
             setTargetState(
                     Rotation2d.fromDegrees(360 - targetState.targetAngle.getDegrees())
