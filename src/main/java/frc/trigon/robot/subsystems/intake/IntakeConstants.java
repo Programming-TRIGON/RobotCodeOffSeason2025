@@ -112,15 +112,15 @@ public class IntakeConstants {
             COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS = 0.2,
             REVERSE_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS = 0.1,
             FORWARD_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS = 0.1;
-    private static final BooleanEvent
-            COLLECTION_DETECTION_BOOLEAN_EVENT = new BooleanEvent(
+    static final BooleanEvent COLLECTION_DETECTION_BOOLEAN_EVENT = new BooleanEvent(
             CommandScheduler.getInstance().getActiveButtonLoop(),
             DISTANCE_SENSOR::getBinaryValue
     ).debounce(COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS),
+    private static final BooleanEvent
             REVERSE_LIMIT_SENSOR_BOOLEAN_EVENT = new BooleanEvent(
-                    CommandScheduler.getInstance().getActiveButtonLoop(),
-                    REVERSE_LIMIT_SENSOR::getBinaryValue
-            ).debounce(REVERSE_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS),
+            CommandScheduler.getInstance().getActiveButtonLoop(),
+            REVERSE_LIMIT_SENSOR::getBinaryValue
+    ).debounce(REVERSE_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS),
             FORWARD_LIMIT_SENSOR_BOOLEAN_EVENT = new BooleanEvent(
                     CommandScheduler.getInstance().getActiveButtonLoop(),
                     FORWARD_LIMIT_SENSOR::getBinaryValue
