@@ -7,10 +7,10 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.trigon.robot.subsystems.MotorSubsystem;
+import lib.hardware.misc.servo.Servo;
+import lib.hardware.phoenix6.talonfx.TalonFXMotor;
+import lib.hardware.phoenix6.talonfx.TalonFXSignal;
 import org.littletonrobotics.junction.Logger;
-import trigon.hardware.misc.servo.Servo;
-import trigon.hardware.phoenix6.talonfx.TalonFXMotor;
-import trigon.hardware.phoenix6.talonfx.TalonFXSignal;
 
 public class Climber extends MotorSubsystem {
     private final TalonFXMotor motor = ClimberConstants.MOTOR;

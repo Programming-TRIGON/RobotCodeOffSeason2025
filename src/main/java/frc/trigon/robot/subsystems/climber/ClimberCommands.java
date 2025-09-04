@@ -3,8 +3,8 @@ package frc.trigon.robot.subsystems.climber;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.trigon.robot.RobotContainer;
-import trigon.commands.ExecuteEndCommand;
-import trigon.commands.NetworkTablesCommand;
+import lib.commands.ExecuteEndCommand;
+import lib.commands.NetworkTablesCommand;
 
 import java.util.Set;
 import java.util.function.DoubleSupplier;

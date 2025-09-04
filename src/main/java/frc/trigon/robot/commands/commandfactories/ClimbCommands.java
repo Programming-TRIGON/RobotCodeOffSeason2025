@@ -10,7 +10,7 @@ import frc.trigon.robot.constants.OperatorConstants;
 import frc.trigon.robot.subsystems.climber.ClimberCommands;
 import frc.trigon.robot.subsystems.climber.ClimberConstants;
 import frc.trigon.robot.subsystems.swerve.SwerveCommands;
-import trigon.hardware.misc.leds.LEDCommands;
+import lib.hardware.misc.leds.LEDCommands;
 
 public class ClimbCommands {
     public static boolean IS_CLIMBING = false;

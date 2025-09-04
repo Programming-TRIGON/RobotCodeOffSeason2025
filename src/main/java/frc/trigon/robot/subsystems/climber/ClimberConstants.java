@@ -13,13 +13,13 @@ import edu.wpi.first.wpilibj.event.BooleanEvent;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import trigon.hardware.RobotHardwareStats;
-import trigon.hardware.misc.servo.Servo;
-import trigon.hardware.misc.simplesensor.SimpleSensor;
-import trigon.hardware.phoenix6.talonfx.TalonFXMotor;
-import trigon.hardware.phoenix6.talonfx.TalonFXSignal;
-import trigon.hardware.simulation.SimpleMotorSimulation;
-import trigon.utilities.mechanisms.SingleJointedArmMechanism2d;
+import lib.hardware.RobotHardwareStats;
+import lib.hardware.misc.servo.Servo;
+import lib.hardware.misc.simplesensor.SimpleSensor;
+import lib.hardware.phoenix6.talonfx.TalonFXMotor;
+import lib.hardware.phoenix6.talonfx.TalonFXSignal;
+import lib.hardware.simulation.SimpleMotorSimulation;
+import lib.utilities.mechanisms.SingleJointedArmMechanism2d;
 
 import java.util.function.DoubleSupplier;
 

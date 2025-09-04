@@ -1,7 +1,7 @@
 package frc.trigon.robot.constants;
 
 import edu.wpi.first.wpilibj.util.Color;
-import trigon.hardware.misc.leds.LEDStripAnimationSettings;
+import lib.hardware.misc.leds.LEDStripAnimationSettings;
 
 public class LEDConstants {
     //TODO: Implement LEDConstants
