@@ -8,10 +8,10 @@ import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.trigon.robot.subsystems.MotorSubsystem;
 import org.littletonrobotics.junction.Logger;
-import trigon.hardware.phoenix6.cancoder.CANcoderEncoder;
-import trigon.hardware.phoenix6.cancoder.CANcoderSignal;
-import trigon.hardware.phoenix6.talonfx.TalonFXMotor;
-import trigon.hardware.phoenix6.talonfx.TalonFXSignal;
+import lib.hardware.phoenix6.cancoder.CANcoderEncoder;
+import lib.hardware.phoenix6.cancoder.CANcoderSignal;
+import lib.hardware.phoenix6.talonfx.TalonFXMotor;
+import lib.hardware.phoenix6.talonfx.TalonFXSignal;
 
 public class Arm extends MotorSubsystem {
     private final TalonFXMotor

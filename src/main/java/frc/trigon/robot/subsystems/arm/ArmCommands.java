@@ -4,8 +4,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.trigon.robot.RobotContainer;
-import trigon.commands.GearRatioCalculationCommand;
-import trigon.commands.NetworkTablesCommand;
+import lib.commands.GearRatioCalculationCommand;
+import lib.commands.NetworkTablesCommand;
 
 import java.util.Set;
 
@@ -32,9 +32,17 @@ public class ArmCommands {
         );
     }
 
-    public static Command getSetTargetStateCommand(ArmConstants.ArmState targetState, boolean reverseState) {
+    public static Command getSetTargetStateWithReverseStatesCommand(ArmConstants.ArmState targetState, boolean reverseState) {
         return new StartEndCommand(
                 () -> RobotContainer.ARM.setTargetStateWithReverseStates(targetState, reverseState),
+                RobotContainer.ARM::stop,
+                RobotContainer.ARM
+        );
+    }
+
+    public static Command getSetTargetStateCommand(ArmConstants.ArmState targetState) {
+        return new StartEndCommand(
+                () -> RobotContainer.ARM.setTargetState(targetState),
                 RobotContainer.ARM::stop,
                 RobotContainer.ARM
         );

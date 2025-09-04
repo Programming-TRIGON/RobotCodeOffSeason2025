@@ -15,17 +15,17 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.trigon.robot.misc.simulatedfield.SimulationFieldHandler;
-import trigon.hardware.RobotHardwareStats;
-import trigon.hardware.misc.simplesensor.SimpleSensor;
-import trigon.hardware.phoenix6.cancoder.CANcoderEncoder;
-import trigon.hardware.phoenix6.cancoder.CANcoderSignal;
-import trigon.hardware.phoenix6.talonfx.TalonFXMotor;
-import trigon.hardware.phoenix6.talonfx.TalonFXSignal;
-import trigon.hardware.simulation.SimpleMotorSimulation;
-import trigon.hardware.simulation.SingleJointedArmSimulation;
-import trigon.utilities.Conversions;
-import trigon.utilities.mechanisms.SingleJointedArmMechanism2d;
-import trigon.utilities.mechanisms.SpeedMechanism2d;
+import lib.hardware.RobotHardwareStats;
+import lib.hardware.misc.simplesensor.SimpleSensor;
+import lib.hardware.phoenix6.cancoder.CANcoderEncoder;
+import lib.hardware.phoenix6.cancoder.CANcoderSignal;
+import lib.hardware.phoenix6.talonfx.TalonFXMotor;
+import lib.hardware.phoenix6.talonfx.TalonFXSignal;
+import lib.hardware.simulation.SimpleMotorSimulation;
+import lib.hardware.simulation.SingleJointedArmSimulation;
+import lib.utilities.Conversions;
+import lib.utilities.mechanisms.SingleJointedArmMechanism2d;
+import lib.utilities.mechanisms.SpeedMechanism2d;
 
 import java.util.function.DoubleSupplier;
 
