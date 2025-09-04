@@ -115,7 +115,7 @@ public class IntakeConstants {
     static final BooleanEvent COLLECTION_DETECTION_BOOLEAN_EVENT = new BooleanEvent(
             CommandScheduler.getInstance().getActiveButtonLoop(),
             DISTANCE_SENSOR::getBinaryValue
-    ).debounce(COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS),
+    ).debounce(COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS);
     private static final BooleanEvent
             REVERSE_LIMIT_SENSOR_BOOLEAN_EVENT = new BooleanEvent(
             CommandScheduler.getInstance().getActiveButtonLoop(),
