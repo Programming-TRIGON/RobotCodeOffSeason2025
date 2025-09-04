@@ -92,7 +92,8 @@ public class TransporterConstants {
     public enum TransporterState {
         REST(0, 0),
         COLLECT(5, 5),
-        ALIGN(5, 6),
+        ALIGN_CORAL(5, 6),
+        HOLD_CORAL(1, 1),
         EJECT(-5, -5);
 
         public final double
