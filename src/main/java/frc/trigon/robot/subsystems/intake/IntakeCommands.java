@@ -4,7 +4,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.trigon.robot.RobotContainer;
-import trigon.commands.NetworkTablesCommand;
+import lib.commands.NetworkTablesCommand;
 
 import java.util.Set;
 
