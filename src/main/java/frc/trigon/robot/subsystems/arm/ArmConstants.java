@@ -120,6 +120,7 @@ public class ArmConstants {
             CommandScheduler.getInstance().getActiveButtonLoop(),
             DISTANCE_SENSOR::getBinaryValue
     ).debounce(COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS);
+    private static final double ARM_MOTOR_CURRENT_LIMIT = 50;
 
     static {
         configureArmMasterMotor();
@@ -157,6 +158,8 @@ public class ArmConstants {
         config.MotionMagic.MotionMagicAcceleration = ARM_DEFAULT_MAXIMUM_ACCELERATION;
         config.MotionMagic.MotionMagicJerk = config.MotionMagic.MotionMagicAcceleration * 10;
 
+        config.CurrentLimits.SupplyCurrentLimit = ARM_MOTOR_CURRENT_LIMIT;
+
         ARM_MASTER_MOTOR.applyConfiguration(config);
         ARM_MASTER_MOTOR.setPhysicsSimulation(ARM_SIMULATION);
 
@@ -176,6 +179,8 @@ public class ArmConstants {
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
+        config.CurrentLimits.SupplyCurrentLimit = ARM_MOTOR_CURRENT_LIMIT;
+
         ARM_FOLLOWER_MOTOR.applyConfiguration(config);
 
         final Follower followerRequest = new Follower(ARM_MASTER_MOTOR.getID(), SHOULD_ARM_FOLLOWER_OPPOSE_MASTER);
@@ -190,6 +195,8 @@ public class ArmConstants {
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         config.Feedback.RotorToSensorRatio = END_EFFECTOR_GEAR_RATIO;
+
+        config.CurrentLimits.SupplyCurrentLimit = 80;
 
         END_EFFECTOR_MOTOR.applyConfiguration(config);
         END_EFFECTOR_MOTOR.setPhysicsSimulation(END_EFFECTOR_SIMULATION);
