@@ -32,9 +32,9 @@ public class ArmCommands {
         );
     }
 
-    public static Command getSetTargetStateWithReverseStatesCommand(ArmConstants.ArmState targetState, boolean reverseState) {
+    public static Command getSetTargetStateWithReversedStatesCommand(ArmConstants.ArmState targetState, boolean isStateReversed) {
         return new StartEndCommand(
-                () -> RobotContainer.ARM.setTargetStateWithReverseStates(targetState, reverseState),
+                () -> RobotContainer.ARM.setTargetStateWithReversedStates(targetState, isStateReversed),
                 RobotContainer.ARM::stop,
                 RobotContainer.ARM
         );

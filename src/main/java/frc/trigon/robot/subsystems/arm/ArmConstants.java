@@ -239,17 +239,6 @@ public class ArmConstants {
         SCORE_PROCESSOR(Rotation2d.fromDegrees(90), 4),
         COLLECT_ALGAE_L2(Rotation2d.fromDegrees(90), -4),
         COLLECT_ALGAE_L3(Rotation2d.fromDegrees(90), -4);
-//        HOLD_ALGAE_REVERSE(Rotation2d.fromDegrees(360 - HOLD_ALGAE.targetAngle.getDegrees()), HOLD_ALGAE.targetVoltage),
-//        SCORE_L1_REVERSE(Rotation2d.fromDegrees(360 - SCORE_L1.targetAngle.getDegrees()), SCORE_L1.targetVoltage),
-//        SCORE_L2_REVERSE(Rotation2d.fromDegrees(360 - SCORE_L2.targetAngle.getDegrees()), SCORE_L2.targetVoltage),
-//        SCORE_L3_REVERSE(Rotation2d.fromDegrees(360 - SCORE_L3.targetAngle.getDegrees()), SCORE_L3.targetVoltage),
-//        SCORE_L4_REVERSE(Rotation2d.fromDegrees(360 - SCORE_L4.targetAngle.getDegrees()), SCORE_L4.targetVoltage),
-//        PREPARE_NET_SCORE_REVERSE(Rotation2d.fromDegrees(360 - PREPARE_NET_SCORE.targetAngle.getDegrees()), HOLD_ALGAE.targetVoltage),
-//        SCORE_NET_REVERSE(Rotation2d.fromDegrees(360 - SCORE_NET.targetAngle.getDegrees()), SCORE_NET.targetVoltage),
-//        PREPARE_PROCESSOR_SCORE_REVERSE(Rotation2d.fromDegrees(360 - PREPARE_PROCESSOR_SCORE.targetAngle.getDegrees()), HOLD_ALGAE.targetVoltage),
-//        SCORE_PROCESSOR_REVERSE(Rotation2d.fromDegrees(360 - SCORE_PROCESSOR.targetAngle.getDegrees()), SCORE_PROCESSOR.targetVoltage),
-//        COLLECT_ALGAE_L2_REVERSE(Rotation2d.fromDegrees(360 - COLLECT_ALGAE_L2.targetAngle.getDegrees()), COLLECT_ALGAE_L2.targetVoltage),
-//        COLLECT_ALGAE_L3_REVERSE(Rotation2d.fromDegrees(360 - COLLECT_ALGAE_L3.targetAngle.getDegrees()), COLLECT_ALGAE_L3.targetVoltage);
 
         public final Rotation2d targetAngle;
         public final double targetVoltage;

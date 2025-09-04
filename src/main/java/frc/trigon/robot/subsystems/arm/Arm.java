@@ -17,7 +17,7 @@ public class Arm extends MotorSubsystem {
     private final TalonFXMotor
             armMasterMotor = ArmConstants.ARM_MASTER_MOTOR,
             endEffectorMotor = ArmConstants.END_EFFECTOR_MOTOR;
-    private final CANcoderEncoder encoder = ArmConstants.ANGLE_ENCODER;
+    private final CANcoderEncoder angleEncoder = ArmConstants.ANGLE_ENCODER;
     private final VoltageOut voltageRequest = new VoltageOut(0).withEnableFOC(ArmConstants.FOC_ENABLED);
     private final DynamicMotionMagicVoltage positionRequest = new DynamicMotionMagicVoltage(
             0,
@@ -50,7 +50,7 @@ public class Arm extends MotorSubsystem {
     @Override
     public void updateLog(SysIdRoutineLog log) {
         log.motor("Arm")
-                .angularPosition(Units.Rotations.of(encoder.getSignal(CANcoderSignal.POSITION)))
+                .angularPosition(Units.Rotations.of(angleEncoder.getSignal(CANcoderSignal.POSITION)))
                 .angularVelocity(Units.RotationsPerSecond.of(armMasterMotor.getSignal(TalonFXSignal.VELOCITY)))
                 .voltage(Units.Volts.of(armMasterMotor.getSignal(TalonFXSignal.MOTOR_VOLTAGE)));
     }
@@ -69,7 +69,7 @@ public class Arm extends MotorSubsystem {
     public void updatePeriodically() {
         armMasterMotor.update();
         endEffectorMotor.update();
-        encoder.update();
+        angleEncoder.update();
         ArmConstants.DISTANCE_SENSOR.updateSensor();
         Logger.recordOutput("Arm/CurrentPositionDegrees", getAngle().getDegrees());
     }
@@ -92,8 +92,8 @@ public class Arm extends MotorSubsystem {
         return ArmConstants.COLLECTION_DETECTION_BOOLEAN_EVENT.getAsBoolean();
     }
 
-    void setTargetStateWithReverseStates(ArmConstants.ArmState targetState, boolean reverseState) {
-        if (reverseState) {
+    void setTargetStateWithReversedStates(ArmConstants.ArmState targetState, boolean isStateReversed) {
+        if (isStateReversed) {
             setTargetState(
                     Rotation2d.fromDegrees(360 - targetState.targetAngle.getDegrees())
                     , targetState.targetVoltage
@@ -117,7 +117,7 @@ public class Arm extends MotorSubsystem {
     }
 
     private Rotation2d getAngle() {
-        return Rotation2d.fromRotations(encoder.getSignal(CANcoderSignal.POSITION));
+        return Rotation2d.fromRotations(angleEncoder.getSignal(CANcoderSignal.POSITION));
     }
 
     private void setTargetAngle(Rotation2d targetAngle) {
@@ -125,6 +125,7 @@ public class Arm extends MotorSubsystem {
     }
 
     private void setTargetVoltage(double targetVoltage) {
+        ArmConstants.END_EFFECTOR_MECHANISM.setTargetVelocity(targetVoltage);
         endEffectorMotor.setControl(voltageRequest.withOutput(targetVoltage));
     }
 
