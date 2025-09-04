@@ -12,9 +12,9 @@ import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.trigon.robot.subsystems.MotorSubsystem;
 import org.littletonrobotics.junction.Logger;
-import trigon.hardware.phoenix6.talonfx.TalonFXMotor;
-import trigon.hardware.phoenix6.talonfx.TalonFXSignal;
-import trigon.utilities.Conversions;
+import lib.hardware.phoenix6.talonfx.TalonFXMotor;
+import lib.hardware.phoenix6.talonfx.TalonFXSignal;
+import lib.utilities.Conversions;
 
 public class Elevator extends MotorSubsystem {
     private final TalonFXMotor masterMotor = ElevatorConstants.MASTER_MOTOR;

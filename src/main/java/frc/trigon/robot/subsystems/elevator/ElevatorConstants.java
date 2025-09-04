@@ -12,12 +12,12 @@ import edu.wpi.first.wpilibj.event.BooleanEvent;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import trigon.hardware.RobotHardwareStats;
-import trigon.hardware.misc.simplesensor.SimpleSensor;
-import trigon.hardware.phoenix6.talonfx.TalonFXMotor;
-import trigon.hardware.phoenix6.talonfx.TalonFXSignal;
-import trigon.hardware.simulation.ElevatorSimulation;
-import trigon.utilities.mechanisms.ElevatorMechanism2d;
+import lib.hardware.RobotHardwareStats;
+import lib.hardware.misc.simplesensor.SimpleSensor;
+import lib.hardware.phoenix6.talonfx.TalonFXMotor;
+import lib.hardware.phoenix6.talonfx.TalonFXSignal;
+import lib.hardware.simulation.ElevatorSimulation;
+import lib.utilities.mechanisms.ElevatorMechanism2d;
 
 import java.util.function.DoubleSupplier;
 
