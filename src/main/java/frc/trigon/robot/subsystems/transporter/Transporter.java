@@ -2,8 +2,8 @@ package frc.trigon.robot.subsystems.transporter;
 
 import com.ctre.phoenix6.controls.VoltageOut;
 import frc.trigon.robot.subsystems.MotorSubsystem;
-import trigon.hardware.phoenix6.talonfx.TalonFXMotor;
-import trigon.hardware.phoenix6.talonfx.TalonFXSignal;
+import lib.hardware.phoenix6.talonfx.TalonFXMotor;
+import lib.hardware.phoenix6.talonfx.TalonFXSignal;
 
 public class Transporter extends MotorSubsystem {
     private final TalonFXMotor

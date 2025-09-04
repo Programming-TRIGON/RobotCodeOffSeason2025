@@ -6,11 +6,11 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.event.BooleanEvent;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import trigon.hardware.misc.simplesensor.SimpleSensor;
-import trigon.hardware.phoenix6.talonfx.TalonFXMotor;
-import trigon.hardware.phoenix6.talonfx.TalonFXSignal;
-import trigon.hardware.simulation.SimpleMotorSimulation;
-import trigon.utilities.mechanisms.SpeedMechanism2d;
+import lib.hardware.misc.simplesensor.SimpleSensor;
+import lib.hardware.phoenix6.talonfx.TalonFXMotor;
+import lib.hardware.phoenix6.talonfx.TalonFXSignal;
+import lib.hardware.simulation.SimpleMotorSimulation;
+import lib.utilities.mechanisms.SpeedMechanism2d;
 
 import java.util.function.DoubleSupplier;
 
