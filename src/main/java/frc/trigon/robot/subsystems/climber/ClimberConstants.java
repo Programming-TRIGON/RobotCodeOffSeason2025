@@ -32,7 +32,7 @@ public class ClimberConstants {
             CAGE_SENSOR_CHANNEL = 3;
     private static final String
             MOTOR_NAME = "ClimberMotor",
-            REVERSE_LIMIT_SWITCH_NAME = "ClimberReverseLimitSwitch",
+            REVERSE_LIMIT_SENSOR_NAME = "ClimberReverseLimitSensor",
             RIGHT_SERVO_NAME = "ClimberRightServo",
             LEFT_SERVO_NAME = "ClimberLeftServo",
             CAGE_SENSOR_NAME = "ClimberCageSensor";
@@ -41,7 +41,7 @@ public class ClimberConstants {
             RIGHT_SERVO = new Servo(RIGHT_SERVO_CHANNEL, RIGHT_SERVO_NAME),
             LEFT_SERVO = new Servo(LEFT_SERVO_CHANNEL, LEFT_SERVO_NAME);
     private static final SimpleSensor
-            REVERSE_LIMIT_SENSOR = SimpleSensor.createDigitalSensor(REVERSE_LIMIT_SENSOR_CHANNEL, REVERSE_LIMIT_SWITCH_NAME),
+            REVERSE_LIMIT_SENSOR = SimpleSensor.createDigitalSensor(REVERSE_LIMIT_SENSOR_CHANNEL, REVERSE_LIMIT_SENSOR_NAME),
             CAGE_SENSOR = SimpleSensor.createDigitalSensor(CAGE_SENSOR_CHANNEL, CAGE_SENSOR_NAME);
 
     static final int
@@ -78,7 +78,7 @@ public class ClimberConstants {
             Color.kGreen
     );
 
-    public static final double MAXIMUM_MANUAL_CONTROL_VOLTAGE = 4;
+    static final double MAXIMUM_MANUAL_CONTROL_VOLTAGE = 4;
     private static final double
             HAS_CAGE_DEBOUNCE_TIME_SECONDS = 0.5,
             REVERSE_LIMIT_DEBOUNCE_TIME_SECONDS = 0.1;
@@ -91,12 +91,12 @@ public class ClimberConstants {
                     CommandScheduler.getInstance().getActiveButtonLoop(),
                     REVERSE_LIMIT_SENSOR::getBinaryValue
             ).debounce(REVERSE_LIMIT_DEBOUNCE_TIME_SECONDS);
-    private static final DoubleSupplier REVERSE_LIMIT_SWITCH_SIMULATION_SUPPLIER = () -> 0;
+    private static final DoubleSupplier REVERSE_LIMIT_SENSORS_SIMULATION_SUPPLIER = () -> 0;
     static final double CLIMBER_TOLERANCE_ROTATIONS = 0.01;
 
     static {
         configureMotor();
-        configureReverseLimitSwitch();
+        configureReverseLimitSensor();
     }
 
     private static void configureMotor() {
@@ -145,8 +145,8 @@ public class ClimberConstants {
         MOTOR.registerSignal(TalonFXSignal.FORWARD_LIMIT, 100);
     }
 
-    private static void configureReverseLimitSwitch() {
-        REVERSE_LIMIT_SENSOR.setSimulationSupplier(REVERSE_LIMIT_SWITCH_SIMULATION_SUPPLIER);
+    private static void configureReverseLimitSensor() {
+        REVERSE_LIMIT_SENSOR.setSimulationSupplier(REVERSE_LIMIT_SENSORS_SIMULATION_SUPPLIER);
         REVERSE_LIMIT_SENSOR_BOOLEAN_EVENT.ifHigh(() -> MOTOR.setPosition(REVERSE_LIMIT_SENSOR_RESET_POSITION));
     }
 

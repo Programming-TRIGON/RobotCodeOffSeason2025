@@ -28,9 +28,9 @@ public class ClimberCommands {
         );
     }
 
-    public static Command getSetTargetStateCommand(double targetPositionRotations, double targetServoPower, boolean affectedByRobotWeight) {
+    public static Command getSetTargetStateCommand(double targetPositionRotations, double targetServoPower, boolean isAffectedByRobotWeight) {
         return new StartEndCommand(
-                () -> RobotContainer.CLIMBER.setTargetState(targetPositionRotations, targetServoPower, affectedByRobotWeight),
+                () -> RobotContainer.CLIMBER.setTargetState(targetPositionRotations, targetServoPower, isAffectedByRobotWeight),
                 RobotContainer.CLIMBER::stop,
                 RobotContainer.CLIMBER
         );
