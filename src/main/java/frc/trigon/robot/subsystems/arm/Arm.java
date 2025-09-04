@@ -83,13 +83,13 @@ public class Arm extends MotorSubsystem {
         return this.targetState == targetState && atTargetState();
     }
 
-    public boolean hasGamePiece() {
-        return ArmConstants.COLLECTION_DETECTION_BOOLEAN_EVENT.getAsBoolean();
-    }
-
     public boolean atTargetState() {
         final double currentToTargetStateDifferenceDegrees = Math.abs(targetState.targetAngle.minus(getAngle()).getDegrees());
         return currentToTargetStateDifferenceDegrees < ArmConstants.ANGLE_TOLERANCE.getDegrees();
+    }
+
+    public boolean hasGamePiece() {
+        return ArmConstants.COLLECTION_DETECTION_BOOLEAN_EVENT.getAsBoolean();
     }
 
     void setTargetState(ArmConstants.ArmState targetState) {
