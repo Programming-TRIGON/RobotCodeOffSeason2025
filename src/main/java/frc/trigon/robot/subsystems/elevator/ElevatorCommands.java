@@ -24,4 +24,13 @@ public class ElevatorCommands {
                 RobotContainer.ELEVATOR
         );
     }
+
+
+    public static Command getSetTargetStateCommand(double targetRotations) {
+        return new StartEndCommand(
+                () -> RobotContainer.ELEVATOR.setTargetPositionRotations(targetRotations),
+                RobotContainer.ELEVATOR::stop,
+                RobotContainer.ELEVATOR
+        );
+    }
 }

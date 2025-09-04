@@ -29,14 +29,14 @@ public class ElevatorConstants {
     private static final String
             MASTER_MOTOR_NAME = "ElevatorMasterMotor",
             FOLLOWER_MOTOR_NAME = "ElevatorFollowerMotor",
-            REVERSE_LIMIT_SWITCH_NAME = "ElevatorReverseLimitSwitch";
+            REVERSE_LIMIT_SENSOR_NAME = "ElevatorReverseLimitSensor";
     static final TalonFXMotor
             MASTER_MOTOR = new TalonFXMotor(MASTER_MOTOR_ID, MASTER_MOTOR_NAME),
             FOLLOWER_MOTOR = new TalonFXMotor(FOLLOWER_MOTOR_ID, FOLLOWER_MOTOR_NAME);
-    private static final SimpleSensor REVERSE_LIMIT_SENSOR = SimpleSensor.createDigitalSensor(REVERSE_LIMIT_SENSOR_CHANNEL, REVERSE_LIMIT_SWITCH_NAME);
+    private static final SimpleSensor REVERSE_LIMIT_SENSOR = SimpleSensor.createDigitalSensor(REVERSE_LIMIT_SENSOR_CHANNEL, REVERSE_LIMIT_SENSOR_NAME);
 
     private static final double GEAR_RATIO = 4;
-    private static final double REVERSE_LIMIT_SWITCH_RESET_POSITION = 0;
+    private static final double REVERSE_LIMIT_SENSOR_RESET_POSITION = 0;
     private static final boolean SHOULD_FOLLOWER_OPPOSE_MASTER = false;
     static final double
             DEFAULT_MAXIMUM_VELOCITY = RobotHardwareStats.isSimulation() ? 80 : 20,
@@ -87,14 +87,14 @@ public class ElevatorConstants {
             REVERSE_LIMIT_SENSOR::getBinaryValue
     ).debounce(REVERSE_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS);
 
-    private static final DoubleSupplier REVERSE_LIMIT_SWITCH_SIMULATION_SUPPLIER = () -> 0;
+    private static final DoubleSupplier REVERSE_LIMIT_SENSOR_SIMULATION_SUPPLIER = () -> 0;
     static final double FIRST_ELEVATOR_COMPONENT_EXTENDED_LENGTH_METERS = 0.78;
     static final double DRUM_DIAMETER_METERS = DRUM_RADIUS_METERS * 2;
 
     static {
         configureMasterMotor();
         configureFollowerMotor();
-        configureReverseLimitSwitch();
+        configureReverseLimitSensor();
     }
 
     private static void configureMasterMotor() {
@@ -153,9 +153,9 @@ public class ElevatorConstants {
         FOLLOWER_MOTOR.setControl(followerRequest);
     }
 
-    private static void configureReverseLimitSwitch() {
-        REVERSE_LIMIT_SENSOR.setSimulationSupplier(REVERSE_LIMIT_SWITCH_SIMULATION_SUPPLIER);
-        REVERSE_LIMIT_SENSOR_BOOLEAN_EVENT.ifHigh(() -> MASTER_MOTOR.setPosition(REVERSE_LIMIT_SWITCH_RESET_POSITION));
+    private static void configureReverseLimitSensor() {
+        REVERSE_LIMIT_SENSOR.setSimulationSupplier(REVERSE_LIMIT_SENSOR_SIMULATION_SUPPLIER);
+        REVERSE_LIMIT_SENSOR_BOOLEAN_EVENT.ifHigh(() -> MASTER_MOTOR.setPosition(REVERSE_LIMIT_SENSOR_RESET_POSITION));
     }
 
     public enum ElevatorState {
