@@ -123,8 +123,14 @@ public class IntakeConstants {
                     FORWARD_LIMIT_SENSOR::getBinaryValue
             ).debounce(FORWARD_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS);
     static final Transform3d
-            INTAKE_ORIGIN_POINT_TO_CORAL_COLLECTION_TRANSFORM = new Transform3d(),
-            INTAKE_ORIGIN_POINT_TO_CORAL_VISUALIZATION_TRANSFORM = new Transform3d(); //TODO: get actual values
+            INTAKE_ORIGIN_POINT_TO_CORAL_COLLECTION_TRANSFORM = new Transform3d(
+            new Translation3d(0, 23.73, 31.5),
+            new Rotation3d()
+    ),
+            INTAKE_ORIGIN_POINT_TO_CORAL_VISUALIZATION_TRANSFORM = new Transform3d(
+                    new Translation3d(0, 8.98, 32.2),
+                    new Rotation3d()
+            );
 
     static {
         configureIntakeMotor();
