@@ -88,6 +88,28 @@ public class Intake extends MotorSubsystem {
         return IntakeConstants.COLLECTION_DETECTION_BOOLEAN_EVENT.getAsBoolean();
     }
 
+    /**
+     * Calculates the pose where the coral should actually be collected from relative to the robot.
+     *
+     * @return the pose
+     */
+    public Pose3d calculateCoralCollectionPose() {
+        return calculateVisualizationPose()
+                .transformBy(getVisualizationToRealPitchTransform())
+                .transformBy(IntakeConstants.INTAKE_ORIGIN_POINT_TO_CORAL_COLLECTION_TRANSFORM);
+    }
+
+    /**
+     * Calculates the pose where the coral should rest inside the robot after intaking.
+     *
+     * @return the pose
+     */
+    public Pose3d calculateCollectedCoralPose() {
+        return calculateVisualizationPose()
+                .transformBy(getVisualizationToRealPitchTransform())
+                .transformBy(IntakeConstants.INTAKE_ORIGIN_POINT_TO_CORAL_VISUALIZATION_TRANSFORM);
+    }
+
     void setTargetState(IntakeConstants.IntakeState targetState) {
         this.targetState = targetState;
         setTargetState(targetState.targetAngle, targetState.targetVoltage);
@@ -113,6 +135,13 @@ public class Intake extends MotorSubsystem {
                 new Rotation3d(0, getCurrentAngle().getRadians(), 0)
         );
         return IntakeConstants.INTAKE_VISUALIZATION_ORIGIN_POINT.transformBy(transform);
+    }
+
+    private Transform3d getVisualizationToRealPitchTransform() {
+        return new Transform3d(
+                new Translation3d(),
+                IntakeConstants.INTAKE_VISUALIZATION_ORIGIN_POINT.getRotation().unaryMinus()
+        );
     }
 
     private Rotation2d getCurrentAngle() {
