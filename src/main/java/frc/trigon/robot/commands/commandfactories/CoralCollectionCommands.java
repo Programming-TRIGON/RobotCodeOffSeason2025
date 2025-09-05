@@ -17,7 +17,7 @@ import lib.hardware.misc.leds.LEDCommands;
 public class CoralCollectionCommands {
     public static Command getCoralCollectionCommand() {
         return new ParallelCommandGroup(
-                getInitiateCollectionCommand(),
+                getInitiateCollectionCommand().until(RobotContainer.INTAKE::hasCoral),
                 getScheduleCoralAlignmentWhenCollectedCommand(),
                 new IntakeAssistCommand(OperatorConstants.DEFAULT_INTAKE_ASSIST_MODE)
         );
@@ -33,7 +33,7 @@ public class CoralCollectionCommands {
     private static Command getScheduleCoralAlignmentWhenCollectedCommand() {
         return GeneralCommands.runWhen(
                 getCoralAlignmentCommand().alongWith(getCollectionConfirmationCommand()),
-                RobotContainer.TRANSPORTER::hasCoral
+                RobotContainer.INTAKE::hasCoral
         );
     }
 
