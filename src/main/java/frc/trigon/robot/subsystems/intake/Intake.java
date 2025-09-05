@@ -84,7 +84,7 @@ public class Intake extends MotorSubsystem {
         return angleDifferenceFromTargetAngleDegrees < IntakeConstants.ANGLE_TOLERANCE.getDegrees();
     }
 
-    public boolean hasGamePiece() {
+    public boolean hasCoral() {
         return IntakeConstants.COLLECTION_DETECTION_BOOLEAN_EVENT.getAsBoolean();
     }
 
