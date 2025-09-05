@@ -23,6 +23,9 @@ import frc.trigon.robot.subsystems.MotorSubsystem;
 import frc.trigon.robot.subsystems.elevator.Elevator;
 import frc.trigon.robot.subsystems.elevator.ElevatorCommands;
 import frc.trigon.robot.subsystems.elevator.ElevatorConstants;
+import frc.trigon.robot.subsystems.arm.Arm;
+import frc.trigon.robot.subsystems.arm.ArmCommands;
+import frc.trigon.robot.subsystems.arm.ArmConstants;
 
 import frc.trigon.robot.subsystems.climber.Climber;
 import frc.trigon.robot.subsystems.climber.ClimberCommands;
@@ -30,6 +33,7 @@ import frc.trigon.robot.subsystems.climber.ClimberConstants;
 import frc.trigon.robot.subsystems.intake.Intake;
 import frc.trigon.robot.subsystems.intake.IntakeCommands;
 import frc.trigon.robot.subsystems.intake.IntakeConstants;
+
 import frc.trigon.robot.subsystems.swerve.Swerve;
 import frc.trigon.robot.subsystems.transporter.Transporter;
 import frc.trigon.robot.subsystems.transporter.TransporterCommands;
@@ -47,9 +51,11 @@ public class RobotContainer {
     );
     public static final Swerve SWERVE = new Swerve();
     public static final Elevator ELEVATOR = new Elevator();
+    public static final Arm ARM = new Arm();
     public static final Climber CLIMBER = new Climber();
     public static final Intake INTAKE = new Intake();
     public static final Transporter TRANSPORTER = new Transporter();
+
     private LoggedDashboardChooser<Command> autoChooser;
 
     public RobotContainer() {
@@ -73,6 +79,7 @@ public class RobotContainer {
     private void bindDefaultCommands() {
         SWERVE.setDefaultCommand(GeneralCommands.getFieldRelativeDriveCommand());
         ELEVATOR.setDefaultCommand(ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.REST));
+        ARM.setDefaultCommand(ArmCommands.getSetTargetStateCommand(ArmConstants.ArmState.REST));
         CLIMBER.setDefaultCommand(ClimberCommands.getSetTargetStateCommand(ClimberConstants.ClimberState.REST));
         INTAKE.setDefaultCommand(IntakeCommands.getSetTargetStateCommand(IntakeConstants.IntakeState.REST));
         TRANSPORTER.setDefaultCommand(TransporterCommands.getSetTargetStateCommand(TransporterConstants.TransporterState.REST));
