@@ -13,7 +13,7 @@ public class ElevatorCommands {
                 RobotContainer.ELEVATOR::setTargetPositionRotations,
                 false,
                 Set.of(RobotContainer.ELEVATOR),
-                "Debuggin/ElevatorTargetPositionRotations"
+                "Debugging/ElevatorTargetPositionRotations"
         );
     }
 
@@ -25,9 +25,9 @@ public class ElevatorCommands {
         );
     }
     
-    public static Command getSetTargetStateCommand(double targetRotations) {
+    public static Command getSetTargetStateCommand(double targetPositionRotations) {
         return new StartEndCommand(
-                () -> RobotContainer.ELEVATOR.setTargetPositionRotations(targetRotations),
+                () -> RobotContainer.ELEVATOR.setTargetPositionRotations(targetPositionRotations),
                 RobotContainer.ELEVATOR::stop,
                 RobotContainer.ELEVATOR
         );
