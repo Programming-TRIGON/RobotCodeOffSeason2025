@@ -233,19 +233,19 @@ public class ArmConstants {
         SCORE_L2(Rotation2d.fromDegrees(90), 4),
         SCORE_L3(Rotation2d.fromDegrees(90), 4),
         SCORE_L4(Rotation2d.fromDegrees(90), 4),
-        PREPARE_NET_SCORE(Rotation2d.fromDegrees(90), HOLD_ALGAE.targetVoltage),
+        PREPARE_NET_SCORE(Rotation2d.fromDegrees(90), HOLD_ALGAE.targetEndEffectorVoltage),
         SCORE_NET(Rotation2d.fromDegrees(160), 4),
-        PREPARE_PROCESSOR_SCORE(Rotation2d.fromDegrees(90), HOLD_ALGAE.targetVoltage),
+        PREPARE_PROCESSOR_SCORE(Rotation2d.fromDegrees(90), HOLD_ALGAE.targetEndEffectorVoltage),
         SCORE_PROCESSOR(Rotation2d.fromDegrees(90), 4),
         COLLECT_ALGAE_L2(Rotation2d.fromDegrees(90), -4),
         COLLECT_ALGAE_L3(Rotation2d.fromDegrees(90), -4);
 
         public final Rotation2d targetAngle;
-        public final double targetVoltage;
+        public final double targetEndEffectorVoltage;
 
-        ArmState(Rotation2d targetAngle, double targetVoltage) {
+        ArmState(Rotation2d targetAngle, double targetEndEffectorVoltage) {
             this.targetAngle = targetAngle;
-            this.targetVoltage = targetVoltage;
+            this.targetEndEffectorVoltage = targetEndEffectorVoltage;
         }
     }
 }

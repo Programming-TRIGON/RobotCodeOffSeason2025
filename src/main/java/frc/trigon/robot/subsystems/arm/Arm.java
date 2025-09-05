@@ -96,7 +96,7 @@ public class Arm extends MotorSubsystem {
         if (isStateReversed) {
             setTargetState(
                     Rotation2d.fromDegrees(360 - targetState.targetAngle.getDegrees())
-                    , targetState.targetVoltage
+                    , targetState.targetEndEffectorVoltage
             );
             return;
         }
@@ -107,7 +107,7 @@ public class Arm extends MotorSubsystem {
         this.targetState = targetState;
         setTargetState(
                 targetState.targetAngle,
-                targetState.targetVoltage
+                targetState.targetEndEffectorVoltage
         );
     }
 
