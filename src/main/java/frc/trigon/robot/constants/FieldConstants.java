@@ -33,8 +33,7 @@ public class FieldConstants {
             REEF_CENTER_TO_TARGET_SCORING_POSITION_X_TRANSFORM_METERS = 1.3,
             REEF_CENTER_TO_TARGET_SCORING_POSITION_Y_TRANSFORM_METERS = 0.17,
             REEF_CENTER_TO_TARGET_ALGAE_COLLECTION_POSITION_X_TRANSFORM_METERS = 1.6;
-
-
+    
     private static AprilTagFieldLayout createAprilTagFieldLayout() {
         try {
             return SHOULD_USE_HOME_TAG_LAYOUT ?
