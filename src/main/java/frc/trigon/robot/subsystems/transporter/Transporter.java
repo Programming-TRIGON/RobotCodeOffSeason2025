@@ -21,6 +21,7 @@ public class Transporter extends MotorSubsystem {
         rightMotor.update();
         leftMotor.update();
         TransporterConstants.BEAM_BREAK.updateSensor();
+        System.out.println(targetState.name());
     }
 
     @Override
