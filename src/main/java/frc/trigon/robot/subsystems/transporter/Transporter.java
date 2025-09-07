@@ -4,6 +4,7 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import frc.trigon.robot.subsystems.MotorSubsystem;
 import lib.hardware.phoenix6.talonfx.TalonFXMotor;
 import lib.hardware.phoenix6.talonfx.TalonFXSignal;
+import org.littletonrobotics.junction.AutoLogOutput;
 
 public class Transporter extends MotorSubsystem {
     private final TalonFXMotor
@@ -21,7 +22,6 @@ public class Transporter extends MotorSubsystem {
         rightMotor.update();
         leftMotor.update();
         TransporterConstants.BEAM_BREAK.updateSensor();
-        System.out.println(targetState.name());
     }
 
     @Override
@@ -42,6 +42,7 @@ public class Transporter extends MotorSubsystem {
         return targetState;
     }
 
+    @AutoLogOutput(key = "Transporter/hasCoral")
     public boolean hasCoral() {
         return TransporterConstants.HAS_CORAL_BOOLEAN_EVENT.getAsBoolean();
     }
