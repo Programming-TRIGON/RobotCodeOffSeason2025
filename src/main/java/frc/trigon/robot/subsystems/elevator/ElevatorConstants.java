@@ -67,11 +67,11 @@ public class ElevatorConstants {
     );
 
     public static final Pose3d FIRST_STAGE_VISUALIZATION_ORIGIN_POINT = new Pose3d(
-            new Translation3d(0, 0, 0),
+            new Translation3d(0, -0.17, 0.0504),
             new Rotation3d(0, 0, 0)
     );
     static final Pose3d SECOND_STAGE_VISUALIZATION_ORIGIN_POINT = new Pose3d(
-            new Translation3d(0, 0 ,0),
+            new Translation3d(0, -0.17 ,0.684),
             new Rotation3d(0, 0, 0)
     );
     static final ElevatorMechanism2d MECHANISM = new ElevatorMechanism2d(
@@ -164,6 +164,7 @@ public class ElevatorConstants {
         SCORE_L2(0, 1),
         SCORE_L3(0.4, 1),
         SCORE_L4(1.045, 1),
+        COLLECT_ALGAE_FROM_L2(0, 1),
         COLLECT_ALGAE_FROM_L3(0.35, 1),
         REST_WITH_ALGAE(0, 0.3),
         SCORE_NET(1.045, 0.3);

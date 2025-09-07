@@ -4,12 +4,12 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.hardware.TalonFX;
-import org.littletonrobotics.junction.Logger;
 import lib.hardware.RobotHardwareStats;
 import lib.hardware.phoenix6.Phoenix6Inputs;
 import lib.hardware.phoenix6.talonfx.io.RealTalonFXIO;
 import lib.hardware.phoenix6.talonfx.io.SimulationTalonFXIO;
 import lib.hardware.simulation.MotorPhysicsSimulation;
+import org.littletonrobotics.junction.Logger;
 
 /**
  * A class that represents a TalonFX motor controller.
