@@ -110,7 +110,7 @@ public class ArmConstants {
     );
 
     static final Pose3d ARM_VISUALIZATION_ORIGIN_POINT = new Pose3d(
-            new Translation3d(0, 0.0954, 0.9517),
+            new Translation3d(0, -0.0954, 0.9517),
             new Rotation3d(0, 0, 0)
     );
 
