@@ -5,6 +5,7 @@ import com.pathplanner.lib.util.swerve.SwerveSetpoint;
 import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -18,8 +19,6 @@ import frc.trigon.robot.poseestimation.poseestimator.PoseEstimatorConstants;
 import frc.trigon.robot.subsystems.MotorSubsystem;
 import frc.trigon.robot.subsystems.swerve.swervemodule.SwerveModule;
 import frc.trigon.robot.subsystems.swerve.swervemodule.SwerveModuleConstants;
-import org.littletonrobotics.junction.AutoLogOutput;
-import org.littletonrobotics.junction.Logger;
 import lib.hardware.RobotHardwareStats;
 import lib.hardware.phoenix6.Phoenix6SignalThread;
 import lib.hardware.phoenix6.pigeon2.Pigeon2Gyro;
@@ -27,6 +26,8 @@ import lib.hardware.phoenix6.pigeon2.Pigeon2Signal;
 import lib.utilities.flippable.Flippable;
 import lib.utilities.flippable.FlippablePose2d;
 import lib.utilities.flippable.FlippableRotation2d;
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
 
 public class Swerve extends MotorSubsystem {
     private final Pigeon2Gyro gyro = SwerveConstants.GYRO;
@@ -91,6 +92,14 @@ public class Swerve extends MotorSubsystem {
 
     public Rotation2d getHeading() {
         return Rotation2d.fromDegrees(SwerveConstants.GYRO.getSignal(Pigeon2Signal.YAW));
+    }
+
+    public Translation3d getFieldRelativeVelocity3d() {
+        return new Translation3d(
+                getFieldRelativeVelocity().vxMetersPerSecond,
+                getFieldRelativeVelocity().vyMetersPerSecond,
+                0
+        );
     }
 
     public ChassisSpeeds getFieldRelativeVelocity() {

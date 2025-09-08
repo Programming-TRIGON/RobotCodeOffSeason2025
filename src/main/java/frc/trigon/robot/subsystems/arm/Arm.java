@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.trigon.robot.RobotContainer;
 import frc.trigon.robot.subsystems.MotorSubsystem;
 import lib.hardware.phoenix6.cancoder.CANcoderEncoder;
 import lib.hardware.phoenix6.cancoder.CANcoderSignal;
@@ -91,6 +92,15 @@ public class Arm extends MotorSubsystem {
 
     public boolean hasGamePiece() {
         return ArmConstants.COLLECTION_DETECTION_BOOLEAN_EVENT.getAsBoolean();
+    }
+
+    public Translation3d calculateLinearEndEffectorVelocity() {
+        double velocityRotationsPerSecond = endEffectorMotor.getSignal(TalonFXSignal.VELOCITY) * ArmConstants.WHEEL_RADIUS_METERS;
+        return new Translation3d(
+                Math.cos(RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().getRotation().getRadians()) * velocityRotationsPerSecond,
+                Math.sin(RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().getRotation().getRadians()) * velocityRotationsPerSecond,
+                0
+        );
     }
 
     void setTargetState(ArmConstants.ArmState targetState, boolean isStateReversed) {
