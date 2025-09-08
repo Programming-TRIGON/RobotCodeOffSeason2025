@@ -36,7 +36,7 @@ public class ElevatorConstants {
     private static final SimpleSensor REVERSE_LIMIT_SENSOR = SimpleSensor.createDigitalSensor(REVERSE_LIMIT_SENSOR_CHANNEL, REVERSE_LIMIT_SENSOR_NAME);
 
     private static final double GEAR_RATIO = 4;
-    private static final double REVERSE_LIMIT_SENSOR_RESET_POSITION = 0;
+    private static final double REVERSE_LIMIT_SENSOR_RESET_POSITION_ROTATIONS = 0;
     private static final boolean SHOULD_FOLLOWER_OPPOSE_MASTER = false;
     static final double
             DEFAULT_MAXIMUM_VELOCITY = RobotHardwareStats.isSimulation() ? 80 : 20,
@@ -81,6 +81,9 @@ public class ElevatorConstants {
             Color.kYellow
     );
 
+    static final double FIRST_ELEVATOR_COMPONENT_EXTENDED_LENGTH_METERS = 0.78;
+    static final double DRUM_DIAMETER_METERS = DRUM_RADIUS_METERS * 2;
+
     private static final double REVERSE_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS = 0.1;
     private static final BooleanEvent REVERSE_LIMIT_SENSOR_BOOLEAN_EVENT = new BooleanEvent(
             CommandScheduler.getInstance().getActiveButtonLoop(),
@@ -88,8 +91,6 @@ public class ElevatorConstants {
     ).debounce(REVERSE_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS);
 
     private static final DoubleSupplier REVERSE_LIMIT_SENSOR_SIMULATION_SUPPLIER = () -> 0;
-    static final double FIRST_ELEVATOR_COMPONENT_EXTENDED_LENGTH_METERS = 0.78;
-    static final double DRUM_DIAMETER_METERS = DRUM_RADIUS_METERS * 2;
 
     static {
         configureMasterMotor();
@@ -122,7 +123,7 @@ public class ElevatorConstants {
         config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0;
 
         config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-        config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 6.8;
+        config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 0;
 
         config.MotionMagic.MotionMagicCruiseVelocity = DEFAULT_MAXIMUM_VELOCITY;
         config.MotionMagic.MotionMagicAcceleration = DEFAULT_MAXIMUM_ACCELERATION;
@@ -155,7 +156,7 @@ public class ElevatorConstants {
 
     private static void configureReverseLimitSensor() {
         REVERSE_LIMIT_SENSOR.setSimulationSupplier(REVERSE_LIMIT_SENSOR_SIMULATION_SUPPLIER);
-        REVERSE_LIMIT_SENSOR_BOOLEAN_EVENT.ifHigh(() -> MASTER_MOTOR.setPosition(REVERSE_LIMIT_SENSOR_RESET_POSITION));
+        REVERSE_LIMIT_SENSOR_BOOLEAN_EVENT.ifHigh(() -> MASTER_MOTOR.setPosition(REVERSE_LIMIT_SENSOR_RESET_POSITION_ROTATIONS));
     }
 
     public enum ElevatorState {
@@ -164,6 +165,10 @@ public class ElevatorConstants {
         SCORE_L2(0, 1),
         SCORE_L3(0.4, 1),
         SCORE_L4(1.045, 1),
+        PREPARE_SCORE_L1(0, 1),
+        PREPARE_SCORE_L2(0, 1),
+        PREPARE_SCORE_L3(0.4, 1),
+        PREPARE_SCORE_L4(1.045, 1),
         COLLECT_ALGAE_FROM_L2(0, 1),
         COLLECT_ALGAE_FROM_L3(0.35, 1),
         REST_WITH_ALGAE(0, 0.3),

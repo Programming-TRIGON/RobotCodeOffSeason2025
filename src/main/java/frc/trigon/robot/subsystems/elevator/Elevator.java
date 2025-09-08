@@ -1,7 +1,6 @@
 package frc.trigon.robot.subsystems.elevator;
 
 import com.ctre.phoenix6.controls.DynamicMotionMagicVoltage;
-import com.ctre.phoenix6.controls.FireAnimation;
 import com.ctre.phoenix6.controls.VoltageOut;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -18,6 +17,7 @@ import lib.utilities.Conversions;
 
 public class Elevator extends MotorSubsystem {
     private final TalonFXMotor masterMotor = ElevatorConstants.MASTER_MOTOR;
+
     private final VoltageOut voltageRequest = new VoltageOut(0).withEnableFOC(ElevatorConstants.FOC_ENABLED);
     private final DynamicMotionMagicVoltage positionRequest = new DynamicMotionMagicVoltage(0, ElevatorConstants.DEFAULT_MAXIMUM_VELOCITY, ElevatorConstants.DEFAULT_MAXIMUM_ACCELERATION, ElevatorConstants.DEFAULT_MAXIMUM_ACCELERATION * 10).withEnableFOC(ElevatorConstants.FOC_ENABLED);
     private ElevatorConstants.ElevatorState targetState = ElevatorConstants.ElevatorState.REST;
@@ -57,7 +57,7 @@ public class Elevator extends MotorSubsystem {
     @Override
     public void updateMechanism() {
         ElevatorConstants.MECHANISM.update(
-                getPositionsMeters(),
+                getPositionMeters(),
                 rotationsToMeters(masterMotor.getSignal(TalonFXSignal.CLOSED_LOOP_REFERENCE))
         );
 
@@ -68,7 +68,7 @@ public class Elevator extends MotorSubsystem {
     @Override
     public void updatePeriodically() {
         masterMotor.update();
-        Logger.recordOutput("Elevator/CurrentPositionMeters", getPositionsMeters());
+        Logger.recordOutput("Elevator/CurrentPositionMeters", getPositionMeters());
     }
 
     void setTargetState(ElevatorConstants.ElevatorState targetState) {
@@ -86,21 +86,11 @@ public class Elevator extends MotorSubsystem {
     }
 
     private Pose3d getSecondStageComponentPose() {
-        return calculateComponentPose(ElevatorConstants.SECOND_STAGE_VISUALIZATION_ORIGIN_POINT, getSecondPoseHeight());
-    }
-
-    private double getSecondPoseHeight() {
-        if (firstComponentLimitReached())
-            return getPositionsMeters() - ElevatorConstants.FIRST_ELEVATOR_COMPONENT_EXTENDED_LENGTH_METERS;
-        return 0;
-    }
-
-    private boolean firstComponentLimitReached() {
-        return getPositionsMeters() > ElevatorConstants.FIRST_ELEVATOR_COMPONENT_EXTENDED_LENGTH_METERS;
+            return calculateCurrentElevatorPoseFromOrigin(ElevatorConstants.SECOND_STAGE_VISUALIZATION_ORIGIN_POINT)
     }
 
     private Pose3d calculateCurrentElevatorPoseFromOrigin(Pose3d originPoint) {
-        return calculateComponentPose(originPoint, getPositionsMeters());
+        return calculateComponentPose(originPoint, getPositionMeters());
     }
 
     private Pose3d calculateComponentPose(Pose3d originPoint, double poseHeight) {
@@ -117,7 +107,7 @@ public class Elevator extends MotorSubsystem {
         positionRequest.Jerk = positionRequest.Acceleration * 10;
     }
 
-    private double getPositionsMeters() {
+    private double getPositionMeters() {
         return rotationsToMeters(getPositionRotations());
     }
 
