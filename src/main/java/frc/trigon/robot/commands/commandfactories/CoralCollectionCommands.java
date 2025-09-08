@@ -25,7 +25,7 @@ public class CoralCollectionCommands {
     private static Command getIntakeSequenceCommand() {
         return new SequentialCommandGroup(
                 getInitiateCollectionCommand().until(RobotContainer.INTAKE::hasCoral),
-                new InstantCommand(() -> getCoralAlignmentCommand().schedule()).alongWith(getCollectionConfirmationCommand())
+                new InstantCommand(() -> getAlignCoralCommand().schedule()).alongWith(getCollectionConfirmationCommand())
         );
     }
 
@@ -36,7 +36,7 @@ public class CoralCollectionCommands {
         );
     }
 
-    private static Command getCoralAlignmentCommand() {
+    private static Command getAlignCoralCommand() {
         return new SequentialCommandGroup(
                 TransporterCommands.getSetTargetStateCommand(TransporterConstants.TransporterState.ALIGN_CORAL).until(RobotContainer.TRANSPORTER::hasCoral),
                 TransporterCommands.getSetTargetStateCommand(TransporterConstants.TransporterState.HOLD_CORAL)
