@@ -83,7 +83,6 @@ public class ElevatorConstants {
 
     static final double FIRST_ELEVATOR_COMPONENT_EXTENDED_LENGTH_METERS = 0.78;
     static final double DRUM_DIAMETER_METERS = DRUM_RADIUS_METERS * 2;
-
     private static final double REVERSE_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS = 0.1;
     private static final BooleanEvent REVERSE_LIMIT_SENSOR_BOOLEAN_EVENT = new BooleanEvent(
             CommandScheduler.getInstance().getActiveButtonLoop(),
@@ -123,7 +122,7 @@ public class ElevatorConstants {
         config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0;
 
         config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-        config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 0;
+        config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = REVERSE_LIMIT_SENSOR_RESET_POSITION_ROTATIONS;
 
         config.MotionMagic.MotionMagicCruiseVelocity = DEFAULT_MAXIMUM_VELOCITY;
         config.MotionMagic.MotionMagicAcceleration = DEFAULT_MAXIMUM_ACCELERATION;
@@ -165,10 +164,10 @@ public class ElevatorConstants {
         SCORE_L2(0, 1),
         SCORE_L3(0.4, 1),
         SCORE_L4(1.045, 1),
-        PREPARE_SCORE_L1(0, 1),
-        PREPARE_SCORE_L2(0, 1),
-        PREPARE_SCORE_L3(0.4, 1),
-        PREPARE_SCORE_L4(1.045, 1),
+        PREPARE_L1(0, 1),
+        PREPARE_L2(0, 1),
+        PREPARE_L3(0.4, 1),
+        PREPARE_L4(1.045, 1),
         COLLECT_ALGAE_FROM_L2(0, 1),
         COLLECT_ALGAE_FROM_L3(0.35, 1),
         REST_WITH_ALGAE(0, 0.3),

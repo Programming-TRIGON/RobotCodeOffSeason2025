@@ -17,9 +17,13 @@ import lib.utilities.Conversions;
 
 public class Elevator extends MotorSubsystem {
     private final TalonFXMotor masterMotor = ElevatorConstants.MASTER_MOTOR;
-
     private final VoltageOut voltageRequest = new VoltageOut(0).withEnableFOC(ElevatorConstants.FOC_ENABLED);
-    private final DynamicMotionMagicVoltage positionRequest = new DynamicMotionMagicVoltage(0, ElevatorConstants.DEFAULT_MAXIMUM_VELOCITY, ElevatorConstants.DEFAULT_MAXIMUM_ACCELERATION, ElevatorConstants.DEFAULT_MAXIMUM_ACCELERATION * 10).withEnableFOC(ElevatorConstants.FOC_ENABLED);
+    private final DynamicMotionMagicVoltage positionRequest = new DynamicMotionMagicVoltage(
+            0,
+            ElevatorConstants.DEFAULT_MAXIMUM_VELOCITY,
+            ElevatorConstants.DEFAULT_MAXIMUM_ACCELERATION,
+            ElevatorConstants.DEFAULT_MAXIMUM_ACCELERATION * 10
+            ).withEnableFOC(ElevatorConstants.FOC_ENABLED);
     private ElevatorConstants.ElevatorState targetState = ElevatorConstants.ElevatorState.REST;
 
     public Elevator() {
