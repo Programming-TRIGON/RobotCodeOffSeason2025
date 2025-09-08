@@ -19,18 +19,15 @@ import frc.trigon.robot.misc.objectdetectioncamera.ObjectPoseEstimator;
 import frc.trigon.robot.misc.simulatedfield.SimulatedGamePieceConstants;
 import frc.trigon.robot.poseestimation.poseestimator.PoseEstimator;
 import frc.trigon.robot.subsystems.MotorSubsystem;
-
 import frc.trigon.robot.subsystems.arm.Arm;
 import frc.trigon.robot.subsystems.arm.ArmCommands;
 import frc.trigon.robot.subsystems.arm.ArmConstants;
-
 import frc.trigon.robot.subsystems.climber.Climber;
 import frc.trigon.robot.subsystems.climber.ClimberCommands;
 import frc.trigon.robot.subsystems.climber.ClimberConstants;
 import frc.trigon.robot.subsystems.intake.Intake;
 import frc.trigon.robot.subsystems.intake.IntakeCommands;
 import frc.trigon.robot.subsystems.intake.IntakeConstants;
-
 import frc.trigon.robot.subsystems.swerve.Swerve;
 import frc.trigon.robot.subsystems.transporter.Transporter;
 import frc.trigon.robot.subsystems.transporter.TransporterCommands;
@@ -40,7 +37,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
     public static final PoseEstimator ROBOT_POSE_ESTIMATOR = new PoseEstimator();
-    public static final ObjectPoseEstimator OBJECT_POSE_ESTIMATOR = new ObjectPoseEstimator(
+    public static final ObjectPoseEstimator CORAL_POSE_ESTIMATOR = new ObjectPoseEstimator(
             CameraConstants.OBJECT_POSE_ESTIMATOR_DELETION_THRESHOLD_SECONDS,
             ObjectPoseEstimator.DistanceCalculationMethod.ROTATION_AND_TRANSLATION,
             SimulatedGamePieceConstants.GamePieceType.CORAL,

@@ -5,7 +5,10 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
-import edu.wpi.first.math.geometry.*;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.event.BooleanEvent;
@@ -123,15 +126,10 @@ public class IntakeConstants {
                     CommandScheduler.getInstance().getActiveButtonLoop(),
                     FORWARD_LIMIT_SENSOR::getBinaryValue
             ).debounce(FORWARD_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS);
-    static final Transform3d
-            INTAKE_ORIGIN_POINT_TO_CORAL_COLLECTION_TRANSFORM = new Transform3d(
-            new Translation3d(0, 23.73, 31.5),
+    public static Pose3d CORAL_COLLECTION_POSE = new Pose3d(
+            new Translation3d(-23.58, 23.73, -20.22),
             new Rotation3d()
-    ),
-            INTAKE_ORIGIN_POINT_TO_CORAL_VISUALIZATION_TRANSFORM = new Transform3d(
-                    new Translation3d(0, 8.98, 32.2),
-                    new Rotation3d()
-            );
+    );
 
     static {
         configureIntakeMotor();

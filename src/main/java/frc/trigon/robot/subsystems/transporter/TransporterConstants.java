@@ -3,6 +3,9 @@ package frc.trigon.robot.subsystems.transporter;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.event.BooleanEvent;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -62,6 +65,10 @@ public class TransporterConstants {
             CommandScheduler.getInstance().getActiveButtonLoop(),
             BEAM_BREAK::getBinaryValue
     ).debounce(HAS_CORAL_DEBOUNCE_TIME_SECONDS);
+    public static final Pose3d COLLECTED_CORAL_POSE = new Pose3d(
+            new Translation3d(-24.11, 8.98, -20.68),
+            new Rotation3d()
+    );
 
     static {
         configureMotor(RIGHT_MOTOR, RIGHT_MOTOR_SIMULATION);

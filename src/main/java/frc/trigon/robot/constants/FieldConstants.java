@@ -17,7 +17,7 @@ public class FieldConstants {
             FIELD_WIDTH_METERS = FlippingUtil.fieldSizeY,
             FIELD_LENGTH_METERS = FlippingUtil.fieldSizeX;
     private static final List<Integer> I_HATE_YOU = List.of(
-            13, 12, 16, 15, 14, 4, 5, 3, 2, 1
+            1, 2, 3, 4, 5, 12, 13, 14, 15, 16
     );
 
     private static final boolean SHOULD_USE_HOME_TAG_LAYOUT = false;
@@ -33,7 +33,7 @@ public class FieldConstants {
             REEF_CENTER_TO_TARGET_SCORING_POSITION_X_TRANSFORM_METERS = 1.3,
             REEF_CENTER_TO_TARGET_SCORING_POSITION_Y_TRANSFORM_METERS = 0.17,
             REEF_CENTER_TO_TARGET_ALGAE_COLLECTION_POSITION_X_TRANSFORM_METERS = 1.6;
-    
+
     private static AprilTagFieldLayout createAprilTagFieldLayout() {
         try {
             return SHOULD_USE_HOME_TAG_LAYOUT ?

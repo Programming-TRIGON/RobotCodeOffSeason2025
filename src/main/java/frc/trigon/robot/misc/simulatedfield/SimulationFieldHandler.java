@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import frc.trigon.robot.RobotContainer;
 import frc.trigon.robot.subsystems.intake.IntakeConstants;
+import frc.trigon.robot.subsystems.transporter.TransporterConstants;
 import org.littletonrobotics.junction.Logger;
 
 import java.util.ArrayList;
@@ -68,7 +69,7 @@ public class SimulationFieldHandler {
     private static void updateCollection() {
         final Pose3d robotPose = new Pose3d(RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose());
         final Pose3d
-                coralCollectionPose = robotPose.plus(toTransform(RobotContainer.INTAKE.calculateCoralCollectionPose()));
+                coralCollectionPose = robotPose.plus(toTransform(IntakeConstants.CORAL_COLLECTION_POSE));
 //                algaeCollectionPose = robotPose.plus(toTransform(RobotContainer.ARM.calculateAlgaeCollectionPose()));
 
         if (isCollectingCoral() && HELD_CORAL_INDEX == null)
@@ -137,7 +138,7 @@ public class SimulationFieldHandler {
      */
     private static void updateHeldGamePiecePoses() {
         final Pose3d
-                robotRelativeHeldCoralPosition = RobotContainer.INTAKE.calculateCollectedCoralPose();
+                robotRelativeHeldCoralPosition = TransporterConstants.COLLECTED_CORAL_POSE;
 //                robotRelativeHeldAlgaePosition = RobotContainer.ARM.calculateAlgaeCollectionPose();
         updateHeldGamePiecePose(robotRelativeHeldCoralPosition, CORAL_ON_FIELD, HELD_CORAL_INDEX);
 //        updateHeldGamePiecePose(robotRelativeHeldAlgaePosition, ALGAE_ON_FIELD, HELD_ALGAE_INDEX);
