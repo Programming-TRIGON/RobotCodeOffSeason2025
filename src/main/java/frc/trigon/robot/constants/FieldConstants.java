@@ -4,9 +4,8 @@ import com.pathplanner.lib.util.FlippingUtil;
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.*;
+import lib.utilities.Conversions;
 import lib.utilities.FilesHandler;
 
 import java.io.IOException;
@@ -18,7 +17,7 @@ public class FieldConstants {
             FIELD_WIDTH_METERS = FlippingUtil.fieldSizeY,
             FIELD_LENGTH_METERS = FlippingUtil.fieldSizeX;
     private static final List<Integer> I_HATE_YOU = List.of(
-            //Tags to ignore
+            13, 12, 16, 15, 14, 4, 5, 3, 2, 1
     );
 
     private static final boolean SHOULD_USE_HOME_TAG_LAYOUT = false;
@@ -26,6 +25,15 @@ public class FieldConstants {
     private static final Transform3d TAG_OFFSET = new Transform3d(0, 0, 0, new Rotation3d(0, 0, 0));
     public static final HashMap<Integer, Pose3d> TAG_ID_TO_POSE = fieldLayoutToTagIDToPoseMap();
 
+    public static final int REEF_CLOCK_POSITIONS = 6;
+    public static final Rotation2d REEF_CLOCK_POSITION_DIFFERENCE = Rotation2d.fromDegrees(Conversions.DEGREES_PER_ROTATIONS / REEF_CLOCK_POSITIONS);
+    public static final Rotation2d[] REEF_CLOCK_ANGLES = ReefClockPosition.getClockAngles();
+    public static final Translation2d BLUE_REEF_CENTER_TRANSLATION = new Translation2d(4.48945, FIELD_WIDTH_METERS / 2);
+    public static final double
+            REEF_CENTER_TO_TARGET_SCORING_POSITION_X_TRANSFORM_METERS = 1.3,
+            REEF_CENTER_TO_TARGET_SCORING_POSITION_Y_TRANSFORM_METERS = 0.17,
+            REEF_CENTER_TO_TARGET_ALGAE_COLLECTION_POSITION_X_TRANSFORM_METERS = 1.6;
+    
     private static AprilTagFieldLayout createAprilTagFieldLayout() {
         try {
             return SHOULD_USE_HOME_TAG_LAYOUT ?
@@ -43,5 +51,51 @@ public class FieldConstants {
                 tagIDToPose.put(aprilTag.ID, aprilTag.pose.transformBy(TAG_OFFSET));
 
         return tagIDToPose;
+    }
+
+    public enum ReefSide {
+        RIGHT(true),
+        LEFT(false);
+
+        public final boolean doesFlipYTransformWhenFacingDriverStation;
+
+        ReefSide(boolean doesFlipYTransformWhenFacingDriverStation) {
+            this.doesFlipYTransformWhenFacingDriverStation = doesFlipYTransformWhenFacingDriverStation;
+        }
+
+        public boolean shouldFlipYTransform(ReefClockPosition reefClockPosition) {
+            return doesFlipYTransformWhenFacingDriverStation ^ reefClockPosition.isFacingDriverStation; // In Java, ^ acts as an XOR (exclusive OR) operator, which fits in this case
+        }
+    }
+
+    public enum ReefClockPosition {
+        REEF_12_OCLOCK(true),
+        REEF_2_OCLOCK(true),
+        REEF_4_OCLOCK(true),
+        REEF_6_OCLOCK(true),
+        REEF_8_OCLOCK(true),
+        REEF_10_OCLOCK(true);
+
+        public final Rotation2d clockAngle;
+        public final boolean isFacingDriverStation;
+        public final int clockPosition;
+
+        ReefClockPosition(boolean isFacingDriverStation) {
+            this.clockAngle = calculateClockAngle();
+            this.isFacingDriverStation = isFacingDriverStation;
+            this.clockPosition = ordinal() == 0 ? 12 : ordinal() * 2;
+        }
+
+        public static Rotation2d[] getClockAngles() {
+            final Rotation2d[] clockAngles = new Rotation2d[ReefClockPosition.values().length];
+            for (int i = 0; i < clockAngles.length; i++)
+                clockAngles[i] = ReefClockPosition.values()[i].clockAngle;
+
+            return clockAngles;
+        }
+
+        private Rotation2d calculateClockAngle() {
+            return REEF_CLOCK_POSITION_DIFFERENCE.times(-ordinal());
+        }
     }
 }

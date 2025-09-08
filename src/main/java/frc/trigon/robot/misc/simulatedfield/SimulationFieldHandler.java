@@ -1,11 +1,9 @@
 package frc.trigon.robot.misc.simulatedfield;
 
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.trigon.robot.RobotContainer;
+import frc.trigon.robot.subsystems.intake.IntakeConstants;
 import org.littletonrobotics.junction.Logger;
 
 import java.util.ArrayList;
@@ -14,15 +12,27 @@ import java.util.ArrayList;
  * Handles the simulation of game pieces.
  */
 public class SimulationFieldHandler {
-    private static final ArrayList<SimulatedGamePiece> GAME_PIECES_ON_FIELD = SimulatedGamePieceConstants.STARTING_GAME_PIECES;
-    private static Integer HELD_GAME_PIECE_INDEX = null;
+    private static final ArrayList<SimulatedGamePiece>
+            CORAL_ON_FIELD = SimulatedGamePieceConstants.CORAL_ON_FIELD,
+            ALGAE_ON_FIELD = SimulatedGamePieceConstants.ALGAE_ON_FIELD;
+    private static Integer
+            HELD_CORAL_INDEX = null,
+            HELD_ALGAE_INDEX = null;
 
-    public static ArrayList<SimulatedGamePiece> getSimulatedGamePieces() {
-        return GAME_PIECES_ON_FIELD;
+    public static ArrayList<SimulatedGamePiece> getSimulatedCoral() {
+        return CORAL_ON_FIELD;
     }
 
-    public static boolean isHoldingGamePiece() {
-        return HELD_GAME_PIECE_INDEX != null;
+    public static ArrayList<SimulatedGamePiece> getSimulatedAlgae() {
+        return ALGAE_ON_FIELD;
+    }
+
+    public static boolean isHoldingCoral() {
+        return HELD_CORAL_INDEX != null;
+    }
+
+    public static boolean isHoldingAlgae() {
+        return HELD_ALGAE_INDEX != null;
     }
 
     public static void update() {
@@ -44,33 +54,28 @@ public class SimulationFieldHandler {
      * Logs the position of all the game pieces.
      */
     private static void logGamePieces() {
-        Logger.recordOutput("Poses/GamePieces/GamePieces", mapSimulatedGamePieceListToPoseArray(GAME_PIECES_ON_FIELD));
+        Logger.recordOutput("Poses/GamePieces/Corals", mapSimulatedGamePieceListToPoseArray(CORAL_ON_FIELD));
+        Logger.recordOutput("Poses/GamePieces/Algae", mapSimulatedGamePieceListToPoseArray(ALGAE_ON_FIELD));
     }
 
     private static void updateGamePiecesPeriodically() {
-        for (SimulatedGamePiece gamePiece : GAME_PIECES_ON_FIELD)
-            gamePiece.updatePeriodically(HELD_GAME_PIECE_INDEX != null && HELD_GAME_PIECE_INDEX == GAME_PIECES_ON_FIELD.indexOf(gamePiece));
+        for (SimulatedGamePiece coral : CORAL_ON_FIELD)
+            coral.updatePeriodically(HELD_CORAL_INDEX != null && HELD_CORAL_INDEX == CORAL_ON_FIELD.indexOf(coral));
+        for (SimulatedGamePiece algae : ALGAE_ON_FIELD)
+            algae.updatePeriodically(HELD_CORAL_INDEX != null && HELD_CORAL_INDEX == CORAL_ON_FIELD.indexOf(algae));
     }
 
     private static void updateCollection() {
         final Pose3d robotPose = new Pose3d(RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose());
-        final Pose3d robotRelativeCollectionPose = new Pose3d();
-        final Pose3d collectionPose = robotPose.plus(toTransform(robotRelativeCollectionPose));
+        final Pose3d
+                coralCollectionPose = robotPose.plus(toTransform(RobotContainer.INTAKE.calculateCoralCollectionPose()));
+//                algaeCollectionPose = robotPose.plus(toTransform(RobotContainer.ARM.calculateAlgaeCollectionPose()));
 
-        updateFeederCollection(robotPose);
+        if (isCollectingCoral() && HELD_CORAL_INDEX == null)
+            HELD_CORAL_INDEX = getIndexOfCollectedGamePiece(coralCollectionPose, CORAL_ON_FIELD, SimulatedGamePieceConstants.CORAL_INTAKE_TOLERANCE_METERS);
 
-        if (isCollectingGamePiece() && HELD_GAME_PIECE_INDEX == null)
-            HELD_GAME_PIECE_INDEX = getIndexOfCollectedGamePiece(collectionPose, GAME_PIECES_ON_FIELD, SimulatedGamePieceConstants.INTAKE_TOLERANCE_METERS);
-    }
-
-    private static void updateFeederCollection(Pose3d robotPose) {
-        final double distanceFromFeeder = robotPose.toPose2d().getTranslation().getDistance(SimulatedGamePieceConstants.FEEDER_POSITION.get());
-
-        if (isCollectingGamePieceFromFeeder() && HELD_GAME_PIECE_INDEX == null &&
-                distanceFromFeeder < SimulatedGamePieceConstants.FEEDER_INTAKE_TOLERANCE_METERS) {
-            GAME_PIECES_ON_FIELD.add(new SimulatedGamePiece(new Pose3d(), SimulatedGamePieceConstants.GamePieceType.GAME_PIECE_TYPE));
-            HELD_GAME_PIECE_INDEX = GAME_PIECES_ON_FIELD.size() - 1;
-        }
+//        if (isCollectingAlgae() && HELD_ALGAE_INDEX == null)
+//            HELD_ALGAE_INDEX = getIndexOfCollectedGamePiece(algaeCollectionPose, ALGAE_ON_FIELD, SimulatedGamePieceConstants.ALGAE_INTAKE_TOLERANCE_METERS);
     }
 
     /**
@@ -87,7 +92,11 @@ public class SimulationFieldHandler {
         return null;
     }
 
-    private static boolean isCollectingGamePiece() {
+    private static boolean isCollectingCoral() {
+        return RobotContainer.INTAKE.atState(IntakeConstants.IntakeState.COLLECT);
+    }
+
+    private static boolean isCollectingAlgae() {
         return false;//TODO: Implement
     }
 
@@ -96,22 +105,30 @@ public class SimulationFieldHandler {
     }
 
     private static void updateEjection() {
-        if (HELD_GAME_PIECE_INDEX != null && isEjectingGamePiece()) {
-            final SimulatedGamePiece heldGamePiece = GAME_PIECES_ON_FIELD.get(HELD_GAME_PIECE_INDEX);
-            ejectGamePiece(heldGamePiece);
-            HELD_GAME_PIECE_INDEX = null;
+        if (HELD_CORAL_INDEX != null)
+            updateCoralEjection();
+
+//        if (HELD_ALGAE_INDEX != null && isEjectingAlgae()) {
+//            final SimulatedGamePiece heldAlgae = ALGAE_ON_FIELD.get(HELD_ALGAE_INDEX);
+//            ejectAlgae(heldAlgae);
+//            HELD_ALGAE_INDEX = null;
+//        }
+    }
+
+    private static void updateCoralEjection() {
+        final SimulatedGamePiece heldCoral = CORAL_ON_FIELD.get(HELD_CORAL_INDEX);
+
+        if (isCollectingCoral()) {
+            heldCoral.release();
+            HELD_CORAL_INDEX = null;
         }
     }
 
-    private static void ejectGamePiece(SimulatedGamePiece ejectedGamePiece) {
-        final ChassisSpeeds swerveWheelSpeeds = RobotContainer.SWERVE.getSelfRelativeVelocity();
-        final Translation3d robotSelfRelativeVelocity = new Translation3d(swerveWheelSpeeds.vxMetersPerSecond, swerveWheelSpeeds.vyMetersPerSecond, 0);
-        final Translation3d robotRelativeReleaseVelocity = new Translation3d();
-
-        ejectedGamePiece.release(robotSelfRelativeVelocity.plus(robotRelativeReleaseVelocity).rotateBy(new Rotation3d(RobotContainer.SWERVE.getHeading())));
+    private static boolean isEjectingCoral() {
+        return RobotContainer.INTAKE.atState(IntakeConstants.IntakeState.EJECT);
     }
 
-    private static boolean isEjectingGamePiece() {
+    private static boolean isEjectingAlgae() {
         return false;//TODO: Implement
     }
 
@@ -119,8 +136,11 @@ public class SimulationFieldHandler {
      * Updates the position of the held game pieces so that they stay inside the robot.
      */
     private static void updateHeldGamePiecePoses() {
-        final Pose3d robotRelativeHeldGamePiecePosition = new Pose3d();
-        updateHeldGamePiecePose(robotRelativeHeldGamePiecePosition, GAME_PIECES_ON_FIELD, HELD_GAME_PIECE_INDEX);
+        final Pose3d
+                robotRelativeHeldCoralPosition = RobotContainer.INTAKE.calculateCollectedCoralPose();
+//                robotRelativeHeldAlgaePosition = RobotContainer.ARM.calculateAlgaeCollectionPose();
+        updateHeldGamePiecePose(robotRelativeHeldCoralPosition, CORAL_ON_FIELD, HELD_CORAL_INDEX);
+//        updateHeldGamePiecePose(robotRelativeHeldAlgaePosition, ALGAE_ON_FIELD, HELD_ALGAE_INDEX);
     }
 
     private static void updateHeldGamePiecePose(Pose3d robotRelativeHeldGamePiecePose, ArrayList<SimulatedGamePiece> gamePieceList, Integer heldGamePieceIndex) {
