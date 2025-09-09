@@ -86,20 +86,16 @@ public class Elevator extends MotorSubsystem {
     }
 
     private Pose3d getFirstStageComponentPose() {
-            return calculateCurrentElevatorPoseFromOrigin(ElevatorConstants.FIRST_STAGE_VISUALIZATION_ORIGIN_POINT);
+            return calculateComponentPose(ElevatorConstants.FIRST_STAGE_VISUALIZATION_ORIGIN_POINT, getPositionMeters());
     }
 
     private Pose3d getSecondStageComponentPose() {
-            return calculateCurrentElevatorPoseFromOrigin(ElevatorConstants.SECOND_STAGE_VISUALIZATION_ORIGIN_POINT);
+            return calculateComponentPose(ElevatorConstants.SECOND_STAGE_VISUALIZATION_ORIGIN_POINT, getPositionMeters());
     }
 
-    private Pose3d calculateCurrentElevatorPoseFromOrigin(Pose3d originPoint) {
-        return calculateComponentPose(originPoint, getPositionMeters());
-    }
-
-    private Pose3d calculateComponentPose(Pose3d originPoint, double poseHeight) {
+    private Pose3d calculateComponentPose(Pose3d originPoint, double currentHeight) {
         final Transform3d elevatorTransform = new Transform3d(
-                new Translation3d(0, 0, poseHeight),
+                new Translation3d(0, 0, currentHeight),
                 new Rotation3d()
         );
         return originPoint.transformBy(elevatorTransform);
