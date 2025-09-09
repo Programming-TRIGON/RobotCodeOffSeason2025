@@ -39,7 +39,7 @@ public class ElevatorConstants {
     private static final double REVERSE_LIMIT_SENSOR_RESET_POSITION_ROTATIONS = 0;
     private static final boolean SHOULD_FOLLOWER_OPPOSE_MASTER = false;
     static final double
-            DEFAULT_MAXIMUM_VELOCITY = RobotHardwareStats.isSimulation() ? 80 : 20,
+            DEFAULT_MAXIMUM_VELOCITY = RobotHardwareStats.isSimulation() ? 25.178 : 20,
             DEFAULT_MAXIMUM_ACCELERATION = RobotHardwareStats.isSimulation() ? 80 : 20;
     static final boolean FOC_ENABLED = true;
 
@@ -48,8 +48,8 @@ public class ElevatorConstants {
     private static final double
             ELEVATOR_MASS_KILOGRAMS = 7,
             DRUM_RADIUS_METERS = 0.04,
-            MINIMUM_ELEVATOR_HEIGHT_METERS = 0.78,
-            MAXIMUM_ELEVATOR_HEIGHT_METERS = 1.752;
+            MINIMUM_ELEVATOR_HEIGHT_METERS = 0,
+            MAXIMUM_ELEVATOR_HEIGHT_METERS = 1.382;
     private static final boolean SHOULD_SIMULATE_GRAVITY = true;
     private static final ElevatorSimulation SIMULATION = new ElevatorSimulation(
             GEARBOX,
@@ -71,7 +71,7 @@ public class ElevatorConstants {
             new Rotation3d(0, 0, 0)
     );
     static final Pose3d SECOND_STAGE_VISUALIZATION_ORIGIN_POINT = new Pose3d(
-            new Translation3d(0, -0.17 ,0.684),
+            new Translation3d(0, -0.17 ,0.0814),
             new Rotation3d(0, 0, 0)
     );
     static final ElevatorMechanism2d MECHANISM = new ElevatorMechanism2d(
@@ -80,8 +80,7 @@ public class ElevatorConstants {
             MINIMUM_ELEVATOR_HEIGHT_METERS,
             Color.kYellow
     );
-
-    static final double FIRST_ELEVATOR_COMPONENT_EXTENDED_LENGTH_METERS = 0.78;
+    static final double SECOND_ELEVATOR_COMPONENT_EXTENDED_LENGTH_METERS = 0.603;
     static final double DRUM_DIAMETER_METERS = DRUM_RADIUS_METERS * 2;
     private static final double REVERSE_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS = 0.1;
     private static final BooleanEvent REVERSE_LIMIT_SENSOR_BOOLEAN_EVENT = new BooleanEvent(
@@ -107,9 +106,9 @@ public class ElevatorConstants {
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         config.Feedback.SensorToMechanismRatio = GEAR_RATIO;
 
-        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 1.8:0;
+        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 3.5:0;
         config.Slot0.kI = RobotHardwareStats.isSimulation() ? 0:0;
-        config.Slot0.kD = RobotHardwareStats.isSimulation() ? 0.2:0;
+        config.Slot0.kD = RobotHardwareStats.isSimulation() ? 0.4:0;
         config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0.016165:0;
         config.Slot0.kV = RobotHardwareStats.isSimulation() ? 0.4766:0;
         config.Slot0.kA = RobotHardwareStats.isSimulation() ? 0.014239:0;
@@ -122,7 +121,7 @@ public class ElevatorConstants {
         config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = REVERSE_LIMIT_SENSOR_RESET_POSITION_ROTATIONS;
 
         config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-        config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 0;
+        config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 6.8;
 
         config.MotionMagic.MotionMagicCruiseVelocity = DEFAULT_MAXIMUM_VELOCITY;
         config.MotionMagic.MotionMagicAcceleration = DEFAULT_MAXIMUM_ACCELERATION;
@@ -159,19 +158,20 @@ public class ElevatorConstants {
     }
 
     public enum ElevatorState {
-        REST(0, 0.7),
-        SCORE_L1(0, 1),
-        SCORE_L2(0, 1),
-        SCORE_L3(0.4, 1),
-        SCORE_L4(1.045, 1),
-        PREPARE_L1(0, 1),
-        PREPARE_L2(0, 1),
-        PREPARE_L3(0.4, 1),
-        PREPARE_L4(1.045, 1),
-        COLLECT_ALGAE_FROM_L2(0, 1),
-        COLLECT_ALGAE_FROM_L3(0.35, 1),
-        REST_WITH_ALGAE(0, 0.3),
-        SCORE_NET(1.045, 0.3);
+        REST(0.603, 0.7),
+        SCORE_L1(0.603, 1),
+        SCORE_L2(0.603, 1),
+        SCORE_L3(1.003, 1),
+        SCORE_L4(1.382, 1),
+        PREPARE_L1(0.603, 1),
+        PREPARE_L2(0.603, 1),
+        PREPARE_L3(1.003, 1),
+        PREPARE_L4(1.382, 1),
+        COLLECT_ALGAE_FROM_L2(0.603, 1),
+        COLLECT_ALGAE_FROM_L3(0.953, 1),
+        COLLECT_ALGAE_FROM_GROUND(0, 0.7),
+        REST_WITH_ALGAE(0.603, 0.3),
+        SCORE_NET(1.382, 0.3);
 
         public final double targetPositionMeters;
         final double speedScalar;
