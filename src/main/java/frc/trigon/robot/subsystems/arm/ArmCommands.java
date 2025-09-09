@@ -47,4 +47,20 @@ public class ArmCommands {
                 RobotContainer.ARM
         );
     }
+
+    public static Command getSetPrepareTargetStateCommand(ArmConstants.ArmState targetState, boolean isStateReversed) {
+        return new StartEndCommand(
+                () -> RobotContainer.ARM.setPrepareTargetState(targetState, isStateReversed),
+                RobotContainer.ARM::stop,
+                RobotContainer.ARM
+        );
+    }
+
+    public static Command getSetPrepareTargetStateCommand(ArmConstants.ArmState targetState) {
+        return new StartEndCommand(
+                () -> RobotContainer.ARM.setPrepareTargetState(targetState),
+                RobotContainer.ARM::stop,
+                RobotContainer.ARM
+        );
+    }
 }

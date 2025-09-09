@@ -117,6 +117,17 @@ public class Arm extends MotorSubsystem {
         setTargetVoltage(targetVoltage);
     }
 
+    void setPrepareTargetState(ArmConstants.ArmState targetState, boolean isStateReversed) {
+        if (isStateReversed)
+            setTargetAngle(Rotation2d.fromDegrees(360 - targetState.targetAngle.getDegrees()));
+        setPrepareTargetState(targetState);
+    }
+
+    void setPrepareTargetState(ArmConstants.ArmState targetState) {
+        this.targetState = targetState;
+        setTargetAngle(targetState.targetAngle);
+    }
+
     private Rotation2d getAngle() {
         return Rotation2d.fromRotations(angleEncoder.getSignal(CANcoderSignal.POSITION));
     }

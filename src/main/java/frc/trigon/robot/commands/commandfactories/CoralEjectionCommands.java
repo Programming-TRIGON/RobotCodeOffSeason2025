@@ -2,8 +2,10 @@ package frc.trigon.robot.commands.commandfactories;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.trigon.robot.RobotContainer;
+import frc.trigon.robot.subsystems.arm.ArmCommands;
+import frc.trigon.robot.subsystems.arm.ArmConstants;
 import frc.trigon.robot.subsystems.intake.IntakeCommands;
 import frc.trigon.robot.subsystems.intake.IntakeConstants;
 import frc.trigon.robot.subsystems.transporter.TransporterCommands;
@@ -26,6 +28,10 @@ public class CoralEjectionCommands {
     }
 
     private static Command getEjectCoralFromArmCommand() {
-        return new PrintCommand("Ejecting coral from arm - Not implemented yet"); //TODO: Shamya do this
+        return new SequentialCommandGroup(
+                ArmCommands.getSetPrepareTargetStateCommand(ArmConstants.ArmState.EJECT).until(RobotContainer.ARM::atTargetAngle),
+                ArmCommands.getSetTargetStateCommand(ArmConstants.ArmState.EJECT)
+
+        );
     }
 }
