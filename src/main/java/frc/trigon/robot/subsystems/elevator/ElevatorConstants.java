@@ -119,10 +119,10 @@ public class ElevatorConstants {
         config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
 
         config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-        config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0;
+        config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = REVERSE_LIMIT_SENSOR_RESET_POSITION_ROTATIONS;
 
         config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-        config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = REVERSE_LIMIT_SENSOR_RESET_POSITION_ROTATIONS;
+        config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 0;
 
         config.MotionMagic.MotionMagicCruiseVelocity = DEFAULT_MAXIMUM_VELOCITY;
         config.MotionMagic.MotionMagicAcceleration = DEFAULT_MAXIMUM_ACCELERATION;
