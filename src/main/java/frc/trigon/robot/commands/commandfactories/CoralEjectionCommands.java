@@ -31,7 +31,6 @@ public class CoralEjectionCommands {
         return new SequentialCommandGroup(
                 ArmCommands.getSetPrepareTargetStateCommand(ArmConstants.ArmState.EJECT).until(RobotContainer.ARM::atTargetAngle),
                 ArmCommands.getSetTargetStateCommand(ArmConstants.ArmState.EJECT)
-
         );
     }
 }
