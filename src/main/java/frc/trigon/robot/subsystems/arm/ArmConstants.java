@@ -120,6 +120,7 @@ public class ArmConstants {
             CommandScheduler.getInstance().getActiveButtonLoop(),
             DISTANCE_SENSOR::getBinaryValue
     ).debounce(COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS);
+    static final Rotation2d FULL_ROTATION = Rotation2d.fromDegrees(360);
 
     static {
         configureArmMasterMotor();
@@ -229,6 +230,7 @@ public class ArmConstants {
         REST(Rotation2d.fromDegrees(0), 0),
         REST_FOR_CLIMB(Rotation2d.fromDegrees(0), 0),
         HOLD_ALGAE(Rotation2d.fromDegrees(90), -4),
+        EJECT(Rotation2d.fromDegrees(60), 4),
         PREPARE_SCORE_L1(Rotation2d.fromDegrees(80), 0),
         SCORE_L1(Rotation2d.fromDegrees(75), 4),
         PREPARE_SCORE_L2(Rotation2d.fromDegrees(95), 0),
