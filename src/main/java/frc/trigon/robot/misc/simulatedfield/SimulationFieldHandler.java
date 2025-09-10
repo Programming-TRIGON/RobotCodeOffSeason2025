@@ -117,7 +117,7 @@ public class SimulationFieldHandler {
         final SimulatedGamePiece heldCoral = CORAL_ON_FIELD.get(HELD_CORAL_INDEX);
 
         if (isCollectingCoral()) {
-            heldCoral.release(RobotContainer.ARM.calculateLinearEndEffectorVelocity(), RobotContainer.ARM.calculateLinearArmVelocity(), RobotContainer.SWERVE.getFieldRelativeVelocity3d()); //TODO add arm velocity @Shmaya
+            heldCoral.release(RobotContainer.ARM.calculateLinearEndEffectorVelocity(), RobotContainer.ARM.calculateLinearArmVelocity(), RobotContainer.SWERVE.getFieldRelativeVelocity3d());
             HELD_CORAL_INDEX = null;
         }
     }
@@ -127,7 +127,7 @@ public class SimulationFieldHandler {
     }
 
     private static boolean isEjectingAlgae() {
-        return RobotContainer.ARM.atState(ArmConstants.ArmState.REST);//TODO: switch with eject state once its merged into main
+        return RobotContainer.ARM.atState(ArmConstants.ArmState.EJECT);
     }
 
     /**
