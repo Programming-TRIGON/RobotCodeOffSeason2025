@@ -4,10 +4,7 @@ import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.signals.*;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.event.BooleanEvent;
@@ -110,8 +107,13 @@ public class ArmConstants {
     );
 
     static final Pose3d ARM_VISUALIZATION_ORIGIN_POINT = new Pose3d(
-            new Translation3d(0, -0.0954, 0.35),
+            new Translation3d(0, -0.0954, 0.3573),
             new Rotation3d(0, 0, 0)
+    );
+
+    static final Transform3d ARM_TO_HELD_ALGAE = new Transform3d(
+            new Translation3d(0, 0, -0.5855),
+            new Rotation3d(0, edu.wpi.first.math.util.Units.degreesToRadians(0), 0)
     );
 
     static final Rotation2d ANGLE_TOLERANCE = Rotation2d.fromDegrees(0);

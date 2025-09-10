@@ -3,6 +3,7 @@ package frc.trigon.robot.misc.simulatedfield;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import frc.trigon.robot.RobotContainer;
+import frc.trigon.robot.subsystems.arm.ArmConstants;
 import frc.trigon.robot.subsystems.intake.IntakeConstants;
 import frc.trigon.robot.subsystems.transporter.TransporterConstants;
 import org.littletonrobotics.junction.Logger;
@@ -69,14 +70,14 @@ public class SimulationFieldHandler {
     private static void updateCollection() {
         final Pose3d robotPose = new Pose3d(RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose());
         final Pose3d
-                coralCollectionPose = robotPose.plus(toTransform(IntakeConstants.CORAL_COLLECTION_POSE));
-//                algaeCollectionPose = robotPose.plus(toTransform(RobotContainer.ARM.calculateAlgaeCollectionPose()));
+                coralCollectionPose = robotPose.plus(toTransform(IntakeConstants.CORAL_COLLECTION_POSE)),
+                algaeCollectionPose = robotPose.plus(toTransform(RobotContainer.ARM.calculateAlgaeCollectionPose()));
 
         if (isCollectingCoral() && HELD_CORAL_INDEX == null)
             HELD_CORAL_INDEX = getIndexOfCollectedGamePiece(coralCollectionPose, CORAL_ON_FIELD, SimulatedGamePieceConstants.CORAL_INTAKE_TOLERANCE_METERS);
 
-//        if (isCollectingAlgae() && HELD_ALGAE_INDEX == null)
-//            HELD_ALGAE_INDEX = getIndexOfCollectedGamePiece(algaeCollectionPose, ALGAE_ON_FIELD, SimulatedGamePieceConstants.ALGAE_INTAKE_TOLERANCE_METERS);
+        if (isCollectingAlgae() && HELD_ALGAE_INDEX == null)
+            HELD_ALGAE_INDEX = getIndexOfCollectedGamePiece(algaeCollectionPose, ALGAE_ON_FIELD, SimulatedGamePieceConstants.ALGAE_INTAKE_TOLERANCE_METERS);
     }
 
     /**
@@ -98,7 +99,7 @@ public class SimulationFieldHandler {
     }
 
     private static boolean isCollectingAlgae() {
-        return false;//TODO: Implement
+        return RobotContainer.ARM.atState(ArmConstants.ArmState.COLLECT_ALGAE_L2) || RobotContainer.ARM.atState(ArmConstants.ArmState.COLLECT_ALGAE_L3);
     }
 
     private static boolean isCollectingGamePieceFromFeeder() {
@@ -109,11 +110,11 @@ public class SimulationFieldHandler {
         if (HELD_CORAL_INDEX != null)
             updateCoralEjection();
 
-//        if (HELD_ALGAE_INDEX != null && isEjectingAlgae()) {
-//            final SimulatedGamePiece heldAlgae = ALGAE_ON_FIELD.get(HELD_ALGAE_INDEX);
-//            ejectAlgae(heldAlgae);
-//            HELD_ALGAE_INDEX = null;
-//        }
+        if (HELD_ALGAE_INDEX != null && isEjectingAlgae()) {
+            final SimulatedGamePiece heldAlgae = ALGAE_ON_FIELD.get(HELD_ALGAE_INDEX);
+            heldAlgae.release(RobotContainer.ARM.calculateLinearEndEffectorVelocity(), RobotContainer.SWERVE.getFieldRelativeVelocity3d());
+            HELD_ALGAE_INDEX = null;
+        }
     }
 
     private static void updateCoralEjection() {
@@ -130,7 +131,7 @@ public class SimulationFieldHandler {
     }
 
     private static boolean isEjectingAlgae() {
-        return false;//TODO: Implement
+        return RobotContainer.ARM.atState(ArmConstants.ArmState.REST);//TODO: switch with eject state once its merged into main
     }
 
     /**
@@ -138,10 +139,10 @@ public class SimulationFieldHandler {
      */
     private static void updateHeldGamePiecePoses() {
         final Pose3d
-                robotRelativeHeldCoralPosition = TransporterConstants.COLLECTED_CORAL_POSE;
-//                robotRelativeHeldAlgaePosition = RobotContainer.ARM.calculateAlgaeCollectionPose();
+                robotRelativeHeldCoralPosition = TransporterConstants.COLLECTED_CORAL_POSE,
+                robotRelativeHeldAlgaePosition = RobotContainer.ARM.calculateAlgaeCollectionPose();
         updateHeldGamePiecePose(robotRelativeHeldCoralPosition, CORAL_ON_FIELD, HELD_CORAL_INDEX);
-//        updateHeldGamePiecePose(robotRelativeHeldAlgaePosition, ALGAE_ON_FIELD, HELD_ALGAE_INDEX);
+        updateHeldGamePiecePose(robotRelativeHeldAlgaePosition, ALGAE_ON_FIELD, HELD_ALGAE_INDEX);
     }
 
     private static void updateHeldGamePiecePose(Pose3d robotRelativeHeldGamePiecePose, ArrayList<SimulatedGamePiece> gamePieceList, Integer heldGamePieceIndex) {
