@@ -25,6 +25,7 @@ public class Arm extends MotorSubsystem {
             ArmConstants.ARM_DEFAULT_MAXIMUM_ACCELERATION,
             ArmConstants.ARM_DEFAULT_MAXIMUM_JERK
     ).withEnableFOC(ArmConstants.FOC_ENABLED);
+    public boolean isStateReversed = false;
     private ArmConstants.ArmState targetState = ArmConstants.ArmState.REST;
 
     public Arm() {
@@ -92,7 +93,7 @@ public class Arm extends MotorSubsystem {
 
     public boolean atTargetAngle(boolean isStateReversed) {
         if (isStateReversed) {
-            final double currentToTargetStateDifferenceDegrees = Math.abs(360 - targetState.targetAngle.minus(getAngle()).getDegrees());
+            final double currentToTargetStateDifferenceDegrees = Math.abs(Rotation2d.fromDegrees(360).minus(targetState.targetAngle).minus(getAngle()).getDegrees());
             return currentToTargetStateDifferenceDegrees < ArmConstants.ANGLE_TOLERANCE.getDegrees();
         }
         return atTargetAngle();
@@ -108,10 +109,11 @@ public class Arm extends MotorSubsystem {
     }
 
     void setTargetState(ArmConstants.ArmState targetState, boolean isStateReversed) {
+        this.isStateReversed = isStateReversed;
         if (isStateReversed) {
             this.targetState = targetState;
             setTargetState(
-                    Rotation2d.fromDegrees(360 - targetState.targetAngle.getDegrees())
+                    Rotation2d.fromDegrees(360).minus(targetState.targetAngle)
                     , targetState.targetEndEffectorVoltage
             );
             return;
@@ -120,6 +122,7 @@ public class Arm extends MotorSubsystem {
     }
 
     void setTargetState(ArmConstants.ArmState targetState) {
+        this.isStateReversed = false;
         this.targetState = targetState;
         setTargetState(
                 targetState.targetAngle,
@@ -133,13 +136,16 @@ public class Arm extends MotorSubsystem {
     }
 
     void prepareForState(ArmConstants.ArmState targetState, boolean isStateReversed) {
-        if (isStateReversed)
+        this.isStateReversed = isStateReversed;
+        if (isStateReversed) {
             this.targetState = targetState;
-        setTargetAngle(Rotation2d.fromDegrees(360 - targetState.targetAngle.getDegrees()));
+            setTargetAngle(Rotation2d.fromDegrees(360).minus(targetState.targetAngle));
+        }
         prepareForState(targetState);
     }
 
     void prepareForState(ArmConstants.ArmState targetState) {
+        this.isStateReversed = false;
         this.targetState = targetState;
         setTargetAngle(targetState.targetAngle);
     }
