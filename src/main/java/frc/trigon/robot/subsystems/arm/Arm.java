@@ -108,26 +108,26 @@ public class Arm extends MotorSubsystem {
         return ArmConstants.COLLECTION_DETECTION_BOOLEAN_EVENT.getAsBoolean();
     }
 
+    void setTargetState(ArmConstants.ArmState targetState) {
+        this.isStateReversed = false;
+        this.targetState = targetState;
+        setTargetState(targetState, false);
+    }
+
     void setTargetState(ArmConstants.ArmState targetState, boolean isStateReversed) {
         this.isStateReversed = isStateReversed;
+        this.targetState = targetState;
+
         if (isStateReversed) {
-            this.targetState = targetState;
             setTargetState(
                     ArmConstants.FULL_ROTATION.minus(targetState.targetAngle)
                     , targetState.targetEndEffectorVoltage
             );
             return;
         }
-        setTargetState(targetState);
-    }
-
-    void setTargetState(ArmConstants.ArmState targetState) {
-        this.isStateReversed = false;
-        this.targetState = targetState;
         setTargetState(
                 targetState.targetAngle,
-                targetState.targetEndEffectorVoltage
-        );
+                targetState.targetEndEffectorVoltage);
     }
 
     void setTargetState(Rotation2d targetAngle, double targetVoltage) {
@@ -135,18 +135,18 @@ public class Arm extends MotorSubsystem {
         setTargetVoltage(targetVoltage);
     }
 
-    void prepareForState(ArmConstants.ArmState targetState, boolean isStateReversed) {
-        if (isStateReversed) {
-            this.isStateReversed = isStateReversed;
-            this.targetState = targetState;
-            setTargetAngle(ArmConstants.FULL_ROTATION.minus(targetState.targetAngle));
-        }
-        prepareForState(targetState);
+    void prepareForState(ArmConstants.ArmState targetState) {
+        prepareForState(targetState, false);
     }
 
-    void prepareForState(ArmConstants.ArmState targetState) {
-        this.isStateReversed = false;
+    void prepareForState(ArmConstants.ArmState targetState, boolean isStateReversed) {
+        this.isStateReversed = isStateReversed;
         this.targetState = targetState;
+        
+        if (isStateReversed) {
+            setTargetAngle(ArmConstants.FULL_ROTATION.minus(targetState.targetAngle));
+            return;
+        }
         setTargetAngle(targetState.targetAngle);
     }
 
