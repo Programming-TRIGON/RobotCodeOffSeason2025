@@ -36,7 +36,7 @@ public class ElevatorConstants {
     private static final SimpleSensor REVERSE_LIMIT_SENSOR = SimpleSensor.createDigitalSensor(REVERSE_LIMIT_SENSOR_CHANNEL, REVERSE_LIMIT_SENSOR_NAME);
 
     private static final double GEAR_RATIO = 4;
-    private static final double REVERSE_LIMIT_SENSOR_RESET_POSITION_ROTATIONS = 0;
+    private static final double REVERSE_LIMIT_SENSOR_THRESHOLD_POSITION_ROTATIONS = 0;
     private static final boolean SHOULD_FOLLOWER_OPPOSE_MASTER = false;
     static final double
             DEFAULT_MAXIMUM_VELOCITY = RobotHardwareStats.isSimulation() ? 25.178 : 20,
@@ -66,11 +66,11 @@ public class ElevatorConstants {
             Units.Second.of(1000)
     );
 
-    public static final Pose3d FIRST_STAGE_VISUALIZATION_ORIGIN_POINT = new Pose3d(
+    public static final Pose3d ELEVATOR_FIRST_STAGE_VISUALIZATION_ORIGIN_POINT = new Pose3d(
             new Translation3d(0, -0.17, 0.0504),
             new Rotation3d(0, 0, 0)
     );
-    static final Pose3d SECOND_STAGE_VISUALIZATION_ORIGIN_POINT = new Pose3d(
+    static final Pose3d ELEVATOR_SECOND_STAGE_VISUALIZATION_ORIGIN_POINT = new Pose3d(
             new Translation3d(0, -0.17 ,0.0814),
             new Rotation3d(0, 0, 0)
     );
@@ -118,7 +118,7 @@ public class ElevatorConstants {
         config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
 
         config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-        config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = REVERSE_LIMIT_SENSOR_RESET_POSITION_ROTATIONS;
+        config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = REVERSE_LIMIT_SENSOR_THRESHOLD_POSITION_ROTATIONS;
 
         config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
         config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 6.8;
@@ -154,7 +154,7 @@ public class ElevatorConstants {
 
     private static void configureReverseLimitSensor() {
         REVERSE_LIMIT_SENSOR.setSimulationSupplier(REVERSE_LIMIT_SENSOR_SIMULATION_SUPPLIER);
-        REVERSE_LIMIT_SENSOR_BOOLEAN_EVENT.ifHigh(() -> MASTER_MOTOR.setPosition(REVERSE_LIMIT_SENSOR_RESET_POSITION_ROTATIONS));
+        REVERSE_LIMIT_SENSOR_BOOLEAN_EVENT.ifHigh(() -> MASTER_MOTOR.setPosition(REVERSE_LIMIT_SENSOR_THRESHOLD_POSITION_ROTATIONS));
     }
 
     public enum ElevatorState {

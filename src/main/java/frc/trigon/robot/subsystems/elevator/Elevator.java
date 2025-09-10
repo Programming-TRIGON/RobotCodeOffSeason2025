@@ -86,20 +86,20 @@ public class Elevator extends MotorSubsystem {
     }
 
     private Pose3d getFirstStageComponentPose() {
-        return calculateComponentPose(ElevatorConstants.FIRST_STAGE_VISUALIZATION_ORIGIN_POINT, getFirstPoseHeight());
+        return calculateComponentPose(ElevatorConstants.ELEVATOR_FIRST_STAGE_VISUALIZATION_ORIGIN_POINT, getFirstStageComponentPoseHeight());
     }
 
     private Pose3d getSecondStageComponentPose() {
-        return calculateComponentPose(ElevatorConstants.SECOND_STAGE_VISUALIZATION_ORIGIN_POINT, getPositionMeters());
+        return calculateComponentPose(ElevatorConstants.ELEVATOR_SECOND_STAGE_VISUALIZATION_ORIGIN_POINT, getPositionMeters());
     }
 
-    private double getFirstPoseHeight() {
-        if (secondComponentLimitReached())
+    private double getFirstStageComponentPoseHeight() {
+        if (isSecondComponentLimitReached())
             return getPositionMeters() - ElevatorConstants.SECOND_ELEVATOR_COMPONENT_EXTENDED_LENGTH_METERS;
         return 0;
     }
 
-    private boolean secondComponentLimitReached() {
+    private boolean isSecondComponentLimitReached() {
         return getPositionMeters() > ElevatorConstants.SECOND_ELEVATOR_COMPONENT_EXTENDED_LENGTH_METERS;
     }
 
