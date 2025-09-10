@@ -81,7 +81,9 @@ public class Arm extends MotorSubsystem {
     }
 
     public boolean atState(ArmConstants.ArmState targetState, boolean isStateReversed) {
-        return this.targetState == targetState && atTargetAngle(isStateReversed);
+        if (isStateReversed)
+            return this.targetState == targetState && atTargetAngle(isStateReversed);
+        return atState(targetState);
     }
 
     public boolean atState(ArmConstants.ArmState targetState) {
@@ -89,8 +91,11 @@ public class Arm extends MotorSubsystem {
     }
 
     public boolean atTargetAngle(boolean isStateReversed) {
-        final double currentToTargetStateDifferenceDegrees = Math.abs(360 - targetState.targetAngle.minus(getAngle()).getDegrees());
-        return currentToTargetStateDifferenceDegrees < ArmConstants.ANGLE_TOLERANCE.getDegrees();
+        if (isStateReversed) {
+            final double currentToTargetStateDifferenceDegrees = Math.abs(360 - targetState.targetAngle.minus(getAngle()).getDegrees());
+            return currentToTargetStateDifferenceDegrees < ArmConstants.ANGLE_TOLERANCE.getDegrees();
+        }
+        return atTargetAngle();
     }
 
     public boolean atTargetAngle() {
