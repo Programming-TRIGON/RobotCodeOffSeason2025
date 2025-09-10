@@ -29,7 +29,7 @@ public class CoralEjectionCommands {
 
     private static Command getEjectCoralFromArmCommand() {
         return new SequentialCommandGroup(
-                ArmCommands.getPrepareStateCommand(ArmConstants.ArmState.EJECT).until(RobotContainer.ARM::atTargetAngle),
+                ArmCommands.getPrepareForStateCommand(ArmConstants.ArmState.EJECT).until(RobotContainer.ARM::atTargetAngle),
                 ArmCommands.getSetTargetStateCommand(ArmConstants.ArmState.EJECT)
         );
     }
