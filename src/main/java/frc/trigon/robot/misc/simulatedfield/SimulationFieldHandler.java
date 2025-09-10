@@ -102,10 +102,6 @@ public class SimulationFieldHandler {
         return RobotContainer.ARM.atState(ArmConstants.ArmState.COLLECT_ALGAE_L2) || RobotContainer.ARM.atState(ArmConstants.ArmState.COLLECT_ALGAE_L3);
     }
 
-    private static boolean isCollectingGamePieceFromFeeder() {
-        return false;//TODO: Implement
-    }
-
     private static void updateEjection() {
         if (HELD_CORAL_INDEX != null)
             updateCoralEjection();
