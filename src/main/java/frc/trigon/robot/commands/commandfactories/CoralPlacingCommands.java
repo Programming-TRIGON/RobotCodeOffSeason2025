@@ -7,19 +7,16 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.trigon.robot.RobotContainer;
 import frc.trigon.robot.commands.commandclasses.WaitUntilChangeCommand;
-import frc.trigon.robot.constants.AutonomousConstants;
 import frc.trigon.robot.constants.FieldConstants;
 import frc.trigon.robot.constants.OperatorConstants;
 import frc.trigon.robot.misc.ReefChooser;
-import frc.trigon.robot.subsystems.intake.IntakeCommands;
-import frc.trigon.robot.subsystems.intake.CoralIntakeConstants;
+import frc.trigon.robot.subsystems.arm.ArmCommands;
+import frc.trigon.robot.subsystems.arm.ArmConstants;
 import frc.trigon.robot.subsystems.elevator.ElevatorCommands;
 import frc.trigon.robot.subsystems.elevator.ElevatorConstants;
-import frc.trigon.robot.subsystems.gripper.GripperCommands;
-import frc.trigon.robot.subsystems.gripper.GripperConstants;
 import frc.trigon.robot.subsystems.swerve.SwerveCommands;
-import org.trigon.utilities.flippable.FlippablePose2d;
-import org.trigon.utilities.flippable.FlippableTranslation2d;
+import lib.utilities.flippable.FlippablePose2d;
+import lib.utilities.flippable.FlippableTranslation2d;
 
 public class CoralPlacingCommands {
     public static boolean SHOULD_SCORE_AUTONOMOUSLY = true;
@@ -27,9 +24,8 @@ public class CoralPlacingCommands {
 
     public static Command getScoreInReefCommand(boolean shouldScoreRight) {
         return new ConditionalCommand(
-                getScoreInReefFromCoralIntakeCommand().asProxy(),
                 getScoreInReefFromGripperCommand(shouldScoreRight).asProxy(),
-                () -> REEF_CHOOSER.getScoringLevel() == ScoringLevel.L1_CORAL_INTAKE
+                () -> REEF_CHOOSER.getScoringLevel() == ScoringLevel.L1
         );
     }
 
@@ -37,17 +33,8 @@ public class CoralPlacingCommands {
         return GeneralCommands.getContinuousConditionalCommand(
                 getAutonomouslyScoreInReefFromGripperCommand(shouldScoreRight).asProxy(),
                 getManuallyScoreInReefFromGripperCommand().asProxy(),
-                () -> SHOULD_SCORE_AUTONOMOUSLY && REEF_CHOOSER.getScoringLevel() != ScoringLevel.L1_GRIPPER
-        ).until(() -> REEF_CHOOSER.getScoringLevel() == ScoringLevel.L1_CORAL_INTAKE);
-    }
-
-    private static Command getScoreInReefFromCoralIntakeCommand() {
-        return new SequentialCommandGroup(
-                CoralCollectionCommands.getUnloadCoralCommand().onlyIf(RobotContainer.GRIPPER::hasGamePiece),
-                CoralIntakeCommands.getPrepareForStateCommand(CoralIntakeConstants.CoralIntakeState.SCORE_L1).until(CoralPlacingCommands::canContinueScoringFromCoralIntake),
-                CoralIntakeCommands.getSetTargetStateCommand(CoralIntakeConstants.CoralIntakeState.SCORE_L1_BOOST).withTimeout(0.05),
-                CoralIntakeCommands.getSetTargetStateCommand(CoralIntakeConstants.CoralIntakeState.SCORE_L1)
-        ).until(() -> REEF_CHOOSER.getScoringLevel() != ScoringLevel.L1_CORAL_INTAKE);
+                () -> SHOULD_SCORE_AUTONOMOUSLY && REEF_CHOOSER.getScoringLevel() != ScoringLevel.L1
+        ).until(() -> REEF_CHOOSER.getScoringLevel() == ScoringLevel.L1);
     }
 
     private static Command getManuallyScoreInReefFromGripperCommand() {
@@ -73,8 +60,8 @@ public class CoralPlacingCommands {
 
     private static Command getGripperScoringSequenceCommand() {
         return new SequentialCommandGroup(
-                GripperCommands.getSetTargetStateCommand(GripperConstants.GripperState.OPEN_FOR_NOT_HITTING_REEF)
-                        .unless(() -> RobotContainer.ELEVATOR.atState(REEF_CHOOSER.getElevatorState()) || REEF_CHOOSER.getScoringLevel() == ScoringLevel.L2 || REEF_CHOOSER.getScoringLevel() == ScoringLevel.L1_GRIPPER)
+                ArmCommands.getSetTargetStateCommand()
+                        .unless(() -> RobotContainer.ELEVATOR.atState(REEF_CHOOSER.getElevatorState()) || REEF_CHOOSER.getScoringLevel() == ScoringLevel.L2 || REEF_CHOOSER.getScoringLevel() == ScoringLevel.L1)
                         .until(RobotContainer.ELEVATOR::isCloseEnoughToOpenGripper),
                 scoreFromGripperReefChooserCommand()
         );
@@ -83,7 +70,7 @@ public class CoralPlacingCommands {
     private static Command getAutoGripperScoringSequenceCommand(boolean shouldScoreRight) {
         return new SequentialCommandGroup(
                 GripperCommands.getSetTargetStateCommand(GripperConstants.GripperState.OPEN_FOR_NOT_HITTING_REEF)
-                        .unless(() -> RobotContainer.ELEVATOR.atState(REEF_CHOOSER.getElevatorState()) || REEF_CHOOSER.getScoringLevel() == ScoringLevel.L2 || REEF_CHOOSER.getScoringLevel() == ScoringLevel.L1_GRIPPER)
+                        .unless(() -> RobotContainer.ELEVATOR.atState(REEF_CHOOSER.getElevatorState()) || REEF_CHOOSER.getScoringLevel() == ScoringLevel.L2 || REEF_CHOOSER.getScoringLevel() == ScoringLevel.L1)
                         .until(RobotContainer.ELEVATOR::isCloseEnoughToOpenGripper),
                 new ConditionalCommand(
                         scoreFromGripperInL4Command(shouldScoreRight),
@@ -174,7 +161,7 @@ public class CoralPlacingCommands {
 
     private static boolean canAutonomouslyReleaseFromGripper(boolean shouldScoreRight) {
         return RobotContainer.ELEVATOR.atTargetState() &&
-                RobotContainer.GRIPPER.atTargetAngle() &&
+                RobotContainer.ARM.atTargetAngle() &&
                 RobotContainer.SWERVE.atPose(calculateClosestScoringPose(shouldScoreRight));
     }
 
@@ -185,14 +172,13 @@ public class CoralPlacingCommands {
      * The x and y transform are used to calculate the target placing position from the middle of the reef.
      */
     public enum ScoringLevel {
-        L1_CORAL_INTAKE(Double.NaN, Double.NaN, null),
-        L1_GRIPPER(Double.NaN, Double.NaN, null),
+        L1(Double.NaN, Double.NaN, null),
         L2(FieldConstants.REEF_CENTER_TO_TARGET_SCORING_POSITION_X_TRANSFORM_METERS, FieldConstants.REEF_CENTER_TO_TARGET_SCORING_POSITION_Y_TRANSFORM_METERS, Rotation2d.fromDegrees(0)),
         L3(L2.xTransformMeters, L2.positiveYTransformMeters, Rotation2d.fromDegrees(0)),
         L4(L2.xTransformMeters, L2.positiveYTransformMeters, Rotation2d.fromDegrees(0));
 
         public final ElevatorConstants.ElevatorState elevatorState;
-        public final GripperConstants.GripperState gripperState;
+        public final ArmConstants.ArmState armState;
         public final int level = calculateLevel();
         final double xTransformMeters, positiveYTransformMeters;
         final Rotation2d rotationTransform;
@@ -211,7 +197,7 @@ public class CoralPlacingCommands {
             this.positiveYTransformMeters = positiveYTransformMeters;
             this.rotationTransform = rotationTransform;
             this.elevatorState = determineElevatorState();
-            this.gripperState = determineGripperState();
+            this.armState = determineArmState();
         }
 
         /**
@@ -244,12 +230,13 @@ public class CoralPlacingCommands {
             };
         }
 
-        private GripperConstants.GripperState determineGripperState() {
+        private ArmConstants.ArmState determineArmState() {
             return switch (ordinal()) {
                 case 0 -> null;
-                case 1 -> GripperConstants.GripperState.SCORE_L1;
-                case 2, 3 -> GripperConstants.GripperState.SCORE_L3_OR_L2;
-                case 4 -> GripperConstants.GripperState.SCORE_L4_CLOSE;
+                case 1 -> ArmConstants.ArmState.SCORE_L1;
+                case 2 -> ArmConstants.ArmState.SCORE_L2;
+                case 3 -> ArmConstants.ArmState.SCORE_L3;
+                case 4 -> ArmConstants.ArmState.SCORE_L4;
                 default -> throw new IllegalStateException("Unexpected value: " + ordinal());
             };
         }
