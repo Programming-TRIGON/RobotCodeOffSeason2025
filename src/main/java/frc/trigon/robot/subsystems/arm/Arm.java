@@ -85,7 +85,8 @@ public class Arm extends MotorSubsystem {
     public Pose3d calculateAlgaeCollectionPose() {
         return calculateVisualizationPose()
                 .transformBy(ArmConstants.ARM_TO_HELD_ALGAE);
-      
+    }
+
     public boolean atState(ArmConstants.ArmState targetState, boolean isStateReversed) {
         if (isStateReversed)
             return this.targetState == targetState && atTargetAngle(isStateReversed);
@@ -129,6 +130,7 @@ public class Arm extends MotorSubsystem {
                 Math.sin(RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().getRotation().getRadians()) * velocityRotationsPerSecond,
                 0
         );
+    }
 
     void setTargetState(ArmConstants.ArmState targetState) {
         this.isStateReversed = false;
@@ -164,7 +166,7 @@ public class Arm extends MotorSubsystem {
     void prepareForState(ArmConstants.ArmState targetState, boolean isStateReversed) {
         this.isStateReversed = isStateReversed;
         this.targetState = targetState;
-        
+
         if (isStateReversed) {
             setTargetAngle(ArmConstants.FULL_ROTATION.minus(targetState.targetAngle));
             return;
