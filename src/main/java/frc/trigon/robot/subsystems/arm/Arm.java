@@ -142,7 +142,7 @@ public class Arm extends MotorSubsystem {
 
     private Pose3d calculateVisualizationPose() {
         final Transform3d armTransform = new Transform3d(
-                new Translation3d(),
+                new Translation3d(0, 0, RobotContainer.ELEVATOR.getPositionMeters()),
                 new Rotation3d(0, getAngle().getRadians(), 0)
         );
         return ArmConstants.ARM_VISUALIZATION_ORIGIN_POINT.transformBy(armTransform);

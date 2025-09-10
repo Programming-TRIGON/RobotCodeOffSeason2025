@@ -117,7 +117,7 @@ public class Elevator extends MotorSubsystem {
         positionRequest.Jerk = positionRequest.Acceleration * 10;
     }
 
-    private double getPositionMeters() {
+    public double getPositionMeters() {
         return rotationsToMeters(getPositionRotations());
     }
 
