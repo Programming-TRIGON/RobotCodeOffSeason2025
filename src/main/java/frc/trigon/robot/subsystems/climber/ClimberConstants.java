@@ -48,7 +48,7 @@ public class ClimberConstants {
             GROUNDED_PID_SLOT = 0,
             ON_CAGE_PID_SLOT = 1;
     private static final double GEAR_RATIO = 37.5;
-    private static final double REVERSE_LIMIT_SENSOR_RESET_POSITION = 0;
+    private static final double REVERSE_LIMIT_RESET_POSITION_ROTATIONS = 0;
     private static final double FORWARD_SOFT_LIMIT_POSITION_ROTATIONS = 3;
     static final boolean FOC_ENABLED = true;
 
@@ -129,7 +129,7 @@ public class ClimberConstants {
         config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = FORWARD_SOFT_LIMIT_POSITION_ROTATIONS;
 
         config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-        config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = REVERSE_LIMIT_SENSOR_RESET_POSITION;
+        config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = REVERSE_LIMIT_RESET_POSITION_ROTATIONS;
 
         config.Feedback.SensorToMechanismRatio = GEAR_RATIO;
 
@@ -147,7 +147,7 @@ public class ClimberConstants {
 
     private static void configureReverseLimitSensor() {
         REVERSE_LIMIT_SENSOR.setSimulationSupplier(REVERSE_LIMIT_SENSORS_SIMULATION_SUPPLIER);
-        REVERSE_LIMIT_SENSOR_BOOLEAN_EVENT.ifHigh(() -> MOTOR.setPosition(REVERSE_LIMIT_SENSOR_RESET_POSITION));
+        REVERSE_LIMIT_SENSOR_BOOLEAN_EVENT.ifHigh(() -> MOTOR.setPosition(REVERSE_LIMIT_RESET_POSITION_ROTATIONS));
     }
 
     public enum ClimberState {
