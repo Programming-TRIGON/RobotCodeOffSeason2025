@@ -80,8 +80,17 @@ public class Arm extends MotorSubsystem {
         armMasterMotor.setControl(voltageRequest.withOutput(targetVoltage));
     }
 
+    public boolean atState(ArmConstants.ArmState targetState, boolean isStateReversed) {
+        return this.targetState == targetState && atTargetAngle(isStateReversed);
+    }
+
     public boolean atState(ArmConstants.ArmState targetState) {
         return this.targetState == targetState && atTargetAngle();
+    }
+
+    public boolean atTargetAngle(boolean isStateReversed) {
+        final double currentToTargetStateDifferenceDegrees = Math.abs(360 - targetState.targetAngle.minus(getAngle()).getDegrees());
+        return currentToTargetStateDifferenceDegrees < ArmConstants.ANGLE_TOLERANCE.getDegrees();
     }
 
     public boolean atTargetAngle() {
@@ -95,6 +104,7 @@ public class Arm extends MotorSubsystem {
 
     void setTargetState(ArmConstants.ArmState targetState, boolean isStateReversed) {
         if (isStateReversed) {
+            this.targetState = targetState;
             setTargetState(
                     Rotation2d.fromDegrees(360 - targetState.targetAngle.getDegrees())
                     , targetState.targetEndEffectorVoltage
@@ -117,13 +127,14 @@ public class Arm extends MotorSubsystem {
         setTargetVoltage(targetVoltage);
     }
 
-    void setPrepareTargetState(ArmConstants.ArmState targetState, boolean isStateReversed) {
+    void prepareForState(ArmConstants.ArmState targetState, boolean isStateReversed) {
         if (isStateReversed)
-            setTargetAngle(Rotation2d.fromDegrees(360 - targetState.targetAngle.getDegrees()));
-        setPrepareTargetState(targetState);
+            this.targetState = targetState;
+        setTargetAngle(Rotation2d.fromDegrees(360 - targetState.targetAngle.getDegrees()));
+        prepareForState(targetState);
     }
 
-    void setPrepareTargetState(ArmConstants.ArmState targetState) {
+    void prepareForState(ArmConstants.ArmState targetState) {
         this.targetState = targetState;
         setTargetAngle(targetState.targetAngle);
     }
