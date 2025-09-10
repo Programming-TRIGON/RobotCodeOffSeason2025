@@ -26,6 +26,7 @@ public class Arm extends MotorSubsystem {
             ArmConstants.ARM_DEFAULT_MAXIMUM_ACCELERATION,
             ArmConstants.ARM_DEFAULT_MAXIMUM_JERK
     ).withEnableFOC(ArmConstants.FOC_ENABLED);
+    public boolean isStateReversed = false;
     private ArmConstants.ArmState targetState = ArmConstants.ArmState.REST;
 
     public Arm() {
@@ -84,10 +85,23 @@ public class Arm extends MotorSubsystem {
     public Pose3d calculateAlgaeCollectionPose() {
         return calculateVisualizationPose()
                 .transformBy(ArmConstants.ARM_TO_HELD_ALGAE);
+      
+    public boolean atState(ArmConstants.ArmState targetState, boolean isStateReversed) {
+        if (isStateReversed)
+            return this.targetState == targetState && atTargetAngle(isStateReversed);
+        return atState(targetState);
     }
 
     public boolean atState(ArmConstants.ArmState targetState) {
         return this.targetState == targetState && atTargetAngle();
+    }
+
+    public boolean atTargetAngle(boolean isStateReversed) {
+        if (isStateReversed) {
+            final double currentToTargetStateDifferenceDegrees = Math.abs(ArmConstants.FULL_ROTATION.minus(targetState.targetAngle).minus(getAngle()).getDegrees());
+            return currentToTargetStateDifferenceDegrees < ArmConstants.ANGLE_TOLERANCE.getDegrees();
+        }
+        return atTargetAngle();
     }
 
     public boolean atTargetAngle() {
@@ -115,30 +129,47 @@ public class Arm extends MotorSubsystem {
                 Math.sin(RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().getRotation().getRadians()) * velocityRotationsPerSecond,
                 0
         );
+
+    void setTargetState(ArmConstants.ArmState targetState) {
+        this.isStateReversed = false;
+        this.targetState = targetState;
+        setTargetState(targetState, false);
     }
 
     void setTargetState(ArmConstants.ArmState targetState, boolean isStateReversed) {
+        this.isStateReversed = isStateReversed;
+        this.targetState = targetState;
+
         if (isStateReversed) {
             setTargetState(
-                    Rotation2d.fromDegrees(360 - targetState.targetAngle.getDegrees())
+                    ArmConstants.FULL_ROTATION.minus(targetState.targetAngle)
                     , targetState.targetEndEffectorVoltage
             );
             return;
         }
-        setTargetState(targetState);
-    }
-
-    void setTargetState(ArmConstants.ArmState targetState) {
-        this.targetState = targetState;
         setTargetState(
                 targetState.targetAngle,
-                targetState.targetEndEffectorVoltage
-        );
+                targetState.targetEndEffectorVoltage);
     }
 
     void setTargetState(Rotation2d targetAngle, double targetVoltage) {
         setTargetAngle(targetAngle);
         setTargetVoltage(targetVoltage);
+    }
+
+    void prepareForState(ArmConstants.ArmState targetState) {
+        prepareForState(targetState, false);
+    }
+
+    void prepareForState(ArmConstants.ArmState targetState, boolean isStateReversed) {
+        this.isStateReversed = isStateReversed;
+        this.targetState = targetState;
+        
+        if (isStateReversed) {
+            setTargetAngle(ArmConstants.FULL_ROTATION.minus(targetState.targetAngle));
+            return;
+        }
+        setTargetAngle(targetState.targetAngle);
     }
 
     private Rotation2d getAngle() {
