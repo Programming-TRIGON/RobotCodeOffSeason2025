@@ -94,12 +94,12 @@ public class Elevator extends MotorSubsystem {
     }
 
     private double getFirstStageComponentPoseHeight() {
-        if (isSecondComponentLimitReached())
+        if (isSecondStageComponentLimitReached())
             return getPositionMeters() - ElevatorConstants.SECOND_ELEVATOR_COMPONENT_EXTENDED_LENGTH_METERS;
         return 0;
     }
 
-    private boolean isSecondComponentLimitReached() {
+    private boolean isSecondStageComponentLimitReached() {
         return getPositionMeters() > ElevatorConstants.SECOND_ELEVATOR_COMPONENT_EXTENDED_LENGTH_METERS;
     }
 
