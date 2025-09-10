@@ -108,6 +108,15 @@ public class Arm extends MotorSubsystem {
         );
     }
 
+    public Translation3d calculateLinearArmVelocity() {
+        double velocityRotationsPerSecond = armMasterMotor.getSignal(TalonFXSignal.VELOCITY);
+        return new Translation3d(
+                Math.cos(RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().getRotation().getRadians()) * velocityRotationsPerSecond,
+                Math.sin(RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().getRotation().getRadians()) * velocityRotationsPerSecond,
+                0
+        );
+    }
+
     void setTargetState(ArmConstants.ArmState targetState, boolean isStateReversed) {
         if (isStateReversed) {
             setTargetState(
