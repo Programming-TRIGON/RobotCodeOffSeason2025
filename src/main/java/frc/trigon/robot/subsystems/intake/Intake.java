@@ -84,6 +84,7 @@ public class Intake extends MotorSubsystem {
         return angleDifferenceFromTargetAngleDegrees < IntakeConstants.ANGLE_TOLERANCE.getDegrees();
     }
 
+    @AutoLogOutput(key = "CoralIntake/HasCoral")
     public boolean hasCoral() {
         return IntakeConstants.COLLECTION_DETECTION_BOOLEAN_EVENT.getAsBoolean();
     }
