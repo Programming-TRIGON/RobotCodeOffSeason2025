@@ -1,10 +1,12 @@
 package lib.hardware.misc.leds;
 
 import com.ctre.phoenix.led.LarsonAnimation;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
+import lib.utilities.RGBUtils;
 
 import java.util.function.Supplier;
 
@@ -65,7 +67,7 @@ public class AddressableLEDStrip extends LEDStrip {
     @Override
     protected void blink(Color color, double speed) {
         final double correctedSpeed = 1 - speed;
-        final double currentTime = Timer.getTimestamp();
+        final double currentTime = Timer.getFPGATimestamp();
 
         if (currentTime - lastLEDAnimationChangeTime > correctedSpeed) {
             lastLEDAnimationChangeTime = currentTime;
@@ -89,7 +91,7 @@ public class AddressableLEDStrip extends LEDStrip {
         clearLEDColors();
         final boolean correctedInverted = this.inverted != inverted;
         final double moveLEDTimeSeconds = 1 - speed;
-        final double currentTime = Timer.getTimestamp();
+        final double currentTime = Timer.getFPGATimestamp();
 
         if (currentTime - lastLEDAnimationChangeTime > moveLEDTimeSeconds) {
             lastLEDAnimationChangeTime = currentTime;
@@ -108,7 +110,7 @@ public class AddressableLEDStrip extends LEDStrip {
         clearLEDColors();
         final boolean correctedInverted = this.inverted != inverted;
         final double moveLEDTimeSeconds = 1 - speed;
-        final double currentTime = Timer.getTimestamp();
+        final double currentTime = Timer.getFPGATimestamp();
 
         if (currentTime - lastLEDAnimationChangeTime > moveLEDTimeSeconds) {
             lastLEDAnimationChangeTime = currentTime;
@@ -150,6 +152,26 @@ public class AddressableLEDStrip extends LEDStrip {
     }
 
     @Override
+    protected void singleFade(Color color, double speed) {
+        final double currentTime = Timer.getFPGATimestamp();
+        final int[] hsv = RGBUtils.rgbToHSV(color);
+        final double currentBrightness = (currentTime - lastLEDAnimationChangeTime) / speed;
+
+        for (int i = 0; i < numberOfLEDs; i++)
+            LED_BUFFER.setHSV(
+                    i + indexOffset,
+                    hsv[0],
+                    hsv[1],
+                    (int) MathUtil.clamp((isLEDAnimationChanged ? currentBrightness : 1 - currentBrightness) * 255, 0, 255)
+            );
+
+        if (currentTime - lastLEDAnimationChangeTime > speed) {
+            lastLEDAnimationChangeTime = currentTime;
+            isLEDAnimationChanged = !isLEDAnimationChanged;
+        }
+    }
+
+    @Override
     protected void sectionColor(Supplier<Color>[] colors) {
         final int amountOfSections = colors.length;
         final int ledsPerSection = (int) Math.floor((double) numberOfLEDs / amountOfSections);
@@ -165,7 +187,7 @@ public class AddressableLEDStrip extends LEDStrip {
     @Override
     protected void resetLEDSettings() {
         lastBreatheLED = indexOffset;
-        lastLEDAnimationChangeTime = Timer.getTimestamp();
+        lastLEDAnimationChangeTime = Timer.getFPGATimestamp();
         rainbowFirstPixelHue = 0;
         isLEDAnimationChanged = false;
         amountOfColorFlowLEDs = 0;

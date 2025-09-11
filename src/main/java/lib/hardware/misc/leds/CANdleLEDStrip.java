@@ -65,7 +65,7 @@ public class CANdleLEDStrip extends LEDStrip {
     protected void blink(Color color, double speed) {
         shouldRunPeriodically = false;
         CANDLE.animate(
-                new SingleFadeAnimation(
+                new StrobeAnimation(
                         (int) (color.red * 255),
                         (int) (color.green * 255),
                         (int) (color.blue * 255),
@@ -82,9 +82,9 @@ public class CANdleLEDStrip extends LEDStrip {
     protected void staticColor(Color color) {
         shouldRunPeriodically = false;
         CANDLE.setLEDs(
-                ((int) color.red * 255),
-                ((int) color.green * 255),
-                ((int) color.blue * 255),
+                (int) (color.red * 255),
+                (int) (color.green * 255),
+                (int) (color.blue * 255),
                 0,
                 indexOffset,
                 numberOfLEDs
@@ -160,6 +160,23 @@ public class CANdleLEDStrip extends LEDStrip {
     }
 
     @Override
+    protected void singleFade(Color color, double speed) {
+        shouldRunPeriodically = false;
+        CANDLE.animate(
+                new SingleFadeAnimation(
+                        (int) (color.red * 255),
+                        (int) (color.green * 255),
+                        (int) (color.blue * 255),
+                        0,
+                        speed,
+                        this.numberOfLEDs,
+                        indexOffset
+                ),
+                animationSlot
+        );
+    }
+
+    @Override
     protected void sectionColor(Supplier<Color>[] colors) {
         shouldRunPeriodically = true;
         final int ledsPerSection = (int) Math.floor((double) numberOfLEDs / colors.length);
@@ -168,7 +185,7 @@ public class CANdleLEDStrip extends LEDStrip {
 
     @Override
     protected void setSingleLEDColor(int index, Color color) {
-        CANDLE.setLEDs((int) color.red, (int) color.green, (int) color.blue, 0, index, 1);
+        CANDLE.setLEDs((int) (color.red * 255), (int) (color.green * 255), (int) (color.blue * 255), 0, index + indexOffset, 1);
     }
 
     private void setSectionColor(int amountOfSections, int ledsPerSection, Supplier<Color>[] colors) {
