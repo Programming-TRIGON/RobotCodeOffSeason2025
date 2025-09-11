@@ -67,7 +67,7 @@ public class AddressableLEDStrip extends LEDStrip {
     @Override
     protected void blink(Color color, double speed) {
         final double correctedSpeed = 1 - speed;
-        final double currentTime = Timer.getTimestamp();
+        final double currentTime = Timer.getFPGATimestamp();
 
         if (currentTime - lastLEDAnimationChangeTime > correctedSpeed) {
             lastLEDAnimationChangeTime = currentTime;
@@ -91,7 +91,7 @@ public class AddressableLEDStrip extends LEDStrip {
         clearLEDColors();
         final boolean correctedInverted = this.inverted != inverted;
         final double moveLEDTimeSeconds = 1 - speed;
-        final double currentTime = Timer.getTimestamp();
+        final double currentTime = Timer.getFPGATimestamp();
 
         if (currentTime - lastLEDAnimationChangeTime > moveLEDTimeSeconds) {
             lastLEDAnimationChangeTime = currentTime;
@@ -110,7 +110,7 @@ public class AddressableLEDStrip extends LEDStrip {
         clearLEDColors();
         final boolean correctedInverted = this.inverted != inverted;
         final double moveLEDTimeSeconds = 1 - speed;
-        final double currentTime = Timer.getTimestamp();
+        final double currentTime = Timer.getFPGATimestamp();
 
         if (currentTime - lastLEDAnimationChangeTime > moveLEDTimeSeconds) {
             lastLEDAnimationChangeTime = currentTime;
@@ -153,7 +153,7 @@ public class AddressableLEDStrip extends LEDStrip {
 
     @Override
     protected void singleFade(Color color, double speed) {
-        final double currentTime = Timer.getTimestamp();
+        final double currentTime = Timer.getFPGATimestamp();
         final int[] hsv = RGBUtils.rgbToHSV(color);
         final double currentBrightness = (currentTime - lastLEDAnimationChangeTime) / speed;
 
@@ -187,7 +187,7 @@ public class AddressableLEDStrip extends LEDStrip {
     @Override
     protected void resetLEDSettings() {
         lastBreatheLED = indexOffset;
-        lastLEDAnimationChangeTime = Timer.getTimestamp();
+        lastLEDAnimationChangeTime = Timer.getFPGATimestamp();
         rainbowFirstPixelHue = 0;
         isLEDAnimationChanged = false;
         amountOfColorFlowLEDs = 0;
