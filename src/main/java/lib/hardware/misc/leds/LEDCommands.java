@@ -322,7 +322,7 @@ public class LEDCommands {
      * Gets a command that sets the LED strips to fade a single color in and out.
      *
      * @param color     the color to fade in and out
-     * @param speed     the time it takes to fade in or out in seconds
+     * @param speed     Addressable LEDs: the time it takes to fade in or out in seconds, CANdle: the speed of the fade on a scale from 0 to 1
      * @param ledStrips the LED strips to animate
      * @return the command
      */

@@ -66,7 +66,7 @@ public class RGBUtils {
      * Converts an RGB color to HSV values.
      *
      * @param color the color to convert
-     * @return the hsv values from 0-255
+     * @return the hsv values where h is between 0-180 and s and v are between 0-255
      */
     public static int[] rgbToHSV(Color color) {
         double r = color.red;
@@ -81,15 +81,15 @@ public class RGBUtils {
 
         if (valueDelta != 0) {
             if (maxValue == r)
-                h = 60 * (((g - b) / valueDelta) % 6);
+                h = 30 * (((g - b) / valueDelta) % 6);
             else if (maxValue == g)
-                h = 60 * (((b - r) / valueDelta) + 2);
+                h = 30 * (((b - r) / valueDelta) + 2);
             else
-                h = 60 * (((r - g) / valueDelta) + 4);
+                h = 30 * (((r - g) / valueDelta) + 4);
         }
 
         if (h < 0)
-            h += 360;
+            h += 180;
 
         double s = maxValue == 0 ? 0 : valueDelta / maxValue;
         return new int[]{(int) h, (int) (s * 255), (int) (maxValue * 255)};

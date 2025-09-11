@@ -1,6 +1,7 @@
 package lib.hardware.misc.leds;
 
 import com.ctre.phoenix.led.*;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import lib.hardware.RobotHardwareStats;
 
@@ -14,6 +15,8 @@ public class CANdleLEDStrip extends LEDStrip {
     private static int LAST_CREATED_LED_STRIP_ANIMATION_SLOT = 0;
     private final int animationSlot;
     private boolean shouldRunPeriodically = false;
+    private double lastLEDAnimationChangeTime = 0;
+    private boolean isLEDAnimationChanged = false;
 
     /**
      * Sets the CANdle instance to be used for controlling the LED strips. Must be set before using any LED strips. Should only be called once.
@@ -63,19 +66,21 @@ public class CANdleLEDStrip extends LEDStrip {
 
     @Override
     protected void blink(Color color, double speed) {
-        shouldRunPeriodically = false;
-        CANDLE.animate(
-                new SingleFadeAnimation(
-                        (int) (color.red * 255),
-                        (int) (color.green * 255),
-                        (int) (color.blue * 255),
-                        0,
-                        speed,
-                        this.numberOfLEDs,
-                        indexOffset
-                ),
-                animationSlot
-        );
+        shouldRunPeriodically = true;
+
+        final double correctedSpeed = 1 - speed;
+        final double currentTime = Timer.getTimestamp();
+
+        if (currentTime - lastLEDAnimationChangeTime > correctedSpeed) {
+            lastLEDAnimationChangeTime = currentTime;
+            isLEDAnimationChanged = !isLEDAnimationChanged;
+        }
+
+        if (isLEDAnimationChanged) {
+            staticColor(color);
+            return;
+        }
+        clearLEDColors();
     }
 
     @Override
