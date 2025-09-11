@@ -113,18 +113,7 @@ public class SimulatedGamePieceConstants {
             case 4 -> coralAlignment = CORAL_TO_L4_ALIGNMENT;
             default -> coralAlignment = new Transform3d();
         }
-
-        final Pose3d reefCenterPose = new Pose3d(new Pose2d(FieldConstants.BLUE_REEF_CENTER_TRANSLATION, new Rotation2d()));
-        final Transform3d reefToClockAndLevel = new Transform3d(
-                reefCenterToLevelVector.rotateBy(reefToClockFaceRotation),
-                reefToClockFaceRotation
-        );
-        final Transform3d branch = isLeftBranch ? RIGHT_BRANCH_TO_LEFT_BRANCH : new Transform3d();
-        final Pose3d target = reefCenterPose
-                .transformBy(reefToClockAndLevel)
-                .transformBy(branch)
-                .transformBy(coralAlignment);
-        return new FlippablePose3d(target, true);
+        return new FlippablePose3d(new Pose3d(new Pose2d(FieldConstants.BLUE_REEF_CENTER_TRANSLATION, new Rotation2d())).transformBy(new Transform3d(reefCenterToLevelVector.rotateBy(reefToClockFaceRotation), reefToClockFaceRotation)).transformBy(isLeftBranch ? RIGHT_BRANCH_TO_LEFT_BRANCH : new Transform3d()).transformBy(coralAlignment), true);
     }
 
     public enum GamePieceType {
