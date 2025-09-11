@@ -15,7 +15,7 @@ import org.littletonrobotics.junction.Logger;
 import java.util.function.Supplier;
 
 public class CoralAutoDriveCommand extends ParallelCommandGroup {
-    private static final ObjectPoseEstimator VOTSL_POSE_ESTIMATOR = RobotContainer.CORAL_POSE_ESTIMATOR;
+    private static final ObjectPoseEstimator CORAL_POSE_ESTIMATOR = RobotContainer.CORAL_POSE_ESTIMATOR;
     private Translation2d distanceFromTrackedGamePiece;
 
     public CoralAutoDriveCommand() {
@@ -24,7 +24,7 @@ public class CoralAutoDriveCommand extends ParallelCommandGroup {
                 GeneralCommands.getContinuousConditionalCommand(
                         getDriveToGamePieceCommand(() -> distanceFromTrackedGamePiece),
                         GeneralCommands.getFieldRelativeDriveCommand(),
-                        () -> VOTSL_POSE_ESTIMATOR.getClosestObjectToRobot() != null && shouldMoveTowardsGamePiece(distanceFromTrackedGamePiece)
+                        () -> CORAL_POSE_ESTIMATOR.getClosestObjectToRobot() != null && shouldMoveTowardsGamePiece(distanceFromTrackedGamePiece)
                 )
         );
     }
@@ -37,7 +37,7 @@ public class CoralAutoDriveCommand extends ParallelCommandGroup {
 
     public static Translation2d calculateDistanceFromTrackedGamePiece() {
         final Pose2d robotPose = RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose();
-        final Translation2d trackedObjectPositionOnField = VOTSL_POSE_ESTIMATOR.getClosestObjectToRobot();
+        final Translation2d trackedObjectPositionOnField = CORAL_POSE_ESTIMATOR.getClosestObjectToRobot();
         if (trackedObjectPositionOnField == null)
             return null;
 
@@ -66,7 +66,7 @@ public class CoralAutoDriveCommand extends ParallelCommandGroup {
 
     public static FlippableRotation2d calculateTargetAngle() {
         final Pose2d robotPose = RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose();
-        final Translation2d trackedObjectFieldRelativePosition = VOTSL_POSE_ESTIMATOR.getClosestObjectToRobot();
+        final Translation2d trackedObjectFieldRelativePosition = CORAL_POSE_ESTIMATOR.getClosestObjectToRobot();
         if (trackedObjectFieldRelativePosition == null)
             return null;
 
