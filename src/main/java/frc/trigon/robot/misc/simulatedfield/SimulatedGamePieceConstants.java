@@ -13,7 +13,6 @@ public class SimulatedGamePieceConstants {
     public static final double G_FORCE = 9.806;
     public static final double
             CORAL_INTAKE_TOLERANCE_METERS = 0.3,
-            CORAL_FEEDER_INTAKE_TOLERANCE_METERS = 1,
             ALGAE_INTAKE_TOLERANCE_METERS = 0.3,
             CORAL_SCORING_TOLERANCE_METERS = 0.1,
             ALGAE_SCORING_TOLERANCE_METERS = 0.2;
