@@ -6,10 +6,9 @@ import lib.hardware.misc.leds.LEDStrip;
 import lib.hardware.misc.leds.LEDStripAnimationSettings;
 
 public class LEDConstants {
-    public static LEDStripAnimationSettings.ColorFlowSettings COLLECTION_CONFIRMATION_ANIMATION_SETTINGS = new LEDStripAnimationSettings.ColorFlowSettings(
+    public static LEDStripAnimationSettings.ColorFlowSettings COLLECTION_CONFIRMATION_ANIMATION_SETTINGS = new LEDStripAnimationSettings.BlinkSettings(
             Color.kGreen,
-            0.5,
-            false
+            0.5
     );
     public static final LEDStripAnimationSettings.SingleFadeSettings CLIMB_ANIMATION_SETTINGS = new LEDStripAnimationSettings.SingleFadeSettings(Color.kYellow, 0.5);
 
