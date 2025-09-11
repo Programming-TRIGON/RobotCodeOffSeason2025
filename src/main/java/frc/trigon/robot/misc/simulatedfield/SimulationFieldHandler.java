@@ -88,11 +88,7 @@ public class SimulationFieldHandler {
     }
 
     private static void updateTransport() {
-        final Pose3d robotPose = new Pose3d(RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose());
-        final Pose3d coralTransportPose = robotPose.plus(toTransform(RobotContainer.ARM.calculateGamePieceCollectionPose()));
-
         if (isTransportingCoral() && HELD_CORAL_INDEX != null) {
-            HELD_CORAL_INDEX = getIndexOfCollectedGamePiece(coralTransportPose, CORAL_ON_FIELD, SimulatedGamePieceConstants.CORAL_INTAKE_TOLERANCE_METERS);
             IS_CORAL_IN_END_EFFECTOR = true;
         }
     }
@@ -156,7 +152,7 @@ public class SimulationFieldHandler {
      */
     private static void updateHeldGamePiecePoses() {
         final Pose3d
-                robotRelativeHeldCoralPosition = TransporterConstants.COLLECTED_CORAL_POSE,
+                robotRelativeHeldCoralPosition = IS_CORAL_IN_END_EFFECTOR ? RobotContainer.ARM.calculateGamePieceCollectionPose() : TransporterConstants.COLLECTED_CORAL_POSE,
                 robotRelativeHeldAlgaePosition = RobotContainer.ARM.calculateGamePieceCollectionPose();
         updateHeldGamePiecePose(robotRelativeHeldCoralPosition, CORAL_ON_FIELD, HELD_CORAL_INDEX);
         updateHeldGamePiecePose(robotRelativeHeldAlgaePosition, ALGAE_ON_FIELD, HELD_ALGAE_INDEX);
