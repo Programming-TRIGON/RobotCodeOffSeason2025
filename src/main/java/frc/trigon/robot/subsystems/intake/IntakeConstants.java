@@ -84,7 +84,7 @@ public class IntakeConstants {
     private static final DoubleSupplier
             REVERSE_LIMIT_SENSOR_SIMULATION_SUPPLIER = () -> 0,
             FORWARD_LIMIT_SENSOR_SIMULATION_SUPPLIER = () -> 0,
-            DISTANCE_SENSOR_SIMULATION_SUPPLIER = () -> SimulationFieldHandler.isHoldingCoral() ? 1 : 0;
+            DISTANCE_SENSOR_SIMULATION_SUPPLIER = () -> SimulationFieldHandler.isHoldingCoral() && !SimulationFieldHandler.isCoralInEndEffector() ? 1 : 0;
 
     static final SysIdRoutine.Config ANGLE_SYSID_CONFIG = new SysIdRoutine.Config(
             Units.Volts.of(0.2).per(Units.Second),

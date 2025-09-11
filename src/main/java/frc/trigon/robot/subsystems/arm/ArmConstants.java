@@ -88,7 +88,7 @@ public class ArmConstants {
             END_EFFECTOR_GEAR_RATIO,
             END_EFFECTOR_MOMENT_OF_INERTIA
     );
-    private static final DoubleSupplier DISTANCE_SENSOR_SIMULATION_SUPPLIER = () -> SimulationFieldHandler.isHoldingCoral() || SimulationFieldHandler.isHoldingAlgae() ? 1 : 0;
+    private static final DoubleSupplier DISTANCE_SENSOR_SIMULATION_SUPPLIER = () -> (SimulationFieldHandler.isHoldingCoral() && SimulationFieldHandler.isCoralInEndEffector()) || SimulationFieldHandler.isHoldingAlgae() ? 1 : 0;
 
     static final SysIdRoutine.Config ARM_SYSID_CONFIG = new SysIdRoutine.Config(
             Units.Volts.of(1.5).per(Units.Seconds),

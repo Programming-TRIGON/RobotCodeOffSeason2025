@@ -20,6 +20,7 @@ public class SimulationFieldHandler {
     private static Integer
             HELD_CORAL_INDEX = null,
             HELD_ALGAE_INDEX = null;
+    private static boolean IS_CORAL_IN_END_EFFECTOR = true;
 
     public static ArrayList<SimulatedGamePiece> getSimulatedCoral() {
         return CORAL_ON_FIELD;
@@ -31,6 +32,10 @@ public class SimulationFieldHandler {
 
     public static boolean isHoldingCoral() {
         return HELD_CORAL_INDEX != null;
+    }
+
+    public static boolean isCoralInEndEffector() {
+        return IS_CORAL_IN_END_EFFECTOR;
     }
 
     public static boolean isHoldingAlgae() {
@@ -74,9 +79,10 @@ public class SimulationFieldHandler {
                 coralCollectionPose = robotPose.plus(toTransform(IntakeConstants.CORAL_COLLECTION_POSE)),
                 algaeCollectionPose = robotPose.plus(toTransform(RobotContainer.ARM.calculateGamePieceCollectionPose()));
 
-        if (isCollectingCoral() && HELD_CORAL_INDEX == null)
+        if (isCollectingCoral() && HELD_CORAL_INDEX == null) {
             HELD_CORAL_INDEX = getIndexOfCollectedGamePiece(coralCollectionPose, CORAL_ON_FIELD, SimulatedGamePieceConstants.CORAL_INTAKE_TOLERANCE_METERS);
-
+            IS_CORAL_IN_END_EFFECTOR = false;
+        }
         if (isCollectingAlgae() && HELD_ALGAE_INDEX == null)
             HELD_ALGAE_INDEX = getIndexOfCollectedGamePiece(algaeCollectionPose, ALGAE_ON_FIELD, SimulatedGamePieceConstants.ALGAE_INTAKE_TOLERANCE_METERS);
     }
@@ -85,8 +91,10 @@ public class SimulationFieldHandler {
         final Pose3d robotPose = new Pose3d(RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose());
         final Pose3d coralTransportPose = robotPose.plus(toTransform(RobotContainer.ARM.calculateGamePieceCollectionPose()));
 
-        if (isTransportingCoral() && HELD_CORAL_INDEX != null)
+        if (isTransportingCoral() && HELD_CORAL_INDEX != null) {
             HELD_CORAL_INDEX = getIndexOfCollectedGamePiece(coralTransportPose, CORAL_ON_FIELD, SimulatedGamePieceConstants.CORAL_INTAKE_TOLERANCE_METERS);
+            IS_CORAL_IN_END_EFFECTOR = true;
+        }
     }
 
     /**
