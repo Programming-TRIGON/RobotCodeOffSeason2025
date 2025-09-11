@@ -64,7 +64,7 @@ public class SimulationFieldHandler {
         for (SimulatedGamePiece coral : CORAL_ON_FIELD)
             coral.updatePeriodically(HELD_CORAL_INDEX != null && HELD_CORAL_INDEX == CORAL_ON_FIELD.indexOf(coral));
         for (SimulatedGamePiece algae : ALGAE_ON_FIELD)
-            algae.updatePeriodically(HELD_CORAL_INDEX != null && HELD_CORAL_INDEX == CORAL_ON_FIELD.indexOf(algae));
+            algae.updatePeriodically(HELD_ALGAE_INDEX != null && HELD_ALGAE_INDEX == ALGAE_ON_FIELD.indexOf(algae));
     }
 
     private static void updateCollection() {
