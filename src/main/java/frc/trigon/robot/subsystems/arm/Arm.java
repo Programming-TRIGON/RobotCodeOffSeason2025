@@ -130,8 +130,8 @@ public class Arm extends MotorSubsystem {
         double velocityMagnitude = velocityRotationsPerSecond * 2 * Math.PI * ArmConstants.ARM_LENGTH_METERS;
         return new Translation3d(
                 getAngle().getCos() * velocityMagnitude,
-                getAngle().getSin() * velocityMagnitude,
-                0
+                0,
+                getAngle().getSin() * velocityMagnitude
         );
     }
 

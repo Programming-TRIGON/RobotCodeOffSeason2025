@@ -116,7 +116,7 @@ public class SimulationFieldHandler {
     private static void updateCoralEjection() {
         final SimulatedGamePiece heldCoral = CORAL_ON_FIELD.get(HELD_CORAL_INDEX);
 
-        if (isCollectingCoral()) {
+        if (isEjectingCoral()) {
             heldCoral.release(RobotContainer.ARM.calculateLinearArmAndEndEffectorVelocity(), RobotContainer.SWERVE.getFieldRelativeVelocity3d());
             HELD_CORAL_INDEX = null;
         }
