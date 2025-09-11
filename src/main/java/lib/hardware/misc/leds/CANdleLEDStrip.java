@@ -14,8 +14,6 @@ public class CANdleLEDStrip extends LEDStrip {
     private static int LAST_CREATED_LED_STRIP_ANIMATION_SLOT = 0;
     private final int animationSlot;
     private boolean shouldRunPeriodically = false;
-    private double lastLEDAnimationChangeTime = 0;
-    private boolean isLEDAnimationChanged = false;
 
     /**
      * Sets the CANdle instance to be used for controlling the LED strips. Must be set before using any LED strips. Should only be called once.
@@ -75,7 +73,8 @@ public class CANdleLEDStrip extends LEDStrip {
                         speed,
                         this.numberOfLEDs,
                         indexOffset
-                )
+                ),
+                animationSlot
         );
     }
 
