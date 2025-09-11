@@ -84,7 +84,7 @@ public class IntakeConstants {
     private static final DoubleSupplier
             REVERSE_LIMIT_SENSOR_SIMULATION_SUPPLIER = () -> 0,
             FORWARD_LIMIT_SENSOR_SIMULATION_SUPPLIER = () -> 0,
-            DISTANCE_SENSOR_SIMULATION_SUPPLIER = () -> SimulationFieldHandler.isHoldingCoral() ? 0 : 1;
+            DISTANCE_SENSOR_SIMULATION_SUPPLIER = () -> SimulationFieldHandler.isHoldingCoral() ? 1 : 0;
 
     static final SysIdRoutine.Config ANGLE_SYSID_CONFIG = new SysIdRoutine.Config(
             Units.Volts.of(0.2).per(Units.Second),
@@ -127,9 +127,10 @@ public class IntakeConstants {
                     FORWARD_LIMIT_SENSOR::getBinaryValue
             ).debounce(FORWARD_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS);
     public static Pose3d CORAL_COLLECTION_POSE = new Pose3d(
-            new Translation3d(-23.58, 23.73, -20.22),
+            new Translation3d(0.6827, 0, 0),
             new Rotation3d()
     );
+    static final double WHEEL_RADIUS_METERS = edu.wpi.first.math.util.Units.inchesToMeters(1.5);
 
     static {
         configureIntakeMotor();
@@ -216,9 +217,9 @@ public class IntakeConstants {
     }
 
     public enum IntakeState {
-        REST(0, MAXIMUM_ANGLE),
-        COLLECT(5, MINIMUM_ANGLE),
-        EJECT(-5, MINIMUM_ANGLE);
+        REST(0, MINIMUM_ANGLE),
+        COLLECT(5, MAXIMUM_ANGLE),
+        EJECT(-5, MAXIMUM_ANGLE);
 
         public final double targetVoltage;
         public final Rotation2d targetAngle;

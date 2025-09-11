@@ -17,8 +17,8 @@ import lib.hardware.misc.leds.LEDCommands;
 public class CoralCollectionCommands {
     public static Command getCoralCollectionCommand() {
         return new ParallelCommandGroup(
-                getIntakeSequenceCommand(),
-                new IntakeAssistCommand(OperatorConstants.DEFAULT_INTAKE_ASSIST_MODE)
+                getIntakeSequenceCommand()
+               // new IntakeAssistCommand(OperatorConstants.DEFAULT_INTAKE_ASSIST_MODE)
         );
     }
 

@@ -66,7 +66,7 @@ public class TransporterConstants {
             BEAM_BREAK::getBinaryValue
     ).debounce(HAS_CORAL_DEBOUNCE_TIME_SECONDS);
     public static final Pose3d COLLECTED_CORAL_POSE = new Pose3d(
-            new Translation3d(-24.11, 8.98, -20.68),
+            new Translation3d(0, 0, 0.2),
             new Rotation3d()
     );
 

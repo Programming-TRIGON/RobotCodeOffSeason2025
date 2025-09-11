@@ -16,7 +16,7 @@ public class CoralEjectionCommands {
         return GeneralCommands.getContinuousConditionalCommand(
                 getEjectCoralFromIntakeCommand(),
                 getEjectCoralFromArmCommand(),
-                () -> RobotContainer.TRANSPORTER.hasCoral() || RobotContainer.INTAKE.hasCoral()
+                () -> RobotContainer.TRANSPORTER.hasCoral() || RobotContainer.INTAKE.hasCoral() || !RobotContainer.ARM.hasGamePiece()
         );
     }
 
