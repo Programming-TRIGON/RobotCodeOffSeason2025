@@ -10,10 +10,10 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.trigon.robot.subsystems.MotorSubsystem;
-import org.littletonrobotics.junction.Logger;
 import lib.hardware.phoenix6.talonfx.TalonFXMotor;
 import lib.hardware.phoenix6.talonfx.TalonFXSignal;
 import lib.utilities.Conversions;
+import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends MotorSubsystem {
     private final TalonFXMotor masterMotor = ElevatorConstants.MASTER_MOTOR;
@@ -23,7 +23,7 @@ public class Elevator extends MotorSubsystem {
             ElevatorConstants.DEFAULT_MAXIMUM_VELOCITY,
             ElevatorConstants.DEFAULT_MAXIMUM_ACCELERATION,
             ElevatorConstants.DEFAULT_MAXIMUM_ACCELERATION * 10
-            ).withEnableFOC(ElevatorConstants.FOC_ENABLED);
+    ).withEnableFOC(ElevatorConstants.FOC_ENABLED);
     private ElevatorConstants.ElevatorState targetState = ElevatorConstants.ElevatorState.REST;
 
     public Elevator() {
@@ -75,6 +75,10 @@ public class Elevator extends MotorSubsystem {
         Logger.recordOutput("Elevator/CurrentPositionMeters", getPositionMeters());
     }
 
+    public double getPositionMeters() {
+        return rotationsToMeters(getPositionRotations());
+    }
+
     void setTargetState(ElevatorConstants.ElevatorState targetState) {
         this.targetState = targetState;
         scalePositionRequestSpeed(targetState.speedScalar);
@@ -115,10 +119,6 @@ public class Elevator extends MotorSubsystem {
         positionRequest.Velocity = ElevatorConstants.DEFAULT_MAXIMUM_VELOCITY * speedScalar;
         positionRequest.Acceleration = ElevatorConstants.DEFAULT_MAXIMUM_ACCELERATION * speedScalar;
         positionRequest.Jerk = positionRequest.Acceleration * 10;
-    }
-
-    public double getPositionMeters() {
-        return rotationsToMeters(getPositionRotations());
     }
 
     private double rotationsToMeters(double positionsRotations) {
