@@ -8,6 +8,9 @@ import lib.hardware.misc.XboxController;
 
 public class OperatorConstants {
     public static final double DRIVER_CONTROLLER_DEADBAND = 0.07;
+    public static final double
+            RUMBLE_DURATION_SECONDS = 0.7,
+            RUMBLE_POWER = 1;
     private static final int DRIVER_CONTROLLER_PORT = 0;
     private static final int
             DRIVER_CONTROLLER_RIGHT_STICK_EXPONENT = 1,
@@ -30,8 +33,10 @@ public class OperatorConstants {
             DRIVE_FROM_DPAD_TRIGGER = new Trigger(() -> DRIVER_CONTROLLER.getPov() != -1),
             TOGGLE_BRAKE_TRIGGER = OPERATOR_CONTROLLER.g().or(RobotController::getUserButton),
             DEBUGGING_TRIGGER = OPERATOR_CONTROLLER.f2(),
+            CONTINUE_TRIGGER = DRIVER_CONTROLLER.leftStick().and(DRIVER_CONTROLLER.rightStick()).or(OPERATOR_CONTROLLER.k()),
             FORWARD_QUASISTATIC_CHARACTERIZATION_TRIGGER = OPERATOR_CONTROLLER.right(),
             BACKWARD_QUASISTATIC_CHARACTERIZATION_TRIGGER = OPERATOR_CONTROLLER.left(),
             FORWARD_DYNAMIC_CHARACTERIZATION_TRIGGER = OPERATOR_CONTROLLER.up(),
             BACKWARD_DYNAMIC_CHARACTERIZATION_TRIGGER = OPERATOR_CONTROLLER.down();
+    public static final Trigger CORAL_COLLECTION_TRIGGER = DRIVER_CONTROLLER.leftTrigger().or(OPERATOR_CONTROLLER.c());
 }
