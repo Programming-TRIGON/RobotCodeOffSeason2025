@@ -111,7 +111,7 @@ public class ArmConstants {
             new Rotation3d(0, 0, 0)
     );
 
-    static final Transform3d ARM_TO_HELD_ALGAE = new Transform3d(
+    static final Transform3d ARM_TO_HELD_GAME_PIECE = new Transform3d(
             new Translation3d(0, 0, -0.5855),
             new Rotation3d(0, edu.wpi.first.math.util.Units.degreesToRadians(0), 0)
     );
@@ -234,7 +234,7 @@ public class ArmConstants {
         REST_FOR_CLIMB(Rotation2d.fromDegrees(0), 0),
         HOLD_ALGAE(Rotation2d.fromDegrees(90), -4),
         EJECT(Rotation2d.fromDegrees(60), 4),
-        COLLECT_CORAL(Rotation2d.fromDegrees(0), -4),
+        TRANSPORT_CORAL(Rotation2d.fromDegrees(0), -4),
         PREPARE_SCORE_L1(Rotation2d.fromDegrees(80), 0),
         SCORE_L1(Rotation2d.fromDegrees(75), 4),
         PREPARE_SCORE_L2(Rotation2d.fromDegrees(95), 0),

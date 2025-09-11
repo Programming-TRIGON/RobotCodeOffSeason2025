@@ -50,6 +50,7 @@ public class SimulationFieldHandler {
         updateCollection();
         updateEjection();
         updateHeldGamePiecePoses();
+        updateTransport();
     }
 
     /**
@@ -71,13 +72,21 @@ public class SimulationFieldHandler {
         final Pose3d robotPose = new Pose3d(RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose());
         final Pose3d
                 coralCollectionPose = robotPose.plus(toTransform(IntakeConstants.CORAL_COLLECTION_POSE)),
-                algaeCollectionPose = robotPose.plus(toTransform(RobotContainer.ARM.calculateAlgaeCollectionPose()));
+                algaeCollectionPose = robotPose.plus(toTransform(RobotContainer.ARM.calculateGamePieceCollectionPose()));
 
         if (isCollectingCoral() && HELD_CORAL_INDEX == null)
             HELD_CORAL_INDEX = getIndexOfCollectedGamePiece(coralCollectionPose, CORAL_ON_FIELD, SimulatedGamePieceConstants.CORAL_INTAKE_TOLERANCE_METERS);
 
         if (isCollectingAlgae() && HELD_ALGAE_INDEX == null)
             HELD_ALGAE_INDEX = getIndexOfCollectedGamePiece(algaeCollectionPose, ALGAE_ON_FIELD, SimulatedGamePieceConstants.ALGAE_INTAKE_TOLERANCE_METERS);
+    }
+
+    private static void updateTransport() {
+        final Pose3d robotPose = new Pose3d(RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose());
+        final Pose3d coralTransportPose = robotPose.plus(toTransform(RobotContainer.ARM.calculateGamePieceCollectionPose()));
+
+        if (isTransportingCoral() && HELD_CORAL_INDEX != null)
+            HELD_CORAL_INDEX = getIndexOfCollectedGamePiece(coralTransportPose, CORAL_ON_FIELD, SimulatedGamePieceConstants.CORAL_INTAKE_TOLERANCE_METERS);
     }
 
     /**
@@ -100,6 +109,10 @@ public class SimulationFieldHandler {
 
     private static boolean isCollectingAlgae() {
         return RobotContainer.ARM.atState(ArmConstants.ArmState.COLLECT_ALGAE_L2) || RobotContainer.ARM.atState(ArmConstants.ArmState.COLLECT_ALGAE_L3);
+    }
+
+    private static boolean isTransportingCoral() {
+        return RobotContainer.ARM.atState(ArmConstants.ArmState.TRANSPORT_CORAL);
     }
 
     private static void updateEjection() {
@@ -136,7 +149,7 @@ public class SimulationFieldHandler {
     private static void updateHeldGamePiecePoses() {
         final Pose3d
                 robotRelativeHeldCoralPosition = TransporterConstants.COLLECTED_CORAL_POSE,
-                robotRelativeHeldAlgaePosition = RobotContainer.ARM.calculateAlgaeCollectionPose();
+                robotRelativeHeldAlgaePosition = RobotContainer.ARM.calculateGamePieceCollectionPose();
         updateHeldGamePiecePose(robotRelativeHeldCoralPosition, CORAL_ON_FIELD, HELD_CORAL_INDEX);
         updateHeldGamePiecePose(robotRelativeHeldAlgaePosition, ALGAE_ON_FIELD, HELD_ALGAE_INDEX);
     }

@@ -20,7 +20,7 @@ import lib.hardware.misc.leds.LEDCommands;
 public class CoralCollectionCommands {
     public static Command getCoralTransportCommand() {
         return new ParallelCommandGroup(
-                ArmCommands.getSetTargetStateCommand(ArmConstants.ArmState.COLLECT_CORAL),
+                ArmCommands.getSetTargetStateCommand(ArmConstants.ArmState.TRANSPORT_CORAL),
                 ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.COLLECT_CORAL)
         ).until(RobotContainer.ARM::hasGamePiece);
     }

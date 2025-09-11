@@ -82,9 +82,9 @@ public class Arm extends MotorSubsystem {
         armMasterMotor.setControl(voltageRequest.withOutput(targetVoltage));
     }
 
-    public Pose3d calculateAlgaeCollectionPose() {
+    public Pose3d calculateGamePieceCollectionPose() {
         return calculateVisualizationPose()
-                .transformBy(ArmConstants.ARM_TO_HELD_ALGAE);
+                .transformBy(ArmConstants.ARM_TO_HELD_GAME_PIECE);
     }
 
     public boolean atState(ArmConstants.ArmState targetState, boolean isStateReversed) {
