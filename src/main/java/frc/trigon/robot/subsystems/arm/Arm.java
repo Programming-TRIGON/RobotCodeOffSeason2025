@@ -114,22 +114,23 @@ public class Arm extends MotorSubsystem {
         return ArmConstants.COLLECTION_DETECTION_BOOLEAN_EVENT.getAsBoolean();
     }
 
-    public Translation3d calculateLinearEndEffectorVelocity() {
+    public Translation3d calculateLinearArmAndEndEffectorVelocity() {
         double velocityMetersPerSecond = endEffectorMotor.getSignal(TalonFXSignal.VELOCITY) * 2 * Math.PI * ArmConstants.WHEEL_RADIUS_METERS;
-        Rotation2d robotRotation = RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().getRotation();
-        return new Translation3d(
-                robotRotation.getCos() * velocityMetersPerSecond,
-                robotRotation.getSin() * velocityMetersPerSecond,
-                0
+        return calculateLinearArmVelocity().plus(
+                new Translation3d(
+                        getAngle().getCos() * velocityMetersPerSecond,
+                        getAngle().getSin() * velocityMetersPerSecond,
+                        0
+                )
         );
     }
 
     public Translation3d calculateLinearArmVelocity() {
         double velocityRotationsPerSecond = armMasterMotor.getSignal(TalonFXSignal.VELOCITY);
-        Rotation2d robotRotation = RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().getRotation();
+        double velocityMagnitude = velocityRotationsPerSecond * 2 * Math.PI * ArmConstants.ARM_LENGTH_METERS;
         return new Translation3d(
-                Math.cos(RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().getRotation().getRadians()) * velocityRotationsPerSecond,
-                Math.sin(RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().getRotation().getRadians()) * velocityRotationsPerSecond,
+                getAngle().getCos() * velocityMagnitude,
+                getAngle().getSin() * velocityMagnitude,
                 0
         );
     }
