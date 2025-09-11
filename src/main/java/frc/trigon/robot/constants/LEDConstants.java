@@ -6,7 +6,7 @@ import lib.hardware.misc.leds.LEDStrip;
 import lib.hardware.misc.leds.LEDStripAnimationSettings;
 
 public class LEDConstants {
-    public static LEDStripAnimationSettings.ColorFlowSettings COLLECTION_CONFIRMATION_ANIMATION_SETTINGS = new LEDStripAnimationSettings.BlinkSettings(
+    public static LEDStripAnimationSettings.BlinkSettings COLLECTION_CONFIRMATION_ANIMATION_SETTINGS = new LEDStripAnimationSettings.BlinkSettings(
             Color.kGreen,
             0.5
     );
