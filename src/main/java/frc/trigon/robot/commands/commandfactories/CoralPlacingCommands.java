@@ -14,20 +14,12 @@ import frc.trigon.robot.subsystems.arm.ArmCommands;
 import frc.trigon.robot.subsystems.arm.ArmConstants;
 import frc.trigon.robot.subsystems.elevator.ElevatorCommands;
 import frc.trigon.robot.subsystems.elevator.ElevatorConstants;
-import frc.trigon.robot.subsystems.swerve.SwerveCommands;
 import lib.utilities.flippable.FlippablePose2d;
 import lib.utilities.flippable.FlippableTranslation2d;
 
 public class CoralPlacingCommands {
     public static boolean SHOULD_SCORE_AUTONOMOUSLY = true;
     private static final ReefChooser REEF_CHOOSER = OperatorConstants.REEF_CHOOSER;
-
-    public static Command getScoreInReefCommand(boolean shouldScoreRight) {
-        return new ConditionalCommand(
-                getScoreInReefFromGripperCommand(shouldScoreRight).asProxy(),
-                () -> REEF_CHOOSER.getScoringLevel() == ScoringLevel.L1
-        );
-    }
 
     private static Command getScoreInReefFromGripperCommand(boolean shouldScoreRight) {
         return GeneralCommands.getContinuousConditionalCommand(
@@ -41,7 +33,7 @@ public class CoralPlacingCommands {
         return CoralCollectionCommands.getLoadCoralCommand().asProxy().andThen(
                 new ParallelCommandGroup(
                         ElevatorCommands.getSetTargetStateCommand(REEF_CHOOSER::getElevatorState).raceWith(new WaitUntilChangeCommand<>(REEF_CHOOSER::getElevatorState)).repeatedly(),
-                        getGripperScoringSequenceCommand()
+                        getArmScoringSequenceCommand()
                 ).asProxy()
         );
     }
@@ -58,18 +50,17 @@ public class CoralPlacingCommands {
         ).andThen();
     }
 
-    private static Command getGripperScoringSequenceCommand() {
+    private static Command getArmScoringSequenceCommand() {
         return new SequentialCommandGroup(
                 ArmCommands.getSetTargetStateCommand()
                         .unless(() -> RobotContainer.ELEVATOR.atState(REEF_CHOOSER.getElevatorState()) || REEF_CHOOSER.getScoringLevel() == ScoringLevel.L2 || REEF_CHOOSER.getScoringLevel() == ScoringLevel.L1)
-                        .until(RobotContainer.ELEVATOR::isCloseEnoughToOpenGripper),
                 scoreFromGripperReefChooserCommand()
         );
     }
 
     private static Command getAutoGripperScoringSequenceCommand(boolean shouldScoreRight) {
         return new SequentialCommandGroup(
-                GripperCommands.getSetTargetStateCommand(GripperConstants.GripperState.OPEN_FOR_NOT_HITTING_REEF)
+                ArmCommands.getSetTargetStateCommand(ArmCommands.getSetTargetStateCommand().OPEN_FOR_NOT_HITTING_REEF)
                         .unless(() -> RobotContainer.ELEVATOR.atState(REEF_CHOOSER.getElevatorState()) || REEF_CHOOSER.getScoringLevel() == ScoringLevel.L2 || REEF_CHOOSER.getScoringLevel() == ScoringLevel.L1)
                         .until(RobotContainer.ELEVATOR::isCloseEnoughToOpenGripper),
                 new ConditionalCommand(
@@ -115,15 +106,15 @@ public class CoralPlacingCommands {
         );
     }
 
-    private static Command getAutonomousDriveToReefThenManualDriveCommand(boolean shouldScoreRight) {
-        return new SequentialCommandGroup(
-                SwerveCommands.getDriveToPoseCommand(
-                        () -> CoralPlacingCommands.calculateClosestScoringPose(shouldScoreRight),
-                        AutonomousConstants.DRIVE_TO_REEF_CONSTRAINTS
-                ),
-                GeneralCommands.getFieldRelativeDriveCommand()
-        );
-    }
+//    private static Command getAutonomousDriveToReefThenManualDriveCommand(boolean shouldScoreRight) {
+//        return new SequentialCommandGroup(
+//                SwerveCommands.getDriveToPoseCommand(
+//                        () -> CoralPlacingCommands.calculateClosestScoringPose(shouldScoreRight),
+//                        AutonomousConstants.DRIVE_TO_REEF_CONSTRAINTS
+//                ),
+//                GeneralCommands.getFieldRelativeDriveCommand()
+//        );
+//    }
 
     private static double calculateDistanceToTargetScoringPose(boolean shouldScoreRight) {
         final Translation2d currentTranslation = RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().getTranslation();
