@@ -4,10 +4,7 @@ import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.signals.*;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.event.BooleanEvent;
@@ -62,6 +59,7 @@ public class ArmConstants {
             ARM_DEFAULT_MAXIMUM_JERK = ARM_DEFAULT_MAXIMUM_ACCELERATION * 10;
     static final boolean FOC_ENABLED = true;
 
+    static final double ARM_LENGTH_METERS = 0.67;
     private static final int
             ARM_MOTOR_AMOUNT = 2,
             END_EFFECTOR_MOTOR_AMOUNT = 1;
@@ -69,7 +67,6 @@ public class ArmConstants {
             ARM_GEARBOX = DCMotor.getKrakenX60Foc(ARM_MOTOR_AMOUNT),
             END_EFFECTOR_GEARBOX = DCMotor.getKrakenX60Foc(END_EFFECTOR_MOTOR_AMOUNT);
     private static final double
-            ARM_LENGTH_METERS = 0.67,
             ARM_MASS_KILOGRAMS = 3.5,
             END_EFFECTOR_MOMENT_OF_INERTIA = 0.003,
             END_EFFECTOR_MAXIMUM_DISPLAYABLE_VELOCITY = 12;
@@ -91,7 +88,7 @@ public class ArmConstants {
             END_EFFECTOR_GEAR_RATIO,
             END_EFFECTOR_MOMENT_OF_INERTIA
     );
-    private static final DoubleSupplier DISTANCE_SENSOR_SIMULATION_SUPPLIER = () -> SimulationFieldHandler.isHoldingGamePiece() ? 0 : 1;
+    private static final DoubleSupplier DISTANCE_SENSOR_SIMULATION_SUPPLIER = () -> (SimulationFieldHandler.isHoldingCoral() && SimulationFieldHandler.isCoralInEndEffector()) || SimulationFieldHandler.isHoldingAlgae() ? 1 : 0;
 
     static final SysIdRoutine.Config ARM_SYSID_CONFIG = new SysIdRoutine.Config(
             Units.Volts.of(1.5).per(Units.Seconds),
@@ -110,16 +107,22 @@ public class ArmConstants {
     );
 
     static final Pose3d ARM_VISUALIZATION_ORIGIN_POINT = new Pose3d(
-            new Translation3d(0, 0.0954, 0.9517),
+            new Translation3d(0, -0.0954, 0.3573),
             new Rotation3d(0, 0, 0)
     );
 
-    static final Rotation2d ANGLE_TOLERANCE = Rotation2d.fromDegrees(0);
+    static final Transform3d ARM_TO_HELD_GAME_PIECE = new Transform3d(
+            new Translation3d(0, 0.1, -0.5855),
+            new Rotation3d(0, edu.wpi.first.math.util.Units.degreesToRadians(0), 0)
+    );
+
+    static final Rotation2d ANGLE_TOLERANCE = Rotation2d.fromDegrees(5);
     private static final double COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS = 0.2;
     static final BooleanEvent COLLECTION_DETECTION_BOOLEAN_EVENT = new BooleanEvent(
             CommandScheduler.getInstance().getActiveButtonLoop(),
             DISTANCE_SENSOR::getBinaryValue
     ).debounce(COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS);
+    static final double WHEEL_RADIUS_METERS = edu.wpi.first.math.util.Units.inchesToMeters(1.5);
     static final Rotation2d FULL_ROTATION = Rotation2d.fromDegrees(360);
 
     static {
@@ -231,6 +234,7 @@ public class ArmConstants {
         REST_FOR_CLIMB(Rotation2d.fromDegrees(0), 0),
         HOLD_ALGAE(Rotation2d.fromDegrees(90), -4),
         EJECT(Rotation2d.fromDegrees(60), 4),
+        LOAD_CORAL(Rotation2d.fromDegrees(0), -4),
         PREPARE_SCORE_L1(Rotation2d.fromDegrees(80), 0),
         SCORE_L1(Rotation2d.fromDegrees(75), 4),
         PREPARE_SCORE_L2(Rotation2d.fromDegrees(95), 0),

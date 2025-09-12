@@ -6,11 +6,14 @@ import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.trigon.robot.RobotContainer;
+import frc.trigon.robot.misc.simulatedfield.SimulationFieldHandler;
 import frc.trigon.robot.subsystems.MotorSubsystem;
 import lib.hardware.phoenix6.cancoder.CANcoderEncoder;
 import lib.hardware.phoenix6.cancoder.CANcoderSignal;
 import lib.hardware.phoenix6.talonfx.TalonFXMotor;
 import lib.hardware.phoenix6.talonfx.TalonFXSignal;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Arm extends MotorSubsystem {
@@ -81,6 +84,11 @@ public class Arm extends MotorSubsystem {
         armMasterMotor.setControl(voltageRequest.withOutput(targetVoltage));
     }
 
+    public Pose3d calculateGamePieceCollectionPose() {
+        return calculateVisualizationPose()
+                .transformBy(ArmConstants.ARM_TO_HELD_GAME_PIECE);
+    }
+
     public boolean atState(ArmConstants.ArmState targetState, boolean isStateReversed) {
         if (isStateReversed)
             return this.targetState == targetState && atTargetAngle(isStateReversed);
@@ -104,8 +112,35 @@ public class Arm extends MotorSubsystem {
         return currentToTargetStateDifferenceDegrees < ArmConstants.ANGLE_TOLERANCE.getDegrees();
     }
 
+    @AutoLogOutput(key = "Arm/HasCoral")
     public boolean hasGamePiece() {
         return ArmConstants.COLLECTION_DETECTION_BOOLEAN_EVENT.getAsBoolean();
+    }
+
+    @AutoLogOutput(key = "Arm/InEndeffector")
+    public boolean inEndeffector() {
+        return SimulationFieldHandler.isCoralInEndEffector();
+    }
+
+    public Translation3d calculateLinearArmAndEndEffectorVelocity() {
+        double velocityMetersPerSecond = endEffectorMotor.getSignal(TalonFXSignal.VELOCITY) * 2 * Math.PI * ArmConstants.WHEEL_RADIUS_METERS;
+        return calculateLinearArmVelocity().plus(
+                new Translation3d(
+                        getAngle().getCos() * velocityMetersPerSecond,
+                        getAngle().getSin() * velocityMetersPerSecond,
+                        0
+                )
+        );
+    }
+
+    public Translation3d calculateLinearArmVelocity() {
+        double velocityRotationsPerSecond = armMasterMotor.getSignal(TalonFXSignal.VELOCITY);
+        double velocityMagnitude = velocityRotationsPerSecond * 2 * Math.PI * ArmConstants.ARM_LENGTH_METERS;
+        return new Translation3d(
+                getAngle().getCos() * velocityMagnitude,
+                0,
+                getAngle().getSin() * velocityMagnitude
+        );
     }
 
     void setTargetState(ArmConstants.ArmState targetState) {
@@ -142,7 +177,7 @@ public class Arm extends MotorSubsystem {
     void prepareForState(ArmConstants.ArmState targetState, boolean isStateReversed) {
         this.isStateReversed = isStateReversed;
         this.targetState = targetState;
-        
+
         if (isStateReversed) {
             setTargetAngle(ArmConstants.FULL_ROTATION.minus(targetState.targetAngle));
             return;
@@ -165,7 +200,7 @@ public class Arm extends MotorSubsystem {
 
     private Pose3d calculateVisualizationPose() {
         final Transform3d armTransform = new Transform3d(
-                new Translation3d(),
+                new Translation3d(0, 0, RobotContainer.ELEVATOR.getPositionMeters()),
                 new Rotation3d(0, getAngle().getRadians(), 0)
         );
         return ArmConstants.ARM_VISUALIZATION_ORIGIN_POINT.transformBy(armTransform);

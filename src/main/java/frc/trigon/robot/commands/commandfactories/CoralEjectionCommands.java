@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.trigon.robot.RobotContainer;
+import frc.trigon.robot.misc.simulatedfield.SimulationFieldHandler;
 import frc.trigon.robot.subsystems.arm.ArmCommands;
 import frc.trigon.robot.subsystems.arm.ArmConstants;
 import frc.trigon.robot.subsystems.intake.IntakeCommands;
@@ -17,7 +18,7 @@ public class CoralEjectionCommands {
                 getEjectCoralFromIntakeCommand(),
                 getEjectCoralFromArmCommand(),
                 () -> RobotContainer.TRANSPORTER.hasCoral() || RobotContainer.INTAKE.hasCoral()
-        );
+        ).onlyIf(SimulationFieldHandler::isHoldingCoral);
     }
 
     private static Command getEjectCoralFromIntakeCommand() {

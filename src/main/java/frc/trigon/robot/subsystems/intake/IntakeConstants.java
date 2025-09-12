@@ -84,7 +84,7 @@ public class IntakeConstants {
     private static final DoubleSupplier
             REVERSE_LIMIT_SENSOR_SIMULATION_SUPPLIER = () -> 0,
             FORWARD_LIMIT_SENSOR_SIMULATION_SUPPLIER = () -> 0,
-            DISTANCE_SENSOR_SIMULATION_SUPPLIER = () -> SimulationFieldHandler.isHoldingGamePiece() ? 0 : 1;
+            DISTANCE_SENSOR_SIMULATION_SUPPLIER = () -> SimulationFieldHandler.isHoldingCoral() && !SimulationFieldHandler.isCoralInEndEffector() ? 1 : 0;
 
     static final SysIdRoutine.Config ANGLE_SYSID_CONFIG = new SysIdRoutine.Config(
             Units.Volts.of(0.2).per(Units.Second),
@@ -93,9 +93,10 @@ public class IntakeConstants {
     );
 
     static final Pose3d INTAKE_VISUALIZATION_ORIGIN_POINT = new Pose3d(
-            new Translation3d(0, 0.29449, 0.32349),
-            new Rotation3d(0, MINIMUM_ANGLE.getRadians(), 0)
+            new Translation3d(0.3234, 0, 0.2944),
+            new Rotation3d(0, -2.28, 0)
     );
+
     private static final double MAXIMUM_DISPLAYABLE_VELOCITY = 12;
     static final SpeedMechanism2d INTAKE_MECHANISM = new SpeedMechanism2d(
             "IntakeMechanism",
@@ -125,6 +126,11 @@ public class IntakeConstants {
                     CommandScheduler.getInstance().getActiveButtonLoop(),
                     FORWARD_LIMIT_SENSOR::getBinaryValue
             ).debounce(FORWARD_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS);
+    public static Pose3d CORAL_COLLECTION_POSE = new Pose3d(
+            new Translation3d(0.6827, 0, 0),
+            new Rotation3d()
+    );
+    static final double WHEEL_RADIUS_METERS = edu.wpi.first.math.util.Units.inchesToMeters(1.5);
 
     static {
         configureIntakeMotor();
@@ -211,9 +217,9 @@ public class IntakeConstants {
     }
 
     public enum IntakeState {
-        REST(0, MAXIMUM_ANGLE),
-        COLLECT(5, MINIMUM_ANGLE),
-        EJECT(-5, MINIMUM_ANGLE);
+        REST(0, MINIMUM_ANGLE),
+        COLLECT(5, MAXIMUM_ANGLE),
+        EJECT(-5, MAXIMUM_ANGLE);
 
         public final double targetVoltage;
         public final Rotation2d targetAngle;

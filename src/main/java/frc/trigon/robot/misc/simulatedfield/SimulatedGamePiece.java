@@ -30,10 +30,21 @@ public class SimulatedGamePiece {
     /**
      * Releases the game piece from the robot.
      *
-     * @param fieldRelativeReleaseVelocity the velocity that the object is released at, relative to the field
+     * @param fieldRelativeReleaseVelocities the velocity that the object is released at, relative to the field
      */
-    public void release(Translation3d fieldRelativeReleaseVelocity) {
+    public void release(Translation3d... fieldRelativeReleaseVelocities) {
+        final Translation3d fieldRelativeReleaseVelocity = new Translation3d();
+        for (Translation3d velocityComponent : fieldRelativeReleaseVelocities)
+            fieldRelativeReleaseVelocity.plus(velocityComponent);
+
         velocityAtRelease = fieldRelativeReleaseVelocity;
+        poseAtRelease = fieldRelativePose;
+        timestampAtRelease = Timer.getTimestamp();
+
+        updateIsTouchingGround();
+    }
+
+    public void release() {
         poseAtRelease = fieldRelativePose;
         timestampAtRelease = Timer.getTimestamp();
 
