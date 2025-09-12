@@ -18,10 +18,10 @@ import frc.trigon.robot.subsystems.transporter.TransporterConstants;
 import lib.hardware.misc.leds.LEDCommands;
 
 public class CoralCollectionCommands {
-    public static Command getCoralTransportCommand() {
+    public static Command getLoadCoralCommand() {
         return new ParallelCommandGroup(
-                ArmCommands.getSetTargetStateCommand(ArmConstants.ArmState.TRANSPORT_CORAL),
-                ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.COLLECT_CORAL)
+                ArmCommands.getSetTargetStateCommand(ArmConstants.ArmState.LOAD_CORAL),
+                ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.LOAD_CORAL)
         ).until(RobotContainer.ARM::hasGamePiece);
     }
 

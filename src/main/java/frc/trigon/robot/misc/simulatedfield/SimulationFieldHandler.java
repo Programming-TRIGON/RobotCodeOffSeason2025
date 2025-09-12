@@ -55,7 +55,7 @@ public class SimulationFieldHandler {
         updateCollection();
         updateEjection();
         updateHeldGamePiecePoses();
-        updateTransport();
+        updateLoad();
     }
 
     /**
@@ -87,8 +87,8 @@ public class SimulationFieldHandler {
             HELD_ALGAE_INDEX = getIndexOfCollectedGamePiece(algaeCollectionPose, ALGAE_ON_FIELD, SimulatedGamePieceConstants.ALGAE_INTAKE_TOLERANCE_METERS);
     }
 
-    private static void updateTransport() {
-        if (isTransportingCoral()) {
+    private static void updateLoad() {
+        if (isCoralLoading()) {
             IS_CORAL_IN_END_EFFECTOR = true;
         }
     }
@@ -115,8 +115,8 @@ public class SimulationFieldHandler {
         return RobotContainer.ARM.atState(ArmConstants.ArmState.COLLECT_ALGAE_L2) || RobotContainer.ARM.atState(ArmConstants.ArmState.COLLECT_ALGAE_L3);
     }
 
-    private static boolean isTransportingCoral() {
-        return RobotContainer.ARM.atState(ArmConstants.ArmState.TRANSPORT_CORAL);
+    private static boolean isCoralLoading() {
+        return RobotContainer.ARM.atState(ArmConstants.ArmState.LOAD_CORAL);
     }
 
     private static void updateEjection() {
