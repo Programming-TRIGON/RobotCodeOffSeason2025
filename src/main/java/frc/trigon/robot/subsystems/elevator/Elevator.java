@@ -10,7 +10,6 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.trigon.robot.subsystems.MotorSubsystem;
-import frc.trigon.robot.subsystems.arm.ArmConstants;
 import lib.hardware.phoenix6.talonfx.TalonFXMotor;
 import lib.hardware.phoenix6.talonfx.TalonFXSignal;
 import lib.utilities.Conversions;
@@ -74,6 +73,10 @@ public class Elevator extends MotorSubsystem {
     public void updatePeriodically() {
         masterMotor.update();
         Logger.recordOutput("Elevator/CurrentPositionMeters", getPositionMeters());
+    }
+
+    public boolean atState(ElevatorConstants.ElevatorState targetState) {
+        return targetState == this.targetState && atTargetState();
     }
 
     public boolean atTargetState() {

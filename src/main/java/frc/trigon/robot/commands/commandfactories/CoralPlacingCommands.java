@@ -52,15 +52,15 @@ public class CoralPlacingCommands {
 
     private static Command getArmScoringSequenceCommand() {
         return new SequentialCommandGroup(
-                ArmCommands.getSetTargetStateCommand()
-                        .unless(() -> RobotContainer.ELEVATOR.atState(REEF_CHOOSER.getElevatorState()) || REEF_CHOOSER.getScoringLevel() == ScoringLevel.L2 || REEF_CHOOSER.getScoringLevel() == ScoringLevel.L1)
+                ArmCommands.getSetTargetStateCommand(REEF_CHOOSER.getArmState())
+                        .unless(() -> RobotContainer.ELEVATOR.atState(REEF_CHOOSER.getElevatorState()) || REEF_CHOOSER.getScoringLevel() == ScoringLevel.L2 || REEF_CHOOSER.getScoringLevel() == ScoringLevel.L1),
                 scoreFromGripperReefChooserCommand()
         );
     }
 
     private static Command getAutoGripperScoringSequenceCommand(boolean shouldScoreRight) {
         return new SequentialCommandGroup(
-                ArmCommands.getSetTargetStateCommand(ArmCommands.getSetTargetStateCommand().OPEN_FOR_NOT_HITTING_REEF)
+                ArmCommands.getSetTargetStateCommand(ArmCommands.getSetTargetStateCommand(REEF_CHOOSER.getArmState())
                         .unless(() -> RobotContainer.ELEVATOR.atState(REEF_CHOOSER.getElevatorState()) || REEF_CHOOSER.getScoringLevel() == ScoringLevel.L2 || REEF_CHOOSER.getScoringLevel() == ScoringLevel.L1)
                         .until(RobotContainer.ELEVATOR::isCloseEnoughToOpenGripper),
                 new ConditionalCommand(
@@ -73,29 +73,29 @@ public class CoralPlacingCommands {
 
     private static Command scoreFromGripperReefChooserCommand(boolean shouldScoreRight) {
         return new SequentialCommandGroup(
-                GripperCommands.getPrepareForStateCommand(REEF_CHOOSER::getGripperState).raceWith(
+                ArmCommands.getPrepareForStateCommand(REEF_CHOOSER::getArmState).raceWith(
                         new SequentialCommandGroup(
                                 new WaitUntilCommand(() -> canAutonomouslyReleaseFromGripper(shouldScoreRight)),
                                 new WaitUntilChangeCommand<>(RobotContainer.ROBOT_POSE_ESTIMATOR::getEstimatedRobotPose)
                         )
                 ).until(OperatorConstants.CONTINUE_TRIGGER),
-                GripperCommands.getSetTargetStateCommand(REEF_CHOOSER::getGripperState).finallyDo(OperatorConstants.REEF_CHOOSER::switchReefSide)
+                ArmCommands.getSetTargetStateCommand(REEF_CHOOSER.getArmState()).finallyDo(OperatorConstants.REEF_CHOOSER::switchReefSide)
         );
     }
 
     private static Command scoreFromGripperReefChooserCommand() {
         return new SequentialCommandGroup(
-                GripperCommands.getPrepareForStateCommand(REEF_CHOOSER::getGripperState).until(OperatorConstants.CONTINUE_TRIGGER),
-                GripperCommands.getSetTargetStateCommand(REEF_CHOOSER::getGripperState).finallyDo(OperatorConstants.REEF_CHOOSER::switchReefSide)
+                ArmCommands.getPrepareForStateCommand(REEF_CHOOSER::getArmState).until(OperatorConstants.CONTINUE_TRIGGER),
+                ArmCommands.getSetTargetStateCommand(REEF_CHOOSER::getArmState).finallyDo(OperatorConstants.REEF_CHOOSER::switchReefSide)
         );
     }
 
     private static Command scoreFromGripperInL4Command(boolean shouldScoreRight) {
         return new SequentialCommandGroup(
-                GripperCommands.getPrepareForScoringInL4Command(REEF_CHOOSER::calculateTargetScoringPose).raceWith(
+                ArmCommands.getPrepareForScoringInL4Command(REEF_CHOOSER::calculateTargetScoringPose).raceWith(
                         new WaitUntilCommand(() -> canAutonomouslyReleaseFromGripper(shouldScoreRight))
                 ).until(OperatorConstants.CONTINUE_TRIGGER),
-                GripperCommands.getScoreInL4Command(REEF_CHOOSER::calculateTargetScoringPose).finallyDo(OperatorConstants.REEF_CHOOSER::switchReefSide)
+                ArmCommands.getScoreInL4Command(REEF_CHOOSER::calculateTargetScoringPose).finallyDo(OperatorConstants.REEF_CHOOSER::switchReefSide)
         );
     }
 
