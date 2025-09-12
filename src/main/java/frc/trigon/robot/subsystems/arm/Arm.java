@@ -7,6 +7,7 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.trigon.robot.RobotContainer;
+import frc.trigon.robot.misc.simulatedfield.SimulationFieldHandler;
 import frc.trigon.robot.subsystems.MotorSubsystem;
 import lib.hardware.phoenix6.cancoder.CANcoderEncoder;
 import lib.hardware.phoenix6.cancoder.CANcoderSignal;
@@ -114,6 +115,11 @@ public class Arm extends MotorSubsystem {
     @AutoLogOutput(key = "Arm/HasCoral")
     public boolean hasGamePiece() {
         return ArmConstants.COLLECTION_DETECTION_BOOLEAN_EVENT.getAsBoolean();
+    }
+
+    @AutoLogOutput(key = "Arm/InEndeffector")
+    public boolean inEndeffector() {
+        return SimulationFieldHandler.isCoralInEndEffector();
     }
 
     public Translation3d calculateLinearArmAndEndEffectorVelocity() {

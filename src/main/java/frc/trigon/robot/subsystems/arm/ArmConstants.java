@@ -112,11 +112,11 @@ public class ArmConstants {
     );
 
     static final Transform3d ARM_TO_HELD_GAME_PIECE = new Transform3d(
-            new Translation3d(0, 0, -0.5855),
+            new Translation3d(0, 0.1, -0.5855),
             new Rotation3d(0, edu.wpi.first.math.util.Units.degreesToRadians(0), 0)
     );
 
-    static final Rotation2d ANGLE_TOLERANCE = Rotation2d.fromDegrees(0);
+    static final Rotation2d ANGLE_TOLERANCE = Rotation2d.fromDegrees(5);
     private static final double COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS = 0.2;
     static final BooleanEvent COLLECTION_DETECTION_BOOLEAN_EVENT = new BooleanEvent(
             CommandScheduler.getInstance().getActiveButtonLoop(),

@@ -103,6 +103,8 @@ public class RobotContainer {
 
         OperatorConstants.CORAL_COLLECTION_TRIGGER.whileTrue(CoralCollectionCommands.getCoralCollectionCommand());
         OperatorConstants.DRIVER_CONTROLLER.rightTrigger().whileTrue(CoralEjectionCommands.getCoralEjectionCommand());
+        OperatorConstants.DRIVER_CONTROLLER.a().whileTrue(CoralCollectionCommands.getCoralTransportCommand());
+        OperatorConstants.DRIVER_CONTROLLER.x().whileTrue(ArmCommands.getSetTargetStateCommand(ArmConstants.ArmState.SCORE_L4));
     }
 
     private void configureSysIDBindings(MotorSubsystem subsystem) {

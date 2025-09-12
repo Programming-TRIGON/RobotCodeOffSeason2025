@@ -88,7 +88,7 @@ public class SimulationFieldHandler {
     }
 
     private static void updateTransport() {
-        if (isTransportingCoral() && HELD_CORAL_INDEX != null) {
+        if (isTransportingCoral()) {
             IS_CORAL_IN_END_EFFECTOR = true;
         }
     }
@@ -140,7 +140,7 @@ public class SimulationFieldHandler {
     }
 
     private static boolean isEjectingCoral() {
-        return RobotContainer.INTAKE.atState(IntakeConstants.IntakeState.EJECT);
+        return RobotContainer.INTAKE.atState(IntakeConstants.IntakeState.EJECT) || RobotContainer.ARM.atState(ArmConstants.ArmState.EJECT);
     }
 
     private static boolean isEjectingAlgae() {
