@@ -50,19 +50,19 @@ public class ArmConstants {
     static final SimpleSensor DISTANCE_SENSOR = SimpleSensor.createDigitalSensor(DISTANCE_SENSOR_CHANNEL, DISTANCE_SENSOR_NAME);
 
     private static final double
-            ARM_GEAR_RATIO = 50,
+            ARM_GEAR_RATIO = 40,
             END_EFFECTOR_GEAR_RATIO = 17;
     private static final double ARM_MOTOR_CURRENT_LIMIT = 50;
     private static final double ANGLE_ENCODER_GRAVITY_OFFSET = 0;
     static final double POSITION_OFFSET_FROM_GRAVITY_OFFSET = RobotHardwareStats.isSimulation() ? 0 - Conversions.degreesToRotations(90) : 0 + Conversions.degreesToRotations(0) - ANGLE_ENCODER_GRAVITY_OFFSET;
     private static final boolean SHOULD_ARM_FOLLOWER_OPPOSE_MASTER = false;
     static final double
-            ARM_DEFAULT_MAXIMUM_VELOCITY = RobotHardwareStats.isSimulation() ? 0.6 : 0,
-            ARM_DEFAULT_MAXIMUM_ACCELERATION = RobotHardwareStats.isSimulation() ? 1.5 : 0,
+            ARM_DEFAULT_MAXIMUM_VELOCITY = RobotHardwareStats.isSimulation() ? 1.93 : 0,
+            ARM_DEFAULT_MAXIMUM_ACCELERATION = RobotHardwareStats.isSimulation() ? 189 : 0,
             ARM_DEFAULT_MAXIMUM_JERK = ARM_DEFAULT_MAXIMUM_ACCELERATION * 10;
     static final boolean FOC_ENABLED = true;
 
-    public static final double ARM_LENGTH_METERS = 0.67;
+    public static final double ARM_LENGTH_METERS = 0.52;
     private static final int
             ARM_MOTOR_AMOUNT = 2,
             END_EFFECTOR_MOTOR_AMOUNT = 1;
@@ -179,7 +179,8 @@ public class ArmConstants {
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
-        config.CurrentLimits.SupplyCurrentLimit = ARM_MOTOR_CURRENT_LIMIT;
+        config.CurrentLimits.StatorCurrentLimitEnable = true;
+        config.CurrentLimits.StatorCurrentLimit = ARM_MOTOR_CURRENT_LIMIT;
 
         ARM_FOLLOWER_MOTOR.applyConfiguration(config);
 
@@ -196,7 +197,8 @@ public class ArmConstants {
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         config.Feedback.RotorToSensorRatio = END_EFFECTOR_GEAR_RATIO;
 
-        config.CurrentLimits.SupplyCurrentLimit = 80;
+        config.CurrentLimits.StatorCurrentLimitEnable = true;
+        config.CurrentLimits.StatorCurrentLimit = 80;
 
         END_EFFECTOR_MOTOR.applyConfiguration(config);
         END_EFFECTOR_MOTOR.setPhysicsSimulation(END_EFFECTOR_SIMULATION);
