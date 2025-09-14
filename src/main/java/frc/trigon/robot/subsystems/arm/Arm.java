@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.trigon.robot.RobotContainer;
 import frc.trigon.robot.subsystems.MotorSubsystem;
 import lib.hardware.phoenix6.cancoder.CANcoderEncoder;
 import lib.hardware.phoenix6.cancoder.CANcoderSignal;
@@ -104,10 +105,6 @@ public class Arm extends MotorSubsystem {
         return currentToTargetStateDifferenceDegrees < ArmConstants.ANGLE_TOLERANCE.getDegrees();
     }
 
-    public boolean hasGamePiece() {
-        return ArmConstants.COLLECTION_DETECTION_BOOLEAN_EVENT.getAsBoolean();
-    }
-
     void setTargetState(ArmConstants.ArmState targetState) {
         this.isStateReversed = false;
         this.targetState = targetState;
@@ -142,7 +139,7 @@ public class Arm extends MotorSubsystem {
     void prepareForState(ArmConstants.ArmState targetState, boolean isStateReversed) {
         this.isStateReversed = isStateReversed;
         this.targetState = targetState;
-        
+
         if (isStateReversed) {
             setTargetAngle(ArmConstants.FULL_ROTATION.minus(targetState.targetAngle));
             return;
@@ -165,7 +162,7 @@ public class Arm extends MotorSubsystem {
 
     private Pose3d calculateVisualizationPose() {
         final Transform3d armTransform = new Transform3d(
-                new Translation3d(),
+                new Translation3d(0, 0, RobotContainer.ELEVATOR.getPositionMeters()),
                 new Rotation3d(0, getAngle().getRadians(), 0)
         );
         return ArmConstants.ARM_VISUALIZATION_ORIGIN_POINT.transformBy(armTransform);
