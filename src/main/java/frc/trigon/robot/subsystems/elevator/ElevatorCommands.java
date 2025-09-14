@@ -3,6 +3,7 @@ package frc.trigon.robot.subsystems.elevator;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.trigon.robot.RobotContainer;
+import frc.trigon.robot.subsystems.arm.ArmConstants;
 import lib.commands.ExecuteEndCommand;
 import lib.commands.NetworkTablesCommand;
 
@@ -18,6 +19,14 @@ public class ElevatorCommands {
         );
     }
 
+    public static Command getLoadCoralFromElevatorCommand() {
+        return new StartEndCommand(
+                RobotContainer.ELEVATOR::loadCoralFromElevator,
+                RobotContainer.ELEVATOR::stop,
+                RobotContainer.ELEVATOR
+        ).onlyIf(() -> RobotContainer.ARM.atState(ArmConstants.ArmState.REST));
+    }
+
     public static Command getSetTargetStateCommand(ElevatorConstants.ElevatorState targetState) {
         return new ExecuteEndCommand(
                 () -> RobotContainer.ELEVATOR.setTargetState(targetState),
@@ -25,7 +34,7 @@ public class ElevatorCommands {
                 RobotContainer.ELEVATOR
         );
     }
-    
+
     public static Command getSetTargetStateCommand(double targetPositionRotations) {
         return new ExecuteEndCommand(
                 () -> RobotContainer.ELEVATOR.setTargetPositionRotations(targetPositionRotations),

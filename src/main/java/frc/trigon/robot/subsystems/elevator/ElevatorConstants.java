@@ -163,6 +163,7 @@ public class ElevatorConstants {
 
     public enum ElevatorState {
         REST(0.603, 0.7),
+        LOAD_CORAL(0.5519, 0.7),
         SCORE_L1(0.603, 1),
         SCORE_L2(0.603, 1),
         SCORE_L3(1.003, 1),
