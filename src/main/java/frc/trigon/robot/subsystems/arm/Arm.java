@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.trigon.robot.RobotContainer;
 import frc.trigon.robot.subsystems.MotorSubsystem;
+import frc.trigon.robot.subsystems.elevator.ElevatorConstants;
 import lib.hardware.phoenix6.cancoder.CANcoderEncoder;
 import lib.hardware.phoenix6.cancoder.CANcoderSignal;
 import lib.hardware.phoenix6.talonfx.TalonFXMotor;
@@ -105,6 +106,10 @@ public class Arm extends MotorSubsystem {
         return currentToTargetStateDifferenceDegrees < ArmConstants.ANGLE_TOLERANCE.getDegrees();
     }
 
+    public Rotation2d getAngle() {
+        return Rotation2d.fromRotations(angleEncoder.getSignal(CANcoderSignal.POSITION));
+    }
+
     void setTargetState(ArmConstants.ArmState targetState) {
         this.isStateReversed = false;
         this.targetState = targetState;
@@ -147,12 +152,9 @@ public class Arm extends MotorSubsystem {
         setTargetAngle(targetState.targetAngle);
     }
 
-    private Rotation2d getAngle() {
-        return Rotation2d.fromRotations(angleEncoder.getSignal(CANcoderSignal.POSITION));
-    }
-
     private void setTargetAngle(Rotation2d targetAngle) {
-        armMasterMotor.setControl(positionRequest.withPosition(targetAngle.getRotations()));
+        Rotation2d minimumSafeAngle = Rotation2d.fromDegrees(Math.acos((RobotContainer.ELEVATOR.getPositionMeters() - ElevatorConstants.MINIMUM_ELEVATOR_SAFE_ZONE_METERS) / ArmConstants.ARM_LENGTH_METERS));
+        armMasterMotor.setControl(positionRequest.withPosition(Math.max(targetAngle.getRotations(), minimumSafeAngle.getRotations())));
     }
 
     private void setTargetVoltage(double targetVoltage) {

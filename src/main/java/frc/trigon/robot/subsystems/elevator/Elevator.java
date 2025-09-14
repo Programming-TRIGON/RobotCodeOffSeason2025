@@ -9,7 +9,9 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.trigon.robot.RobotContainer;
 import frc.trigon.robot.subsystems.MotorSubsystem;
+import frc.trigon.robot.subsystems.arm.ArmConstants;
 import lib.hardware.phoenix6.talonfx.TalonFXMotor;
 import lib.hardware.phoenix6.talonfx.TalonFXSignal;
 import lib.utilities.Conversions;
@@ -86,7 +88,9 @@ public class Elevator extends MotorSubsystem {
     }
 
     void setTargetPositionRotations(double targetPositionRotations) {
-        masterMotor.setControl(positionRequest.withPosition(targetPositionRotations));
+        double minimumSafeHeightMeters = Math.cos(RobotContainer.ARM.getAngle().getDegrees()) * ArmConstants.ARM_LENGTH_METERS + ElevatorConstants.MINIMUM_ELEVATOR_SAFE_ZONE_METERS;
+        double minimumSafeHeightRotations = metersToRotations(minimumSafeHeightMeters);
+        masterMotor.setControl(positionRequest.withPosition(Math.max(targetPositionRotations, minimumSafeHeightRotations)));
     }
 
     private Pose3d getFirstStageComponentPose() {

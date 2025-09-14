@@ -2,7 +2,10 @@ package frc.trigon.robot.subsystems.elevator;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.signals.*;
+import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -71,7 +74,7 @@ public class ElevatorConstants {
             new Rotation3d(0, 0, 0)
     );
     static final Pose3d ELEVATOR_SECOND_STAGE_VISUALIZATION_ORIGIN_POINT = new Pose3d(
-            new Translation3d(0, -0.17 ,0.0814),
+            new Translation3d(0, -0.17, 0.0814),
             new Rotation3d(0, 0, 0)
     );
     static final ElevatorMechanism2d MECHANISM = new ElevatorMechanism2d(
@@ -88,6 +91,7 @@ public class ElevatorConstants {
             REVERSE_LIMIT_SENSOR::getBinaryValue
     ).debounce(REVERSE_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS);
 
+    public static final double MINIMUM_ELEVATOR_SAFE_ZONE_METERS = 0.1;
     private static final DoubleSupplier REVERSE_LIMIT_SENSOR_SIMULATION_SUPPLIER = () -> 0;
 
     static {
@@ -106,13 +110,13 @@ public class ElevatorConstants {
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         config.Feedback.SensorToMechanismRatio = GEAR_RATIO;
 
-        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 3.5:0;
-        config.Slot0.kI = RobotHardwareStats.isSimulation() ? 0:0;
-        config.Slot0.kD = RobotHardwareStats.isSimulation() ? 0.4:0;
-        config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0.016165:0;
-        config.Slot0.kV = RobotHardwareStats.isSimulation() ? 0.4766:0;
-        config.Slot0.kA = RobotHardwareStats.isSimulation() ? 0.014239:0;
-        config.Slot0.kG = RobotHardwareStats.isSimulation() ? 0.58202:0;
+        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 3.5 : 0;
+        config.Slot0.kI = RobotHardwareStats.isSimulation() ? 0 : 0;
+        config.Slot0.kD = RobotHardwareStats.isSimulation() ? 0.4 : 0;
+        config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0.016165 : 0;
+        config.Slot0.kV = RobotHardwareStats.isSimulation() ? 0.4766 : 0;
+        config.Slot0.kA = RobotHardwareStats.isSimulation() ? 0.014239 : 0;
+        config.Slot0.kG = RobotHardwareStats.isSimulation() ? 0.58202 : 0;
 
         config.Slot0.GravityType = GravityTypeValue.Elevator_Static;
         config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;

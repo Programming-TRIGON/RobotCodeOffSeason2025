@@ -62,6 +62,7 @@ public class ArmConstants {
             ARM_DEFAULT_MAXIMUM_JERK = ARM_DEFAULT_MAXIMUM_ACCELERATION * 10;
     static final boolean FOC_ENABLED = true;
 
+    public static final double ARM_LENGTH_METERS = 0.67;
     private static final int
             ARM_MOTOR_AMOUNT = 2,
             END_EFFECTOR_MOTOR_AMOUNT = 1;
@@ -69,7 +70,6 @@ public class ArmConstants {
             ARM_GEARBOX = DCMotor.getKrakenX60Foc(ARM_MOTOR_AMOUNT),
             END_EFFECTOR_GEARBOX = DCMotor.getKrakenX60Foc(END_EFFECTOR_MOTOR_AMOUNT);
     private static final double
-            ARM_LENGTH_METERS = 0.67,
             ARM_MASS_KILOGRAMS = 3.5,
             END_EFFECTOR_MOMENT_OF_INERTIA = 0.003,
             END_EFFECTOR_MAXIMUM_DISPLAYABLE_VELOCITY = 12;
