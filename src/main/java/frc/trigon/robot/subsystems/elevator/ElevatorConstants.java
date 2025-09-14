@@ -91,7 +91,7 @@ public class ElevatorConstants {
             REVERSE_LIMIT_SENSOR::getBinaryValue
     ).debounce(REVERSE_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS);
 
-    public static final double MINIMUM_ELEVATOR_SAFE_ZONE_METERS = 0.1;
+    public static final double MINIMUM_ELEVATOR_SAFE_ZONE_METERS = 0.3262;
     private static final DoubleSupplier REVERSE_LIMIT_SENSOR_SIMULATION_SUPPLIER = () -> 0;
 
     static {
