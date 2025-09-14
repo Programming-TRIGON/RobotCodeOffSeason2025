@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.trigon.robot.RobotContainer;
+import lib.commands.ExecuteEndCommand;
 import lib.commands.GearRatioCalculationCommand;
 import lib.commands.NetworkTablesCommand;
 
@@ -33,7 +34,7 @@ public class ArmCommands {
     }
 
     public static Command getSetTargetStateCommand(ArmConstants.ArmState targetState, boolean isStateReversed) {
-        return new StartEndCommand(
+        return new ExecuteEndCommand(
                 () -> RobotContainer.ARM.setTargetState(targetState, isStateReversed),
                 RobotContainer.ARM::stop,
                 RobotContainer.ARM
@@ -41,7 +42,7 @@ public class ArmCommands {
     }
 
     public static Command getSetTargetStateCommand(ArmConstants.ArmState targetState) {
-        return new StartEndCommand(
+        return new ExecuteEndCommand(
                 () -> RobotContainer.ARM.setTargetState(targetState),
                 RobotContainer.ARM::stop,
                 RobotContainer.ARM
@@ -49,7 +50,7 @@ public class ArmCommands {
     }
 
     public static Command getPrepareForStateCommand(ArmConstants.ArmState targetState, boolean isStateReversed) {
-        return new StartEndCommand(
+        return new ExecuteEndCommand(
                 () -> RobotContainer.ARM.prepareForState(targetState, isStateReversed),
                 RobotContainer.ARM::stop,
                 RobotContainer.ARM
@@ -57,7 +58,7 @@ public class ArmCommands {
     }
 
     public static Command getPrepareForStateCommand(ArmConstants.ArmState targetState) {
-        return new StartEndCommand(
+        return new ExecuteEndCommand(
                 () -> RobotContainer.ARM.prepareForState(targetState),
                 RobotContainer.ARM::stop,
                 RobotContainer.ARM
