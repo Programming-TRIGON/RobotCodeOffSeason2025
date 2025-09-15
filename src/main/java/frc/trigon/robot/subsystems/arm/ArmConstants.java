@@ -57,8 +57,8 @@ public class ArmConstants {
     static final double POSITION_OFFSET_FROM_GRAVITY_OFFSET = RobotHardwareStats.isSimulation() ? 0 - Conversions.degreesToRotations(90) : 0 + Conversions.degreesToRotations(0) - ANGLE_ENCODER_GRAVITY_OFFSET;
     private static final boolean SHOULD_ARM_FOLLOWER_OPPOSE_MASTER = false;
     static final double
-            ARM_DEFAULT_MAXIMUM_VELOCITY = RobotHardwareStats.isSimulation() ? 1.93 : 0,
-            ARM_DEFAULT_MAXIMUM_ACCELERATION = RobotHardwareStats.isSimulation() ? 189 : 0,
+            ARM_DEFAULT_MAXIMUM_VELOCITY = RobotHardwareStats.isSimulation() ? 2.4614 : 0,
+            ARM_DEFAULT_MAXIMUM_ACCELERATION = RobotHardwareStats.isSimulation() ? 67.2344 : 0,
             ARM_DEFAULT_MAXIMUM_JERK = ARM_DEFAULT_MAXIMUM_ACCELERATION * 10;
     static final boolean FOC_ENABLED = true;
 
@@ -95,7 +95,7 @@ public class ArmConstants {
 
     static final SysIdRoutine.Config ARM_SYSID_CONFIG = new SysIdRoutine.Config(
             Units.Volts.of(1.5).per(Units.Seconds),
-            Units.Volts.of(1.5),
+            Units.Volts.of(3),
             Units.Second.of(1000)
     );
 
@@ -120,7 +120,6 @@ public class ArmConstants {
             CommandScheduler.getInstance().getActiveButtonLoop(),
             DISTANCE_SENSOR::getBinaryValue
     ).debounce(COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS);
-    static final Rotation2d FULL_ROTATION = Rotation2d.fromDegrees(360);
 
     static {
         configureArmMasterMotor();
@@ -143,13 +142,13 @@ public class ArmConstants {
         config.Feedback.FeedbackRemoteSensorID = ARM_MASTER_MOTOR.getID();
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
 
-        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 50 : 0;
+        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 100 : 0;
         config.Slot0.kI = RobotHardwareStats.isSimulation() ? 0 : 0;
         config.Slot0.kD = RobotHardwareStats.isSimulation() ? 0 : 0;
-        config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0.0067258 : 0;
-        config.Slot0.kV = RobotHardwareStats.isSimulation() ? 6.2 : 0;
-        config.Slot0.kA = RobotHardwareStats.isSimulation() ? 0.063357 : 0;
-        config.Slot0.kG = RobotHardwareStats.isSimulation() ? 0.15048 : 0;
+        config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0.026331 : 0;
+        config.Slot0.kV = RobotHardwareStats.isSimulation() ? 4.8752 : 0;
+        config.Slot0.kA = RobotHardwareStats.isSimulation() ? 0.17848 : 0;
+        config.Slot0.kG = RobotHardwareStats.isSimulation() ? 0.1117 : 0;
 
         config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
         config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
@@ -236,7 +235,7 @@ public class ArmConstants {
         PREPARE_SCORE_L1(Rotation2d.fromDegrees(80), 0),
         SCORE_L1(Rotation2d.fromDegrees(75), 4),
         PREPARE_SCORE_L2(Rotation2d.fromDegrees(95), 0),
-        SCORE_L2(Rotation2d.fromDegrees(90), 4),
+        SCORE_L2(Rotation2d.fromDegrees(180), 4),
         PREPARE_SCORE_L3(Rotation2d.fromDegrees(95), 0),
         SCORE_L3(Rotation2d.fromDegrees(90), 4),
         PREPARE_SCORE_L4(Rotation2d.fromDegrees(95), 0),

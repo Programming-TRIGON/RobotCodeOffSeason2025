@@ -81,6 +81,10 @@ public class Elevator extends MotorSubsystem {
         return rotationsToMeters(getPositionRotations());
     }
 
+    public boolean isElevatorAboveSafeZone() {
+        return getPositionMeters() >= ElevatorConstants.MAXIMUM_ELEVATOR_SAFE_ZONE_METERS;
+    }
+
     void loadCoralFromElevator() {
         this.targetState = ElevatorConstants.ElevatorState.LOAD_CORAL;
         scalePositionRequestSpeed(targetState.speedScalar);
@@ -94,7 +98,7 @@ public class Elevator extends MotorSubsystem {
     }
 
     void setTargetPositionRotations(double targetPositionRotations) {
-        double minimumSafeHeightMeters = Math.cos(RobotContainer.ARM.getAngle().getDegrees()) * ArmConstants.ARM_LENGTH_METERS + ElevatorConstants.MINIMUM_ELEVATOR_SAFE_ZONE_METERS;
+        double minimumSafeHeightMeters = RobotContainer.ARM.isArmAboveSafeZone() ? 0 : Math.cos(RobotContainer.ARM.getAngle().getDegrees()) * ArmConstants.ARM_LENGTH_METERS + ElevatorConstants.MINIMUM_ELEVATOR_SAFE_ZONE_METERS;
         double minimumSafeHeightRotations = metersToRotations(minimumSafeHeightMeters);
         masterMotor.setControl(positionRequest.withPosition(Math.max(targetPositionRotations, minimumSafeHeightRotations)));
     }

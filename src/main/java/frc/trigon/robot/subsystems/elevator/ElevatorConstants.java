@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.event.BooleanEvent;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.trigon.robot.subsystems.arm.ArmConstants;
 import lib.hardware.RobotHardwareStats;
 import lib.hardware.misc.simplesensor.SimpleSensor;
 import lib.hardware.phoenix6.talonfx.TalonFXMotor;
@@ -92,6 +93,7 @@ public class ElevatorConstants {
     ).debounce(REVERSE_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS);
 
     public static final double MINIMUM_ELEVATOR_SAFE_ZONE_METERS = 0.05;
+    public static final double MAXIMUM_ELEVATOR_SAFE_ZONE_METERS = MINIMUM_ELEVATOR_SAFE_ZONE_METERS + ArmConstants.ARM_LENGTH_METERS;
     private static final DoubleSupplier REVERSE_LIMIT_SENSOR_SIMULATION_SUPPLIER = () -> 0;
 
     static {

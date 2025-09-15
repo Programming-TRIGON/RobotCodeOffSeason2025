@@ -83,6 +83,10 @@ public class Arm extends MotorSubsystem {
         armMasterMotor.setControl(voltageRequest.withOutput(targetVoltage));
     }
 
+    public boolean isArmAboveSafeZone() {
+        return getAngle().getDegrees() >= 90;
+    }
+
     public boolean atState(ArmConstants.ArmState targetState, boolean isStateReversed) {
         if (isStateReversed)
             return this.targetState == targetState && atTargetAngle(isStateReversed);
@@ -95,7 +99,7 @@ public class Arm extends MotorSubsystem {
 
     public boolean atTargetAngle(boolean isStateReversed) {
         if (isStateReversed) {
-            final double currentToTargetStateDifferenceDegrees = Math.abs(ArmConstants.FULL_ROTATION.minus(targetState.targetAngle).minus(getAngle()).getDegrees());
+            final double currentToTargetStateDifferenceDegrees = Math.abs(subtractFrom360(targetState.targetAngle).minus(getAngle()).getDegrees());
             return currentToTargetStateDifferenceDegrees < ArmConstants.ANGLE_TOLERANCE.getDegrees();
         }
         return atTargetAngle();
@@ -122,7 +126,7 @@ public class Arm extends MotorSubsystem {
 
         if (isStateReversed) {
             setTargetState(
-                    ArmConstants.FULL_ROTATION.minus(targetState.targetAngle)
+                    subtractFrom360(targetState.targetAngle)
                     , targetState.targetEndEffectorVoltage
             );
             return;
@@ -146,20 +150,26 @@ public class Arm extends MotorSubsystem {
         this.targetState = targetState;
 
         if (isStateReversed) {
-            setTargetAngle(ArmConstants.FULL_ROTATION.minus(targetState.targetAngle));
+            subtractFrom360(targetState.targetAngle);
             return;
         }
         setTargetAngle(targetState.targetAngle);
     }
 
     private void setTargetAngle(Rotation2d targetAngle) {
-        Rotation2d minimumSafeAngle = Rotation2d.fromDegrees(Math.acos((RobotContainer.ELEVATOR.getPositionMeters() - ElevatorConstants.MINIMUM_ELEVATOR_SAFE_ZONE_METERS) / ArmConstants.ARM_LENGTH_METERS));
+        final double heightFromSafeZone = RobotContainer.ELEVATOR.getPositionMeters() - ElevatorConstants.MINIMUM_ELEVATOR_SAFE_ZONE_METERS;
+        final double cosMinimumAngle = heightFromSafeZone / ArmConstants.ARM_LENGTH_METERS;
+        final Rotation2d minimumSafeAngle = Rotation2d.fromRadians(RobotContainer.ELEVATOR.isElevatorAboveSafeZone() ? 0 : Math.acos(cosMinimumAngle));
         armMasterMotor.setControl(positionRequest.withPosition(Math.max(targetAngle.getRotations(), minimumSafeAngle.getRotations())));
     }
 
     private void setTargetVoltage(double targetVoltage) {
         ArmConstants.END_EFFECTOR_MECHANISM.setTargetVelocity(targetVoltage);
         endEffectorMotor.setControl(voltageRequest.withOutput(targetVoltage));
+    }
+
+    public static Rotation2d subtractFrom360(Rotation2d angleToSubtract) {
+        return Rotation2d.fromDegrees(360 - angleToSubtract.getDegrees());
     }
 
     private Pose3d calculateVisualizationPose() {
