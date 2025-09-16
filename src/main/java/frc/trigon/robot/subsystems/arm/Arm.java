@@ -118,7 +118,7 @@ public class Arm extends MotorSubsystem {
     }
 
     @AutoLogOutput(key = "Arm/InEndeffector")
-    public boolean inEndeffector() {
+    public boolean inEndEffector() {
         return SimulationFieldHandler.isCoralInEndEffector();
     }
 
