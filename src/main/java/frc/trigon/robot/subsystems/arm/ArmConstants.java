@@ -144,7 +144,7 @@ public class ArmConstants {
 
         config.Slot0.kP = RobotHardwareStats.isSimulation() ? 100 : 0;
         config.Slot0.kI = RobotHardwareStats.isSimulation() ? 0 : 0;
-        config.Slot0.kD = RobotHardwareStats.isSimulation() ? 0 : 0;
+        config.Slot0.kD = RobotHardwareStats.isSimulation() ? 1 : 0;
         config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0.026331 : 0;
         config.Slot0.kV = RobotHardwareStats.isSimulation() ? 4.8752 : 0;
         config.Slot0.kA = RobotHardwareStats.isSimulation() ? 0.17848 : 0;
