@@ -150,7 +150,7 @@ public class Arm extends MotorSubsystem {
         this.targetState = targetState;
 
         if (isStateReversed) {
-            subtractFrom360(targetState.targetAngle);
+            setTargetAngle(subtractFrom360(targetState.targetAngle));
             return;
         }
         setTargetAngle(targetState.targetAngle);
