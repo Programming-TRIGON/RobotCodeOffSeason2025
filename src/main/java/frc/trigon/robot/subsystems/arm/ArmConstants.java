@@ -160,7 +160,8 @@ public class ArmConstants {
         config.MotionMagic.MotionMagicAcceleration = ARM_DEFAULT_MAXIMUM_ACCELERATION;
         config.MotionMagic.MotionMagicJerk = config.MotionMagic.MotionMagicAcceleration * 10;
 
-        config.CurrentLimits.SupplyCurrentLimit = ARM_MOTOR_CURRENT_LIMIT;
+        config.CurrentLimits.StatorCurrentLimitEnable = true;
+        config.CurrentLimits.StatorCurrentLimit = ARM_MOTOR_CURRENT_LIMIT;
 
         ARM_MASTER_MOTOR.applyConfiguration(config);
         ARM_MASTER_MOTOR.setPhysicsSimulation(ARM_SIMULATION);
