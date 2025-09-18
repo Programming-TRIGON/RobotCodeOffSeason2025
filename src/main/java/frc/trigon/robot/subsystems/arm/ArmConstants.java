@@ -114,6 +114,7 @@ public class ArmConstants {
             new Rotation3d(0, 0, 0)
     );
 
+    static final Rotation2d MAXIMUM_ARM_SAFE_ZONE = Rotation2d.fromDegrees(90);
     static final Rotation2d ANGLE_TOLERANCE = Rotation2d.fromDegrees(0);
     private static final double COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS = 0.2;
     static final BooleanEvent COLLECTION_DETECTION_BOOLEAN_EVENT = new BooleanEvent(

@@ -84,7 +84,7 @@ public class Arm extends MotorSubsystem {
     }
 
     public boolean isArmAboveSafeZone() {
-        return getAngle().getDegrees() >= 90;
+        return getAngle().getDegrees() >= ArmConstants.MAXIMUM_ARM_SAFE_ZONE.getDegrees();
     }
 
     public boolean atState(ArmConstants.ArmState targetState, boolean isStateReversed) {
