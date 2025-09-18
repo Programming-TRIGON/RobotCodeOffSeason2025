@@ -89,7 +89,7 @@ public class Elevator extends MotorSubsystem {
         return getPositionMeters() - ElevatorConstants.MINIMUM_ELEVATOR_SAFE_ZONE_METERS;
     }
 
-    void prepareLoadCoral() {
+    void prepareForLoadCoral() {
         this.targetState = ElevatorConstants.ElevatorState.LOAD_CORAL;
         scalePositionRequestSpeed(targetState.speedScalar);
         masterMotor.setControl(positionRequest.withPosition(metersToRotations(ElevatorConstants.ElevatorState.LOAD_CORAL.targetPositionMeters)));
