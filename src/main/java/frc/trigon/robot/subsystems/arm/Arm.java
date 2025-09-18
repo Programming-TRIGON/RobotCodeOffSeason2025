@@ -97,6 +97,13 @@ public class Arm extends MotorSubsystem {
         return this.targetState == targetState && atAngle(targetState.targetAngle);
     }
 
+    public boolean atTargetAngle() {
+        if (isStateReversed) {
+            return atAngle(subtractFrom360Degrees(targetState.targetAngle));
+        }
+        return atAngle(targetState.targetAngle);
+    }
+
     public Rotation2d getAngle() {
         return Rotation2d.fromRotations(angleEncoder.getSignal(CANcoderSignal.POSITION));
     }
