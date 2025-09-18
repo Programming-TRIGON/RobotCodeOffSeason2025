@@ -33,37 +33,27 @@ public class ArmCommands {
         );
     }
 
+    public static Command getSetTargetStateCommand(ArmConstants.ArmState targetState) {
+        return getSetTargetStateCommand(targetState, false);
+    }
+
     public static Command getSetTargetStateCommand(ArmConstants.ArmState targetState, boolean isStateReversed) {
         return new FunctionalCommand(
                 () -> RobotContainer.ARM.setEndEffectorState(targetState),
-                () -> RobotContainer.ARM.setTargetState(targetState, isStateReversed),
-                interrupted -> RobotContainer.ARM.stop(),
-                () -> false,
-                RobotContainer.ARM
-        );
-    }
-
-    public static Command getSetTargetStateCommand(ArmConstants.ArmState targetState) {
-        return new FunctionalCommand(
-                () -> RobotContainer.ARM.setEndEffectorState(targetState),
-                () -> RobotContainer.ARM.setArmState(targetState),
-                interrupted -> RobotContainer.ARM.stop(),
-                () -> false,
-                RobotContainer.ARM
-        );
-    }
-
-    public static Command getPrepareForStateCommand(ArmConstants.ArmState targetState, boolean isStateReversed) {
-        return new ExecuteEndCommand(
                 () -> RobotContainer.ARM.setArmState(targetState, isStateReversed),
-                RobotContainer.ARM::stop,
+                interrupted -> RobotContainer.ARM.stop(),
+                () -> false,
                 RobotContainer.ARM
         );
     }
 
     public static Command getPrepareForStateCommand(ArmConstants.ArmState targetState) {
+        return getPrepareForStateCommand(targetState, false);
+    }
+
+    public static Command getPrepareForStateCommand(ArmConstants.ArmState targetState, boolean isStateReversed) {
         return new ExecuteEndCommand(
-                () -> RobotContainer.ARM.setArmState(targetState),
+                () -> RobotContainer.ARM.setArmState(targetState, isStateReversed),
                 RobotContainer.ARM::stop,
                 RobotContainer.ARM
         );
