@@ -29,7 +29,6 @@ public class Arm extends MotorSubsystem {
     ).withEnableFOC(ArmConstants.FOC_ENABLED);
     public boolean isStateReversed = false;
     private ArmConstants.ArmState targetState = ArmConstants.ArmState.REST;
-    private Rotation2d calculatedMinimumArmAngle;
 
     public Arm() {
         setName("Arm");
@@ -155,10 +154,6 @@ public class Arm extends MotorSubsystem {
         setTargetAngle(targetState.targetAngle);
     }
 
-    boolean isArmAtCalculatedMinimumAngle() {
-        return atAngle(calculatedMinimumArmAngle);
-    }
-
     private void setTargetAngle(Rotation2d targetAngle) {
         final boolean isAboveSafeZone = RobotContainer.ELEVATOR.isElevatorAboveSafeZone();
         final double heightFromSafeZone = RobotContainer.ELEVATOR.getElevatorHeightFromMinimumSafeZone();
@@ -166,7 +161,6 @@ public class Arm extends MotorSubsystem {
         final Rotation2d minSafeAngle = isAboveSafeZone
                 ? Rotation2d.fromRadians(0)
                 : Rotation2d.fromRadians(Math.acos(cosOfMinimumSafeAngle));
-        calculatedMinimumArmAngle = minSafeAngle;
         armMasterMotor.setControl(positionRequest.withPosition(Math.max(targetAngle.getRotations(), minSafeAngle.getRotations())));
 
     }
