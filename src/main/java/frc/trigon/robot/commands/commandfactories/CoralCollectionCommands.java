@@ -46,7 +46,7 @@ public class CoralCollectionCommands {
     private static Command getCollectionConfirmationCommand() {
         return new ParallelCommandGroup(
                 new InstantCommand(() -> OperatorConstants.DRIVER_CONTROLLER.rumble(OperatorConstants.RUMBLE_DURATION_SECONDS, OperatorConstants.RUMBLE_POWER)),
-                LEDCommands.getAnimateCommand(LEDConstants.COLLECTION_CONFIRMATION_ANIMATION_SETTINGS) //TODO: add LEDs
+                LEDCommands.getAnimateCommand(LEDConstants.CORAL_COLLECTION_CONFIRMATION_ANIMATION_SETTINGS) //TODO: add LEDs
         );
     }
 }

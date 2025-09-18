@@ -11,6 +11,7 @@ import lib.hardware.phoenix6.cancoder.CANcoderEncoder;
 import lib.hardware.phoenix6.cancoder.CANcoderSignal;
 import lib.hardware.phoenix6.talonfx.TalonFXMotor;
 import lib.hardware.phoenix6.talonfx.TalonFXSignal;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Arm extends MotorSubsystem {
@@ -108,6 +109,11 @@ public class Arm extends MotorSubsystem {
         return ArmConstants.COLLECTION_DETECTION_BOOLEAN_EVENT.getAsBoolean();
     }
 
+    @AutoLogOutput
+    public boolean isEndEffectorMovingSlowly() {
+        return ArmConstants.IS_MOVING_SLOWLY_BOOLEAN_EVENT.getAsBoolean();
+    }
+
     void setTargetState(ArmConstants.ArmState targetState) {
         this.isStateReversed = false;
         this.targetState = targetState;
@@ -142,7 +148,7 @@ public class Arm extends MotorSubsystem {
     void prepareForState(ArmConstants.ArmState targetState, boolean isStateReversed) {
         this.isStateReversed = isStateReversed;
         this.targetState = targetState;
-        
+
         if (isStateReversed) {
             setTargetAngle(ArmConstants.FULL_ROTATION.minus(targetState.targetAngle));
             return;

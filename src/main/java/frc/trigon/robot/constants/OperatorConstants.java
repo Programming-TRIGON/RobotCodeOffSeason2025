@@ -3,6 +3,7 @@ package frc.trigon.robot.constants;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.trigon.robot.commands.commandclasses.IntakeAssistCommand;
+import frc.trigon.robot.commands.commandfactories.AlgaeManipulationCommands;
 import lib.hardware.misc.KeyboardController;
 import lib.hardware.misc.XboxController;
 
@@ -39,4 +40,10 @@ public class OperatorConstants {
             FORWARD_DYNAMIC_CHARACTERIZATION_TRIGGER = OPERATOR_CONTROLLER.up(),
             BACKWARD_DYNAMIC_CHARACTERIZATION_TRIGGER = OPERATOR_CONTROLLER.down();
     public static final Trigger CORAL_COLLECTION_TRIGGER = DRIVER_CONTROLLER.leftTrigger().or(OPERATOR_CONTROLLER.c());
+    public static final Trigger
+            SCORE_ALGAE_IN_NET_TRIGGER = OPERATOR_CONTROLLER.n().or((DRIVER_CONTROLLER.rightStick().and(() -> AlgaeManipulationCommands.IS_HOLDING_ALGAE))),
+            SCORE_ALGAE_IN_PROCESSOR_TRIGGER = OPERATOR_CONTROLLER.j().or((DRIVER_CONTROLLER.leftStick().and(() -> AlgaeManipulationCommands.IS_HOLDING_ALGAE))),
+            STOP_ALGAE_AUTO_ALIGN_OVERRIDE_TRIGGER = DRIVER_CONTROLLER.x().and(() -> AlgaeManipulationCommands.IS_HOLDING_ALGAE),
+            ALGAE_COLLECTION_TRIGGER = DRIVER_CONTROLLER.a().or(OPERATOR_CONTROLLER.a());
+
 }
