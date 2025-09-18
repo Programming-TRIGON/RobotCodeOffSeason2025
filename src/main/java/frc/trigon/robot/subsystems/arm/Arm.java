@@ -99,7 +99,7 @@ public class Arm extends MotorSubsystem {
 
     public boolean atTargetAngle(boolean isStateReversed) {
         if (isStateReversed) {
-            final double currentToTargetStateDifferenceDegrees = Math.abs(subtractFrom360(targetState.targetAngle).minus(getAngle()).getDegrees());
+            final double currentToTargetStateDifferenceDegrees = Math.abs(subtractFrom360Degrees(targetState.targetAngle).minus(getAngle()).getDegrees());
             return currentToTargetStateDifferenceDegrees < ArmConstants.ANGLE_TOLERANCE.getDegrees();
         }
         return atTargetAngle();
@@ -126,7 +126,7 @@ public class Arm extends MotorSubsystem {
 
         if (isStateReversed) {
             setTargetState(
-                    subtractFrom360(targetState.targetAngle)
+                    subtractFrom360Degrees(targetState.targetAngle)
                     , targetState.targetEndEffectorVoltage
             );
             return;
@@ -150,7 +150,7 @@ public class Arm extends MotorSubsystem {
         this.targetState = targetState;
 
         if (isStateReversed) {
-            setTargetAngle(subtractFrom360(targetState.targetAngle));
+            setTargetAngle(subtractFrom360Degrees(targetState.targetAngle));
             return;
         }
         setTargetAngle(targetState.targetAngle);
@@ -168,7 +168,7 @@ public class Arm extends MotorSubsystem {
         endEffectorMotor.setControl(voltageRequest.withOutput(targetVoltage));
     }
 
-    public static Rotation2d subtractFrom360(Rotation2d angleToSubtract) {
+    public static Rotation2d subtractFrom360Degrees(Rotation2d angleToSubtract) {
         return Rotation2d.fromDegrees(360 - angleToSubtract.getDegrees());
     }
 
