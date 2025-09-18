@@ -116,7 +116,7 @@ public class ArmConstants {
     /**
      * The highest point of the arms angular zone where the safety logic applies.
      */
-    static final Rotation2d MAXIMUM_ARM_SAFE_ZONE = Rotation2d.fromDegrees(90);
+    static final Rotation2d MAXIMUM_ARM_SAFE_ANGLE = Rotation2d.fromDegrees(90);
     static final Rotation2d ANGLE_TOLERANCE = Rotation2d.fromDegrees(0);
     private static final double COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS = 0.2;
     static final BooleanEvent COLLECTION_DETECTION_BOOLEAN_EVENT = new BooleanEvent(

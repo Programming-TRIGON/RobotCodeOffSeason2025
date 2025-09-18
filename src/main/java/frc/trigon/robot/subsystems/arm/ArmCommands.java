@@ -37,7 +37,7 @@ public class ArmCommands {
         return new FunctionalCommand(
                 () -> RobotContainer.ARM.setEndEffectorState(targetState),
                 () -> RobotContainer.ARM.setTargetState(targetState, isStateReversed),
-                null,
+                interrupted -> RobotContainer.ARM.stop(),
                 () -> false,
                 RobotContainer.ARM
         );
@@ -47,7 +47,7 @@ public class ArmCommands {
         return new FunctionalCommand(
                 () -> RobotContainer.ARM.setEndEffectorState(targetState),
                 () -> RobotContainer.ARM.setArmState(targetState),
-                null,
+                interrupted -> RobotContainer.ARM.stop(),
                 () -> false,
                 RobotContainer.ARM
         );
