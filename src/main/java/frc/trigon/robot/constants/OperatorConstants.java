@@ -43,6 +43,7 @@ public class OperatorConstants {
     public static final Trigger
             SCORE_ALGAE_IN_NET_TRIGGER = OPERATOR_CONTROLLER.n().or((DRIVER_CONTROLLER.rightStick().and(() -> AlgaeManipulationCommands.IS_HOLDING_ALGAE))),
             SCORE_ALGAE_IN_PROCESSOR_TRIGGER = OPERATOR_CONTROLLER.j().or((DRIVER_CONTROLLER.leftStick().and(() -> AlgaeManipulationCommands.IS_HOLDING_ALGAE))),
+            EJECT_ALGAE_TRIGGER = OPERATOR_CONTROLLER.p().and(() -> AlgaeManipulationCommands.IS_HOLDING_ALGAE),
             STOP_ALGAE_AUTO_ALIGN_OVERRIDE_TRIGGER = DRIVER_CONTROLLER.x().and(() -> AlgaeManipulationCommands.IS_HOLDING_ALGAE),
             ALGAE_COLLECTION_TRIGGER = DRIVER_CONTROLLER.a().or(OPERATOR_CONTROLLER.a());
 

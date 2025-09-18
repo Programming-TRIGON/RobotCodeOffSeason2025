@@ -56,7 +56,8 @@ public class AlgaeManipulationCommands {
                 Map.of(
                         0, getHoldAlgaeCommand(),
                         1, getScoreInNetCommand(),
-                        2, getScoreInProcessorCommand()
+                        2, getScoreInProcessorCommand(),
+                        3, getEjectAlgaeCommand()
                 ),
                 AlgaeManipulationCommands::getAlgaeScoreMethodSelector
         ).raceWith(new WaitUntilChangeCommand<>(AlgaeManipulationCommands::isScoreAlgaeButtonPressed)).repeatedly();
@@ -86,6 +87,13 @@ public class AlgaeManipulationCommands {
         );
     }
 
+    private static Command getEjectAlgaeCommand() {
+        return new ParallelCommandGroup(
+                ArmCommands.getSetTargetStateCommand(ArmConstants.ArmState.EJECT_ALGAE),
+                ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.REST)
+        ).until(() -> !RobotContainer.ARM.hasGamePiece());
+    }
+
     private static Command getArmScoringSequenceCommand(ArmConstants.ArmState prepareState, ArmConstants.ArmState scoreState) {
         return new SequentialCommandGroup(
                 ArmCommands.getSetTargetStateCommand(prepareState).until(OperatorConstants.CONTINUE_TRIGGER),
@@ -96,8 +104,10 @@ public class AlgaeManipulationCommands {
     private static int getAlgaeScoreMethodSelector() {
         if (OperatorConstants.SCORE_ALGAE_IN_NET_TRIGGER.getAsBoolean())
             return 1;
-        else if (OperatorConstants.SCORE_ALGAE_IN_PROCESSOR_TRIGGER.getAsBoolean())
+        if (OperatorConstants.SCORE_ALGAE_IN_PROCESSOR_TRIGGER.getAsBoolean())
             return 2;
+        if (OperatorConstants.EJECT_ALGAE_TRIGGER.getAsBoolean())
+            return 3;
         return 0;
     }
 

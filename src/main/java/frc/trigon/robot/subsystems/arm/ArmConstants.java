@@ -251,7 +251,8 @@ public class ArmConstants {
         PREPARE_PROCESSOR_SCORE(Rotation2d.fromDegrees(90), HOLD_ALGAE.targetEndEffectorVoltage),
         SCORE_PROCESSOR(Rotation2d.fromDegrees(90), 4),
         COLLECT_ALGAE_FROM_REEF(Rotation2d.fromDegrees(90), -4),
-        COLLECT_ALGAE_GROUND(Rotation2d.fromDegrees(90), -4);
+        COLLECT_ALGAE_GROUND(Rotation2d.fromDegrees(90), -4),
+        EJECT_ALGAE(Rotation2d.fromDegrees(90), 4);
 
         public final Rotation2d targetAngle;
         public final double targetEndEffectorVoltage;
