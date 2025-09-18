@@ -85,7 +85,7 @@ public class CoralPlacingCommands {
 
     private static Command scoreFromGripperReefChooserCommand() {
         return new SequentialCommandGroup(
-                ArmCommands.getPrepareForStateCommand(REEF_CHOOSER::getArmState).until(OperatorConstants.CONTINUE_TRIGGER),
+                ArmCommands.(REEF_CHOOSER::getArmState).until(OperatorConstants.CONTINUE_TRIGGER),
                 ArmCommands.getSetTargetStateCommand(REEF_CHOOSER::getArmState).finallyDo(OperatorConstants.REEF_CHOOSER::switchReefSide)
         );
     }

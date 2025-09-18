@@ -13,6 +13,7 @@ import lib.hardware.phoenix6.cancoder.CANcoderEncoder;
 import lib.hardware.phoenix6.cancoder.CANcoderSignal;
 import lib.hardware.phoenix6.talonfx.TalonFXMotor;
 import lib.hardware.phoenix6.talonfx.TalonFXSignal;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Arm extends MotorSubsystem {
@@ -102,6 +103,11 @@ public class Arm extends MotorSubsystem {
             return atAngle(subtractFrom360Degrees(targetState.targetAngle));
         }
         return atAngle(targetState.targetAngle);
+    }
+
+    @AutoLogOutput(key = "Arm/HasCoral")
+    public boolean hasGamePiece() {
+        return ArmConstants.COLLECTION_DETECTION_BOOLEAN_EVENT.getAsBoolean();
     }
 
     public Rotation2d getAngle() {
