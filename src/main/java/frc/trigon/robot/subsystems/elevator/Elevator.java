@@ -102,8 +102,12 @@ public class Elevator extends MotorSubsystem {
     }
 
     void setTargetPositionRotations(double targetPositionRotations) {
-        final double elevatorHeightFromArm = Math.cos(RobotContainer.ARM.getAngle().getRadians()) * ArmConstants.ARM_LENGTH_METERS;
-        final double minimumSafeHeightMeters = (RobotContainer.ARM.isArmAboveSafeZone() ? 0 : elevatorHeightFromArm) + ElevatorConstants.MINIMUM_ELEVATOR_SAFE_ZONE_METERS;
+        final double armCos = RobotContainer.ARM.getAngle().getRadians() * ArmConstants.ARM_LENGTH_METERS;
+        final double elevatorHeightFromArm = Math.cos(armCos);
+        final double minimumSafeElevatorHeight = ElevatorConstants.MINIMUM_ELEVATOR_SAFE_ZONE_METERS;
+        final double minimumSafeHeightMeters = (RobotContainer.ARM.isArmAboveSafeZone()
+                ? 0 : elevatorHeightFromArm)
+                + minimumSafeElevatorHeight;
         final double minimumSafeHeightRotations = metersToRotations(minimumSafeHeightMeters);
         masterMotor.setControl(positionRequest.withPosition(Math.max(targetPositionRotations, minimumSafeHeightRotations)));
     }
