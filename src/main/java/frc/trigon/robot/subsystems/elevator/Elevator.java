@@ -85,6 +85,10 @@ public class Elevator extends MotorSubsystem {
         return getPositionMeters() >= ElevatorConstants.MAXIMUM_ELEVATOR_SAFE_ZONE_METERS;
     }
 
+    public double getElevatorHeightFromSafeZone() {
+        return getPositionMeters() - ElevatorConstants.MAXIMUM_ELEVATOR_SAFE_ZONE_METERS;
+    }
+
     void prepareLoadCoral() {
         this.targetState = ElevatorConstants.ElevatorState.LOAD_CORAL;
         scalePositionRequestSpeed(targetState.speedScalar);

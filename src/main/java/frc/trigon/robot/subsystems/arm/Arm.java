@@ -2,13 +2,13 @@ package frc.trigon.robot.subsystems.arm;
 
 import com.ctre.phoenix6.controls.DynamicMotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.trigon.robot.RobotContainer;
 import frc.trigon.robot.subsystems.MotorSubsystem;
-import frc.trigon.robot.subsystems.elevator.ElevatorConstants;
 import lib.hardware.phoenix6.cancoder.CANcoderEncoder;
 import lib.hardware.phoenix6.cancoder.CANcoderSignal;
 import lib.hardware.phoenix6.talonfx.TalonFXMotor;
@@ -157,10 +157,14 @@ public class Arm extends MotorSubsystem {
     }
 
     private void setTargetAngle(Rotation2d targetAngle) {
-        final double distanceFromSafeZone = RobotContainer.ELEVATOR.getPositionMeters() - ElevatorConstants.MINIMUM_ELEVATOR_SAFE_ZONE_METERS;
-        final double cosMinimumAngle = distanceFromSafeZone / ArmConstants.ARM_LENGTH_METERS;
-        final Rotation2d minimumSafeAngle = Rotation2d.fromRadians(RobotContainer.ELEVATOR.isElevatorAboveSafeZone() ? 0 : Math.acos(cosMinimumAngle));
-        armMasterMotor.setControl(positionRequest.withPosition(Math.max(targetAngle.getRotations(), minimumSafeAngle.getRotations())));
+        final boolean isAboveSafeZone = RobotContainer.ELEVATOR.isElevatorAboveSafeZone();
+        final double heightFromSafeZone = RobotContainer.ELEVATOR.getElevatorHeightFromSafeZone();
+        final double cosOfMinimumSafeAngle = MathUtil.clamp(heightFromSafeZone / ArmConstants.ARM_LENGTH_METERS, 0, 1);
+        final Rotation2d minSafeAngle = isAboveSafeZone
+                ? Rotation2d.fromRadians(0)
+                : Rotation2d.fromRadians(Math.acos(cosOfMinimumSafeAngle));
+        armMasterMotor.setControl(positionRequest.withPosition(Math.max(targetAngle.getRotations(), minSafeAngle.getRotations())));
+
     }
 
     private void setTargetVoltage(double targetVoltage) {
