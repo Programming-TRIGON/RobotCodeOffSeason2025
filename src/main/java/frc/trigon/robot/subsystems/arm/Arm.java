@@ -61,7 +61,7 @@ public class Arm extends MotorSubsystem {
     @Override
     public void updateMechanism() {
         ArmConstants.ARM_MECHANISM.update(
-                Rotation2d.fromRotations(getAngle().getRotations() + ArmConstants.POSITION_OFFSET_FROM_GRAVITY_OFFSET),
+                Rotation2d.fromRotations(getAngle().getRotations()),
                 Rotation2d.fromRotations(armMasterMotor.getSignal(TalonFXSignal.CLOSED_LOOP_REFERENCE) + ArmConstants.POSITION_OFFSET_FROM_GRAVITY_OFFSET)
         );
         ArmConstants.END_EFFECTOR_MECHANISM.update(endEffectorMotor.getSignal(TalonFXSignal.MOTOR_VOLTAGE));
@@ -109,7 +109,7 @@ public class Arm extends MotorSubsystem {
     }
 
     public Rotation2d getAngle() {
-        return Rotation2d.fromRotations(angleEncoder.getSignal(CANcoderSignal.POSITION));
+        return Rotation2d.fromRotations(angleEncoder.getSignal(CANcoderSignal.POSITION) + ArmConstants.POSITION_OFFSET_FROM_GRAVITY_OFFSET);
     }
 
     void setTargetState(ArmConstants.ArmState targetState) {
