@@ -54,7 +54,7 @@ public class ArmConstants {
             END_EFFECTOR_GEAR_RATIO = 17;
     private static final double ARM_MOTOR_CURRENT_LIMIT = 50;
     private static final double ANGLE_ENCODER_GRAVITY_OFFSET = 0;
-    static final double POSITION_OFFSET_FROM_GRAVITY_OFFSET = RobotHardwareStats.isSimulation() ? 0 + Conversions.degreesToRotations(90) : 0 + Conversions.degreesToRotations(0) - ANGLE_ENCODER_GRAVITY_OFFSET;
+    static final double POSITION_OFFSET_FROM_GRAVITY_OFFSET = RobotHardwareStats.isSimulation() ? 0 - Conversions.degreesToRotations(90) : 0 + Conversions.degreesToRotations(0) - ANGLE_ENCODER_GRAVITY_OFFSET;
     private static final boolean SHOULD_ARM_FOLLOWER_OPPOSE_MASTER = false;
     static final double
             ARM_DEFAULT_MAXIMUM_VELOCITY = RobotHardwareStats.isSimulation() ? 2.4614 : 0,
