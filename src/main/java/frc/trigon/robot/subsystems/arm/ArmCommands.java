@@ -2,7 +2,7 @@ package frc.trigon.robot.subsystems.arm;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import frc.trigon.robot.RobotContainer;
 import lib.commands.ExecuteEndCommand;
 import lib.commands.GearRatioCalculationCommand;
@@ -34,24 +34,28 @@ public class ArmCommands {
     }
 
     public static Command getSetTargetStateCommand(ArmConstants.ArmState targetState, boolean isStateReversed) {
-        return new ExecuteEndCommand(
+        return new FunctionalCommand(
+                () -> RobotContainer.ARM.setEndEffectorState(targetState),
                 () -> RobotContainer.ARM.setTargetState(targetState, isStateReversed),
-                RobotContainer.ARM::stop,
+                null,
+                () -> false,
                 RobotContainer.ARM
         );
     }
 
     public static Command getSetTargetStateCommand(ArmConstants.ArmState targetState) {
-        return new ExecuteEndCommand(
+        return new FunctionalCommand(
+                () -> RobotContainer.ARM.setEndEffectorState(targetState),
                 () -> RobotContainer.ARM.setTargetState(targetState),
-                RobotContainer.ARM::stop,
+                null,
+                () -> false,
                 RobotContainer.ARM
         );
     }
 
     public static Command getPrepareForStateCommand(ArmConstants.ArmState targetState, boolean isStateReversed) {
         return new ExecuteEndCommand(
-                () -> RobotContainer.ARM.prepareForState(targetState, isStateReversed),
+                () -> RobotContainer.ARM.setArmState(targetState, isStateReversed),
                 RobotContainer.ARM::stop,
                 RobotContainer.ARM
         );
@@ -59,7 +63,7 @@ public class ArmCommands {
 
     public static Command getPrepareForStateCommand(ArmConstants.ArmState targetState) {
         return new ExecuteEndCommand(
-                () -> RobotContainer.ARM.prepareForState(targetState),
+                () -> RobotContainer.ARM.setArmState(targetState),
                 RobotContainer.ARM::stop,
                 RobotContainer.ARM
         );

@@ -139,11 +139,11 @@ public class Arm extends MotorSubsystem {
         setTargetVoltage(targetVoltage);
     }
 
-    void prepareForState(ArmConstants.ArmState targetState) {
-        prepareForState(targetState, false);
+    void setArmState(ArmConstants.ArmState targetState) {
+        setArmState(targetState, false);
     }
 
-    void prepareForState(ArmConstants.ArmState targetState, boolean isStateReversed) {
+    void setArmState(ArmConstants.ArmState targetState, boolean isStateReversed) {
         this.isStateReversed = isStateReversed;
         this.targetState = targetState;
 
@@ -152,6 +152,9 @@ public class Arm extends MotorSubsystem {
             return;
         }
         setTargetAngle(targetState.targetAngle);
+    }
+    void setEndEffectorState(ArmConstants.ArmState targetState){
+        setTargetVoltage(targetState.targetEndEffectorVoltage);
     }
 
     private void setTargetAngle(Rotation2d targetAngle) {
@@ -170,7 +173,7 @@ public class Arm extends MotorSubsystem {
         return currentToTargetAngleDifferenceDegrees < ArmConstants.ANGLE_TOLERANCE.getDegrees();
     }
 
-    private void setTargetVoltage(double targetVoltage) {
+     void setTargetVoltage(double targetVoltage) {
         ArmConstants.END_EFFECTOR_MECHANISM.setTargetVelocity(targetVoltage);
         endEffectorMotor.setControl(voltageRequest.withOutput(targetVoltage));
     }
