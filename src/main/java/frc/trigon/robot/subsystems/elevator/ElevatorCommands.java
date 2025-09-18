@@ -19,14 +19,6 @@ public class ElevatorCommands {
         );
     }
 
-    public static Command getPrepareForLoadCoralCommand() {
-        return new StartEndCommand(
-                RobotContainer.ELEVATOR::prepareForLoadCoral,
-                RobotContainer.ELEVATOR::stop,
-                RobotContainer.ELEVATOR
-        ).onlyIf(() -> RobotContainer.ARM.atState(ArmConstants.ArmState.REST));
-    }
-
     public static Command getSetTargetStateCommand(ElevatorConstants.ElevatorState targetState) {
         return new ExecuteEndCommand(
                 () -> RobotContainer.ELEVATOR.setTargetState(targetState),

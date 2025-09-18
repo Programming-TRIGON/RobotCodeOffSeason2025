@@ -46,7 +46,7 @@ public class ArmCommands {
     public static Command getSetTargetStateCommand(ArmConstants.ArmState targetState) {
         return new FunctionalCommand(
                 () -> RobotContainer.ARM.setEndEffectorState(targetState),
-                () -> RobotContainer.ARM.setTargetState(targetState),
+                () -> RobotContainer.ARM.setArmState(targetState),
                 null,
                 () -> false,
                 RobotContainer.ARM

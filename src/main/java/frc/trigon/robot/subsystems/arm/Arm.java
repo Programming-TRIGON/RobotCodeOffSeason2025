@@ -161,7 +161,7 @@ public class Arm extends MotorSubsystem {
         final boolean isElevatorAboveSafeZone = RobotContainer.ELEVATOR.isElevatorAboveSafeZone();
         final double heightFromSafeZone = RobotContainer.ELEVATOR.getElevatorHeightFromMinimumSafeZone();
         final double cosOfMinimumSafeAngle = MathUtil.clamp(heightFromSafeZone / ArmConstants.ARM_LENGTH_METERS, 0, 1);
-        final Rotation2d minSafeAngle = isAboveSafeZone
+        final Rotation2d minSafeAngle = isElevatorAboveSafeZone
                 ? Rotation2d.fromRadians(0)
                 : Rotation2d.fromRadians(Math.acos(cosOfMinimumSafeAngle));
         armMasterMotor.setControl(positionRequest.withPosition(Math.max(targetAngle.getRotations(), minSafeAngle.getRotations())));
