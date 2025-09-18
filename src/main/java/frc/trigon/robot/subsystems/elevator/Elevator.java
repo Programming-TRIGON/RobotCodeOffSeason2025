@@ -85,8 +85,8 @@ public class Elevator extends MotorSubsystem {
         return getPositionMeters() >= ElevatorConstants.MAXIMUM_ELEVATOR_SAFE_ZONE_METERS;
     }
 
-    public double getElevatorHeightFromSafeZone() {
-        return getPositionMeters() - ElevatorConstants.MAXIMUM_ELEVATOR_SAFE_ZONE_METERS;
+    public double getElevatorHeightFromMinimumSafeZone() {
+        return getPositionMeters() - ElevatorConstants.MINIMUM_ELEVATOR_SAFE_ZONE_METERS;
     }
 
     void prepareLoadCoral() {
