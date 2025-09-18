@@ -2,8 +2,9 @@ package frc.trigon.robot.subsystems.arm;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import frc.trigon.robot.RobotContainer;
+import lib.commands.ExecuteEndCommand;
 import lib.commands.GearRatioCalculationCommand;
 import lib.commands.NetworkTablesCommand;
 
@@ -32,33 +33,27 @@ public class ArmCommands {
         );
     }
 
-    public static Command getSetTargetStateCommand(ArmConstants.ArmState targetState, boolean isStateReversed) {
-        return new StartEndCommand(
-                () -> RobotContainer.ARM.setTargetState(targetState, isStateReversed),
-                RobotContainer.ARM::stop,
-                RobotContainer.ARM
-        );
-    }
-
     public static Command getSetTargetStateCommand(ArmConstants.ArmState targetState) {
-        return new StartEndCommand(
-                () -> RobotContainer.ARM.setTargetState(targetState),
-                RobotContainer.ARM::stop,
-                RobotContainer.ARM
-        );
+        return getSetTargetStateCommand(targetState, false);
     }
 
-    public static Command getPrepareForStateCommand(ArmConstants.ArmState targetState, boolean isStateReversed) {
-        return new StartEndCommand(
-                () -> RobotContainer.ARM.prepareForState(targetState, isStateReversed),
-                RobotContainer.ARM::stop,
+    public static Command getSetTargetStateCommand(ArmConstants.ArmState targetState, boolean isStateReversed) {
+        return new FunctionalCommand(
+                () -> RobotContainer.ARM.setEndEffectorState(targetState),
+                () -> RobotContainer.ARM.setArmState(targetState, isStateReversed),
+                interrupted -> RobotContainer.ARM.stop(),
+                () -> false,
                 RobotContainer.ARM
         );
     }
 
     public static Command getPrepareForStateCommand(ArmConstants.ArmState targetState) {
-        return new StartEndCommand(
-                () -> RobotContainer.ARM.prepareForState(targetState),
+        return getPrepareForStateCommand(targetState, false);
+    }
+
+    public static Command getPrepareForStateCommand(ArmConstants.ArmState targetState, boolean isStateReversed) {
+        return new ExecuteEndCommand(
+                () -> RobotContainer.ARM.setArmState(targetState, isStateReversed),
                 RobotContainer.ARM::stop,
                 RobotContainer.ARM
         );

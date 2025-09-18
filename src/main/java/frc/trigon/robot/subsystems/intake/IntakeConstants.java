@@ -93,7 +93,7 @@ public class IntakeConstants {
     );
 
     static final Pose3d INTAKE_VISUALIZATION_ORIGIN_POINT = new Pose3d(
-            new Translation3d(0, 0.29449, 0.32349),
+            new Translation3d(0.3234, 0, 0.2944),
             new Rotation3d(0, MINIMUM_ANGLE.getRadians(), 0)
     );
     private static final double MAXIMUM_DISPLAYABLE_VELOCITY = 12;

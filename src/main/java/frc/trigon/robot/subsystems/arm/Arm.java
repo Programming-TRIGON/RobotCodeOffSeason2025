@@ -2,10 +2,12 @@ package frc.trigon.robot.subsystems.arm;
 
 import com.ctre.phoenix6.controls.DynamicMotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.trigon.robot.RobotContainer;
 import frc.trigon.robot.subsystems.MotorSubsystem;
 import lib.hardware.phoenix6.cancoder.CANcoderEncoder;
 import lib.hardware.phoenix6.cancoder.CANcoderSignal;
@@ -81,31 +83,29 @@ public class Arm extends MotorSubsystem {
         armMasterMotor.setControl(voltageRequest.withOutput(targetVoltage));
     }
 
+    public boolean isArmAboveSafeAngle() {
+        return getAngle().getDegrees() >= ArmConstants.MAXIMUM_ARM_SAFE_ANGLE.getDegrees();
+    }
+
     public boolean atState(ArmConstants.ArmState targetState, boolean isStateReversed) {
         if (isStateReversed)
-            return this.targetState == targetState && atTargetAngle(isStateReversed);
+            return this.targetState == targetState && atAngle(subtractFrom360Degrees(targetState.targetAngle));
         return atState(targetState);
     }
 
     public boolean atState(ArmConstants.ArmState targetState) {
-        return this.targetState == targetState && atTargetAngle();
-    }
-
-    public boolean atTargetAngle(boolean isStateReversed) {
-        if (isStateReversed) {
-            final double currentToTargetStateDifferenceDegrees = Math.abs(ArmConstants.FULL_ROTATION.minus(targetState.targetAngle).minus(getAngle()).getDegrees());
-            return currentToTargetStateDifferenceDegrees < ArmConstants.ANGLE_TOLERANCE.getDegrees();
-        }
-        return atTargetAngle();
+        return this.targetState == targetState && atAngle(targetState.targetAngle);
     }
 
     public boolean atTargetAngle() {
-        final double currentToTargetStateDifferenceDegrees = Math.abs(targetState.targetAngle.minus(getAngle()).getDegrees());
-        return currentToTargetStateDifferenceDegrees < ArmConstants.ANGLE_TOLERANCE.getDegrees();
+        if (isStateReversed) {
+            return atAngle(subtractFrom360Degrees(targetState.targetAngle));
+        }
+        return atAngle(targetState.targetAngle);
     }
 
-    public boolean hasGamePiece() {
-        return ArmConstants.COLLECTION_DETECTION_BOOLEAN_EVENT.getAsBoolean();
+    public Rotation2d getAngle() {
+        return Rotation2d.fromRotations(angleEncoder.getSignal(CANcoderSignal.POSITION));
     }
 
     void setTargetState(ArmConstants.ArmState targetState) {
@@ -120,7 +120,7 @@ public class Arm extends MotorSubsystem {
 
         if (isStateReversed) {
             setTargetState(
-                    ArmConstants.FULL_ROTATION.minus(targetState.targetAngle)
+                    subtractFrom360Degrees(targetState.targetAngle)
                     , targetState.targetEndEffectorVoltage
             );
             return;
@@ -132,40 +132,58 @@ public class Arm extends MotorSubsystem {
 
     void setTargetState(Rotation2d targetAngle, double targetVoltage) {
         setTargetAngle(targetAngle);
-        setTargetVoltage(targetVoltage);
+        setEndEffectorTargetVoltage(targetVoltage);
     }
 
-    void prepareForState(ArmConstants.ArmState targetState) {
-        prepareForState(targetState, false);
+    void setArmState(ArmConstants.ArmState targetState) {
+        setArmState(targetState, false);
     }
 
-    void prepareForState(ArmConstants.ArmState targetState, boolean isStateReversed) {
+    void setArmState(ArmConstants.ArmState targetState, boolean isStateReversed) {
         this.isStateReversed = isStateReversed;
         this.targetState = targetState;
-        
+
         if (isStateReversed) {
-            setTargetAngle(ArmConstants.FULL_ROTATION.minus(targetState.targetAngle));
+            setTargetAngle(subtractFrom360Degrees(targetState.targetAngle));
             return;
         }
         setTargetAngle(targetState.targetAngle);
     }
 
-    private Rotation2d getAngle() {
-        return Rotation2d.fromRotations(angleEncoder.getSignal(CANcoderSignal.POSITION));
+    void setEndEffectorState(ArmConstants.ArmState targetState) {
+        setEndEffectorTargetVoltage(targetState.targetEndEffectorVoltage);
     }
 
     private void setTargetAngle(Rotation2d targetAngle) {
-        armMasterMotor.setControl(positionRequest.withPosition(targetAngle.getRotations()));
+        armMasterMotor.setControl(positionRequest.withPosition(Math.max(targetAngle.getRotations(), calculateMinimumArmSafeAngle().getRotations())));
     }
 
-    private void setTargetVoltage(double targetVoltage) {
+    private Rotation2d calculateMinimumArmSafeAngle() {
+        final boolean isElevatorAboveSafeZone = RobotContainer.ELEVATOR.isElevatorAboveSafeZone();
+        final double heightFromSafeZone = RobotContainer.ELEVATOR.getElevatorHeightFromMinimumSafeZone();
+        final double cosOfMinimumSafeAngle = MathUtil.clamp(heightFromSafeZone / ArmConstants.ARM_LENGTH_METERS, 0, 1);
+        return isElevatorAboveSafeZone
+                ? Rotation2d.fromRadians(0)
+                : Rotation2d.fromRadians(Math.acos(cosOfMinimumSafeAngle));
+    }
+
+    private void setEndEffectorTargetVoltage(double targetVoltage) {
         ArmConstants.END_EFFECTOR_MECHANISM.setTargetVelocity(targetVoltage);
         endEffectorMotor.setControl(voltageRequest.withOutput(targetVoltage));
     }
 
+    private boolean atAngle(Rotation2d targetAngle) {
+        final double currentToTargetAngleDifferenceDegrees = Math.abs(targetAngle.minus(getAngle()).getDegrees());
+        return currentToTargetAngleDifferenceDegrees < ArmConstants.ANGLE_TOLERANCE.getDegrees();
+    }
+
+    private static Rotation2d subtractFrom360Degrees(Rotation2d angleToSubtract) {
+        return Rotation2d.fromDegrees(Rotation2d.k180deg.getDegrees() * 2 - angleToSubtract.getDegrees());
+    }
+
     private Pose3d calculateVisualizationPose() {
         final Transform3d armTransform = new Transform3d(
-                new Translation3d(),
+                new Translation3d(0, 0, RobotContainer.ELEVATOR.getPositionMeters()),
                 new Rotation3d(0, getAngle().getRadians(), 0)
         );
         return ArmConstants.ARM_VISUALIZATION_ORIGIN_POINT.transformBy(armTransform);
