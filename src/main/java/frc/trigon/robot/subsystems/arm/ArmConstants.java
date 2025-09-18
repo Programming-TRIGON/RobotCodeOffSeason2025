@@ -145,7 +145,7 @@ public class ArmConstants {
         config.Feedback.FeedbackRemoteSensorID = ARM_MASTER_MOTOR.getID();
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
 
-        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 100 : 0;
+        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 38 : 0;
         config.Slot0.kI = RobotHardwareStats.isSimulation() ? 0 : 0;
         config.Slot0.kD = RobotHardwareStats.isSimulation() ? 1 : 0;
         config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0.026331 : 0;
