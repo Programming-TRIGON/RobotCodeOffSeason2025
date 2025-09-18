@@ -181,7 +181,7 @@ public class Arm extends MotorSubsystem {
         endEffectorMotor.setControl(voltageRequest.withOutput(targetVoltage));
     }
 
-    public static Rotation2d subtractFrom360Degrees(Rotation2d angleToSubtract) {
+    private static Rotation2d subtractFrom360Degrees(Rotation2d angleToSubtract) {
         return Rotation2d.fromDegrees(360 - angleToSubtract.getDegrees());
     }
 
