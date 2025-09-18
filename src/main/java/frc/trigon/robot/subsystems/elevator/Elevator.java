@@ -9,7 +9,9 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.trigon.robot.RobotContainer;
 import frc.trigon.robot.subsystems.MotorSubsystem;
+import frc.trigon.robot.subsystems.arm.ArmConstants;
 import lib.hardware.phoenix6.talonfx.TalonFXMotor;
 import lib.hardware.phoenix6.talonfx.TalonFXSignal;
 import lib.utilities.Conversions;
@@ -82,16 +84,41 @@ public class Elevator extends MotorSubsystem {
     public boolean atTargetState() {
         final double currentToTargetStateDifferenceMeters = Math.abs(targetState.targetPositionMeters - getPositionMeters());
         return currentToTargetStateDifferenceMeters < ElevatorConstants.HEIGHT_TOLERANCE_METERS;
+      
+    public double getPositionMeters() {
+        return rotationsToMeters(getPositionRotations());
+    }
+
+    public boolean isElevatorAboveSafeZone() {
+        return getPositionMeters() >= ElevatorConstants.MAXIMUM_ELEVATOR_SAFE_ZONE_METERS;
+    }
+
+    public double getElevatorHeightFromMinimumSafeZone() {
+        return getPositionMeters() - ElevatorConstants.MINIMUM_ELEVATOR_SAFE_ZONE_METERS;
     }
 
     void setTargetState(ElevatorConstants.ElevatorState targetState) {
         this.targetState = targetState;
         scalePositionRequestSpeed(targetState.speedScalar);
+        if (targetState == ElevatorConstants.ElevatorState.LOAD_CORAL) {
+            masterMotor.setControl(positionRequest.withPosition(metersToRotations(targetState.targetPositionMeters)));
+            return;
+        }
         setTargetPositionRotations(metersToRotations(targetState.targetPositionMeters));
     }
 
     void setTargetPositionRotations(double targetPositionRotations) {
-        masterMotor.setControl(positionRequest.withPosition(targetPositionRotations));
+        masterMotor.setControl(positionRequest.withPosition(Math.max(targetPositionRotations, calculateMinimumSafeElevatorHeightRotations())));
+    }
+
+    private double calculateMinimumSafeElevatorHeightRotations() {
+        final double armCos = RobotContainer.ARM.getAngle().getRadians();
+        final double elevatorHeightFromArm = Math.cos(armCos) * ArmConstants.ARM_LENGTH_METERS;
+        final double minimumElevatorSafeZone = ElevatorConstants.MINIMUM_ELEVATOR_SAFE_ZONE_METERS;
+        final double minimumSafeHeightMeters = (RobotContainer.ARM.isArmAboveSafeAngle()
+                ? 0 : elevatorHeightFromArm)
+                + minimumElevatorSafeZone;
+        return metersToRotations(minimumSafeHeightMeters);
     }
 
     private Pose3d getFirstStageComponentPose() {
@@ -124,10 +151,6 @@ public class Elevator extends MotorSubsystem {
         positionRequest.Velocity = ElevatorConstants.DEFAULT_MAXIMUM_VELOCITY * speedScalar;
         positionRequest.Acceleration = ElevatorConstants.DEFAULT_MAXIMUM_ACCELERATION * speedScalar;
         positionRequest.Jerk = positionRequest.Acceleration * 10;
-    }
-
-    private double getPositionMeters() {
-        return rotationsToMeters(getPositionRotations());
     }
 
     private double rotationsToMeters(double positionsRotations) {

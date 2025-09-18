@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.event.BooleanEvent;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.trigon.robot.subsystems.arm.ArmConstants;
 import lib.hardware.RobotHardwareStats;
 import lib.hardware.misc.simplesensor.SimpleSensor;
 import lib.hardware.phoenix6.talonfx.TalonFXMotor;
@@ -92,6 +93,15 @@ public class ElevatorConstants {
             REVERSE_LIMIT_SENSOR::getBinaryValue
     ).debounce(REVERSE_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS);
 
+    /**
+     * The lowest point in the Elevators zone where the safety logic applies.
+     */
+    public static final double MINIMUM_ELEVATOR_SAFE_ZONE_METERS = 0.05;
+
+    /**
+     * The highest point in the Elevators zone where the safety logic applies.
+     */
+    public static final double MAXIMUM_ELEVATOR_SAFE_ZONE_METERS = MINIMUM_ELEVATOR_SAFE_ZONE_METERS + ArmConstants.ARM_LENGTH_METERS;
     private static final DoubleSupplier REVERSE_LIMIT_SENSOR_SIMULATION_SUPPLIER = () -> 0;
 
     static {
@@ -163,8 +173,9 @@ public class ElevatorConstants {
 
     public enum ElevatorState {
         REST(0.603, 0.7),
-        SCORE_L1(0.603, 1),
-        SCORE_L2(0.603, 1),
+        LOAD_CORAL(0.5519, 0.7),
+        SCORE_L1(0.203, 1),
+        SCORE_L2(0.203, 1),
         SCORE_L3(1.003, 1),
         SCORE_L4(1.382, 1),
         PREPARE_L1(0.603, 1),
