@@ -100,7 +100,7 @@ public class Arm extends MotorSubsystem {
 
     public boolean atTargetAngle(boolean isStateReversed) {
         if (isStateReversed) {
-            atAngle(subtractFrom360Degrees(targetState.targetAngle));
+            return atAngle(subtractFrom360Degrees(targetState.targetAngle));
         }
         return atTargetAngle();
     }
