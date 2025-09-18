@@ -178,7 +178,7 @@ public class Arm extends MotorSubsystem {
     }
 
     private static Rotation2d subtractFrom360Degrees(Rotation2d angleToSubtract) {
-        return Rotation2d.fromDegrees(360 - angleToSubtract.getDegrees());
+        return Rotation2d.fromDegrees(Rotation2d.k180deg.getDegrees() * 2 - angleToSubtract.getDegrees());
     }
 
     private Pose3d calculateVisualizationPose() {
