@@ -132,7 +132,7 @@ public class Arm extends MotorSubsystem {
 
     void setTargetState(Rotation2d targetAngle, double targetVoltage) {
         setTargetAngle(targetAngle);
-        setTargetVoltage(targetVoltage);
+        setEndEffectorTargetVoltage(targetVoltage);
     }
 
     void setArmState(ArmConstants.ArmState targetState) {
@@ -151,7 +151,7 @@ public class Arm extends MotorSubsystem {
     }
 
     void setEndEffectorState(ArmConstants.ArmState targetState) {
-        setTargetVoltage(targetState.targetEndEffectorVoltage);
+        setEndEffectorTargetVoltage(targetState.targetEndEffectorVoltage);
     }
 
     private void setTargetAngle(Rotation2d targetAngle) {
@@ -167,7 +167,7 @@ public class Arm extends MotorSubsystem {
                 : Rotation2d.fromRadians(Math.acos(cosOfMinimumSafeAngle));
     }
 
-    private void setTargetVoltage(double targetVoltage) {
+    private void setEndEffectorTargetVoltage(double targetVoltage) {
         ArmConstants.END_EFFECTOR_MECHANISM.setTargetVelocity(targetVoltage);
         endEffectorMotor.setControl(voltageRequest.withOutput(targetVoltage));
     }
