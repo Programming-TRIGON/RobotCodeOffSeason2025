@@ -2,7 +2,10 @@ package frc.trigon.robot.subsystems.elevator;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.signals.*;
+import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -12,6 +15,7 @@ import edu.wpi.first.wpilibj.event.BooleanEvent;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.trigon.robot.subsystems.arm.ArmConstants;
 import lib.hardware.RobotHardwareStats;
 import lib.hardware.misc.simplesensor.SimpleSensor;
 import lib.hardware.phoenix6.talonfx.TalonFXMotor;
@@ -71,7 +75,7 @@ public class ElevatorConstants {
             new Rotation3d(0, 0, 0)
     );
     static final Pose3d ELEVATOR_SECOND_STAGE_VISUALIZATION_ORIGIN_POINT = new Pose3d(
-            new Translation3d(0, -0.17 ,0.0814),
+            new Translation3d(0, -0.17, 0.0814),
             new Rotation3d(0, 0, 0)
     );
     static final ElevatorMechanism2d MECHANISM = new ElevatorMechanism2d(
@@ -88,7 +92,17 @@ public class ElevatorConstants {
             REVERSE_LIMIT_SENSOR::getBinaryValue
     ).debounce(REVERSE_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS);
 
+    /**
+     * The lowest point in the Elevators zone where the safety logic applies.
+     */
+    public static final double MINIMUM_ELEVATOR_SAFE_ZONE_METERS = 0.05;
+
+    /**
+     * The highest point in the Elevators zone where the safety logic applies.
+     */
+    public static final double MAXIMUM_ELEVATOR_SAFE_ZONE_METERS = MINIMUM_ELEVATOR_SAFE_ZONE_METERS + ArmConstants.ARM_LENGTH_METERS;
     private static final DoubleSupplier REVERSE_LIMIT_SENSOR_SIMULATION_SUPPLIER = () -> 0;
+    static final double ELEVATOR_POSITION_TOLERANCE_METERS = 0.02;
 
     static {
         configureMasterMotor();
@@ -106,13 +120,13 @@ public class ElevatorConstants {
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         config.Feedback.SensorToMechanismRatio = GEAR_RATIO;
 
-        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 3.5:0;
-        config.Slot0.kI = RobotHardwareStats.isSimulation() ? 0:0;
-        config.Slot0.kD = RobotHardwareStats.isSimulation() ? 0.4:0;
-        config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0.016165:0;
-        config.Slot0.kV = RobotHardwareStats.isSimulation() ? 0.4766:0;
-        config.Slot0.kA = RobotHardwareStats.isSimulation() ? 0.014239:0;
-        config.Slot0.kG = RobotHardwareStats.isSimulation() ? 0.58202:0;
+        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 3.5 : 0;
+        config.Slot0.kI = RobotHardwareStats.isSimulation() ? 0 : 0;
+        config.Slot0.kD = RobotHardwareStats.isSimulation() ? 0.4 : 0;
+        config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0.016165 : 0;
+        config.Slot0.kV = RobotHardwareStats.isSimulation() ? 0.4766 : 0;
+        config.Slot0.kA = RobotHardwareStats.isSimulation() ? 0.014239 : 0;
+        config.Slot0.kG = RobotHardwareStats.isSimulation() ? 0.58202 : 0;
 
         config.Slot0.GravityType = GravityTypeValue.Elevator_Static;
         config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
@@ -160,8 +174,8 @@ public class ElevatorConstants {
     public enum ElevatorState {
         REST(0.603, 0.7),
         LOAD_CORAL(0.5519, 0.7),
-        SCORE_L1(0.603, 1),
-        SCORE_L2(0.603, 1),
+        SCORE_L1(0.203, 1),
+        SCORE_L2(0.203, 1),
         SCORE_L3(1.003, 1),
         SCORE_L4(1.382, 1),
         PREPARE_L1(0.603, 1),

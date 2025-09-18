@@ -47,19 +47,19 @@ public class ArmConstants {
     static final SimpleSensor DISTANCE_SENSOR = SimpleSensor.createDigitalSensor(DISTANCE_SENSOR_CHANNEL, DISTANCE_SENSOR_NAME);
 
     private static final double
-            ARM_GEAR_RATIO = 50,
+            ARM_GEAR_RATIO = 40,
             END_EFFECTOR_GEAR_RATIO = 17;
     private static final double ARM_MOTOR_CURRENT_LIMIT = 50;
     private static final double ANGLE_ENCODER_GRAVITY_OFFSET = 0;
     static final double POSITION_OFFSET_FROM_GRAVITY_OFFSET = RobotHardwareStats.isSimulation() ? 0 - Conversions.degreesToRotations(90) : 0 + Conversions.degreesToRotations(0) - ANGLE_ENCODER_GRAVITY_OFFSET;
     private static final boolean SHOULD_ARM_FOLLOWER_OPPOSE_MASTER = false;
     static final double
-            ARM_DEFAULT_MAXIMUM_VELOCITY = RobotHardwareStats.isSimulation() ? 0.6 : 0,
-            ARM_DEFAULT_MAXIMUM_ACCELERATION = RobotHardwareStats.isSimulation() ? 1.5 : 0,
+            ARM_DEFAULT_MAXIMUM_VELOCITY = RobotHardwareStats.isSimulation() ? 2.4614 : 0,
+            ARM_DEFAULT_MAXIMUM_ACCELERATION = RobotHardwareStats.isSimulation() ? 67.2344 : 0,
             ARM_DEFAULT_MAXIMUM_JERK = ARM_DEFAULT_MAXIMUM_ACCELERATION * 10;
     static final boolean FOC_ENABLED = true;
 
-    static final double ARM_LENGTH_METERS = 0.67;
+    public static final double ARM_LENGTH_METERS = 0.52;
     private static final int
             ARM_MOTOR_AMOUNT = 2,
             END_EFFECTOR_MOTOR_AMOUNT = 1;
@@ -92,7 +92,7 @@ public class ArmConstants {
 
     static final SysIdRoutine.Config ARM_SYSID_CONFIG = new SysIdRoutine.Config(
             Units.Volts.of(1.5).per(Units.Seconds),
-            Units.Volts.of(1.5),
+            Units.Volts.of(3),
             Units.Second.of(1000)
     );
 
@@ -105,7 +105,6 @@ public class ArmConstants {
             "EndEffectorMechanism",
             END_EFFECTOR_MAXIMUM_DISPLAYABLE_VELOCITY
     );
-
     static final Pose3d ARM_VISUALIZATION_ORIGIN_POINT = new Pose3d(
             new Translation3d(0, -0.0954, 0.3573),
             new Rotation3d(0, 0, 0)
@@ -115,15 +114,17 @@ public class ArmConstants {
             new Translation3d(0, 0.1, -0.5855),
             new Rotation3d(0, edu.wpi.first.math.util.Units.degreesToRadians(0), 0)
     );
-
     static final Rotation2d ANGLE_TOLERANCE = Rotation2d.fromDegrees(5);
+    /**
+     * The highest point of the arms angular zone where the safety logic applies.
+     */
+    static final Rotation2d MAXIMUM_ARM_SAFE_ANGLE = Rotation2d.fromDegrees(90);
     private static final double COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS = 0.2;
     static final BooleanEvent COLLECTION_DETECTION_BOOLEAN_EVENT = new BooleanEvent(
             CommandScheduler.getInstance().getActiveButtonLoop(),
             DISTANCE_SENSOR::getBinaryValue
     ).debounce(COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS);
     static final double WHEEL_RADIUS_METERS = edu.wpi.first.math.util.Units.inchesToMeters(1.5);
-    static final Rotation2d FULL_ROTATION = Rotation2d.fromDegrees(360);
 
     static {
         configureArmMasterMotor();
@@ -146,13 +147,13 @@ public class ArmConstants {
         config.Feedback.FeedbackRemoteSensorID = ARM_MASTER_MOTOR.getID();
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
 
-        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 50 : 0;
+        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 38 : 0;
         config.Slot0.kI = RobotHardwareStats.isSimulation() ? 0 : 0;
-        config.Slot0.kD = RobotHardwareStats.isSimulation() ? 0 : 0;
-        config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0.0067258 : 0;
-        config.Slot0.kV = RobotHardwareStats.isSimulation() ? 6.2 : 0;
-        config.Slot0.kA = RobotHardwareStats.isSimulation() ? 0.063357 : 0;
-        config.Slot0.kG = RobotHardwareStats.isSimulation() ? 0.15048 : 0;
+        config.Slot0.kD = RobotHardwareStats.isSimulation() ? 1 : 0;
+        config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0.026331 : 0;
+        config.Slot0.kV = RobotHardwareStats.isSimulation() ? 4.8752 : 0;
+        config.Slot0.kA = RobotHardwareStats.isSimulation() ? 0.17848 : 0;
+        config.Slot0.kG = RobotHardwareStats.isSimulation() ? 0.1117 : 0;
 
         config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
         config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
@@ -161,7 +162,8 @@ public class ArmConstants {
         config.MotionMagic.MotionMagicAcceleration = ARM_DEFAULT_MAXIMUM_ACCELERATION;
         config.MotionMagic.MotionMagicJerk = config.MotionMagic.MotionMagicAcceleration * 10;
 
-        config.CurrentLimits.SupplyCurrentLimit = ARM_MOTOR_CURRENT_LIMIT;
+        config.CurrentLimits.StatorCurrentLimitEnable = true;
+        config.CurrentLimits.StatorCurrentLimit = ARM_MOTOR_CURRENT_LIMIT;
 
         ARM_MASTER_MOTOR.applyConfiguration(config);
         ARM_MASTER_MOTOR.setPhysicsSimulation(ARM_SIMULATION);
@@ -182,7 +184,8 @@ public class ArmConstants {
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
-        config.CurrentLimits.SupplyCurrentLimit = ARM_MOTOR_CURRENT_LIMIT;
+        config.CurrentLimits.StatorCurrentLimitEnable = true;
+        config.CurrentLimits.StatorCurrentLimit = ARM_MOTOR_CURRENT_LIMIT;
 
         ARM_FOLLOWER_MOTOR.applyConfiguration(config);
 
@@ -199,7 +202,8 @@ public class ArmConstants {
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         config.Feedback.RotorToSensorRatio = END_EFFECTOR_GEAR_RATIO;
 
-        config.CurrentLimits.SupplyCurrentLimit = 80;
+        config.CurrentLimits.StatorCurrentLimitEnable = true;
+        config.CurrentLimits.StatorCurrentLimit = 80;
 
         END_EFFECTOR_MOTOR.applyConfiguration(config);
         END_EFFECTOR_MOTOR.setPhysicsSimulation(END_EFFECTOR_SIMULATION);
@@ -238,7 +242,7 @@ public class ArmConstants {
         PREPARE_SCORE_L1(Rotation2d.fromDegrees(80), 0),
         SCORE_L1(Rotation2d.fromDegrees(75), 4),
         PREPARE_SCORE_L2(Rotation2d.fromDegrees(95), 0),
-        SCORE_L2(Rotation2d.fromDegrees(90), 4),
+        SCORE_L2(Rotation2d.fromDegrees(180), 4),
         PREPARE_SCORE_L3(Rotation2d.fromDegrees(95), 0),
         SCORE_L3(Rotation2d.fromDegrees(90), 4),
         PREPARE_SCORE_L4(Rotation2d.fromDegrees(95), 0),
