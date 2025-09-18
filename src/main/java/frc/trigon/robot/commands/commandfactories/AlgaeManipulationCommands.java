@@ -25,13 +25,12 @@ import lib.utilities.flippable.FlippableTranslation2d;
 import java.util.Map;
 
 public class AlgaeManipulationCommands {
-    public static boolean IS_HOLDING_ALGAE = false;
 
     public static Command getAlgaeCollectionCommandCommand() {
         return new SequentialCommandGroup(
-                getInitiateAlgaeCollectionCommand().until(RobotContainer.ARM::isEndEffectorMovingSlowly),
+                getInitiateAlgaeCollectionCommand().until(RobotContainer.ARM::hasGamePiece),
                 new InstantCommand(() -> getScoreAlgaeCommand().schedule()).alongWith(getAlgaeCollectionConfirmationCommand()) //TODO: add coral unloading if needed
-        ).alongWith(getAlignToReefCommand()).finallyDo(AlgaeManipulationCommands::disableIsHoldingAlgae);
+        ).alongWith(getAlignToReefCommand());
     }
 
     private static Command getAlignToReefCommand() {
@@ -46,7 +45,7 @@ public class AlgaeManipulationCommands {
                         () -> calculateClosestAlgaeCollectionPose().getRotation()
                 )
         ).raceWith(
-                new WaitCommand(1).andThen(new WaitUntilCommand(RobotContainer.ARM::isEndEffectorMovingSlowly)),
+                new WaitCommand(1).andThen(new WaitUntilCommand(RobotContainer.ARM::hasGamePiece)),
                 new WaitUntilCommand(OperatorConstants.STOP_ALGAE_AUTO_ALIGN_OVERRIDE_TRIGGER)
         ); // TODO: .onlyIf(() -> CoralPlacingCommands.SHOULD_SCORE_AUTONOMOUSLY).asProxy();
     }
@@ -60,7 +59,7 @@ public class AlgaeManipulationCommands {
                         3, getEjectAlgaeCommand()
                 ),
                 AlgaeManipulationCommands::getAlgaeScoreMethodSelector
-        ).raceWith(new WaitUntilChangeCommand<>(AlgaeManipulationCommands::isScoreAlgaeButtonPressed)).repeatedly();
+        ).raceWith(new WaitUntilChangeCommand<>(AlgaeManipulationCommands::isScoreAlgaeButtonPressed)).repeatedly().until(() -> !RobotContainer.ARM.hasGamePiece());
     }
 
     private static Command getScoreInNetCommand() {
@@ -127,10 +126,7 @@ public class AlgaeManipulationCommands {
 
     private static Command getAlgaeCollectionConfirmationCommand() {
         return new ParallelCommandGroup(
-                new InstantCommand(() -> {
-                    OperatorConstants.DRIVER_CONTROLLER.rumble(OperatorConstants.RUMBLE_DURATION_SECONDS, OperatorConstants.RUMBLE_POWER);
-                    IS_HOLDING_ALGAE = true;
-                }),
+                new InstantCommand(() -> OperatorConstants.DRIVER_CONTROLLER.rumble(OperatorConstants.RUMBLE_DURATION_SECONDS, OperatorConstants.RUMBLE_POWER)),
                 LEDCommands.getAnimateCommand(LEDConstants.ALGAE_COLLECTION_CONFIRMATION_ANIMATION_SETTINGS) //TODO: add LEDs
         );
     }
@@ -154,10 +150,6 @@ public class AlgaeManipulationCommands {
         }
 
         return new FlippablePose2d(closestScoringPose, false);
-    }
-
-    private static void disableIsHoldingAlgae() {
-        new WaitUntilCommand(() -> RobotContainer.ELEVATOR.atState(ElevatorConstants.ElevatorState.REST)).andThen(() -> IS_HOLDING_ALGAE = false).schedule();
     }
 
     private static boolean isScoreAlgaeButtonPressed() {

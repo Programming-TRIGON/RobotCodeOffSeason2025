@@ -105,13 +105,9 @@ public class Arm extends MotorSubsystem {
         return currentToTargetStateDifferenceDegrees < ArmConstants.ANGLE_TOLERANCE.getDegrees();
     }
 
+    @AutoLogOutput(key = "Arm/HasGamePiece")
     public boolean hasGamePiece() {
         return ArmConstants.COLLECTION_DETECTION_BOOLEAN_EVENT.getAsBoolean();
-    }
-
-    @AutoLogOutput
-    public boolean isEndEffectorMovingSlowly() {
-        return ArmConstants.IS_MOVING_SLOWLY_BOOLEAN_EVENT.getAsBoolean();
     }
 
     void setTargetState(ArmConstants.ArmState targetState) {

@@ -108,19 +108,11 @@ public class ArmConstants {
             "EndEffectorMechanism",
             END_EFFECTOR_MAXIMUM_DISPLAYABLE_VELOCITY
     );
-
     static final Pose3d ARM_VISUALIZATION_ORIGIN_POINT = new Pose3d(
             new Translation3d(0, 0.0954, 0.9517),
             new Rotation3d(0, 0, 0)
     );
 
-    static final double
-            IS_MOVING_SLOWLY_VELOCITY_THRESHOLD_ROTATION_PER_SECOND = 4,
-            IS_MOVING_SLOWLY_DEBOUNCE_TIME_SECONDS = 0.1;
-    static final BooleanEvent IS_MOVING_SLOWLY_BOOLEAN_EVENT = new BooleanEvent(
-            CommandScheduler.getInstance().getActiveButtonLoop(),
-            () -> Math.abs(ARM_MASTER_MOTOR.getSignal(TalonFXSignal.VELOCITY)) < IS_MOVING_SLOWLY_VELOCITY_THRESHOLD_ROTATION_PER_SECOND || (RobotHardwareStats.isSimulation() && SimulationFieldHandler.isHoldingGamePiece()) //TODO isHoldingAlgae
-    ).debounce(IS_MOVING_SLOWLY_DEBOUNCE_TIME_SECONDS);
     static final Rotation2d ANGLE_TOLERANCE = Rotation2d.fromDegrees(0);
     private static final double COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS = 0.2;
     static final BooleanEvent COLLECTION_DETECTION_BOOLEAN_EVENT = new BooleanEvent(
