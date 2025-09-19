@@ -90,7 +90,7 @@ public class Elevator extends MotorSubsystem {
     }
 
     public boolean atState(ElevatorConstants.ElevatorState targetState) {
-        return Math.abs(getPositionMeters() - targetState.targetPositionMeters) > ElevatorConstants.POSITION_TOLERANCE_METERS;
+        return Math.abs(getPositionMeters() - targetState.targetPositionMeters) < ElevatorConstants.POSITION_TOLERANCE_METERS;
     }
 
     void setTargetState(ElevatorConstants.ElevatorState targetState) {
