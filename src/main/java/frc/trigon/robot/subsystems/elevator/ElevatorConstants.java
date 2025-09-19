@@ -182,9 +182,9 @@ public class ElevatorConstants {
         PREPARE_L2(0.603, 1),
         PREPARE_L3(1.003, 1),
         PREPARE_L4(1.382, 1),
-        COLLECT_ALGAE_FROM_L2(0.603, 1),
-        COLLECT_ALGAE_FROM_L3(0.953, 1),
-        COLLECT_ALGAE_FROM_GROUND(0, 0.7),
+        COLLECT_ALGAE_L2(0.603, 1),
+        COLLECT_ALGAE_L3(0.953, 1),
+        COLLECT_ALGAE_GROUND(0, 0.7),
         REST_WITH_ALGAE(0.603, 0.3),
         SCORE_NET(1.382, 0.3);
 

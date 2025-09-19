@@ -16,6 +16,8 @@ import frc.trigon.robot.subsystems.elevator.ElevatorConstants;
 import frc.trigon.robot.subsystems.intake.IntakeCommands;
 import frc.trigon.robot.subsystems.intake.IntakeConstants;
 import frc.trigon.robot.subsystems.swerve.SwerveCommands;
+import frc.trigon.robot.subsystems.transporter.TransporterCommands;
+import frc.trigon.robot.subsystems.transporter.TransporterConstants;
 import lib.utilities.flippable.FlippablePose2d;
 import org.json.simple.parser.ParseException;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
@@ -43,23 +45,6 @@ public class AutonomousCommands {
         );
     }
 
-    public static Command getCollectCoralCommand(boolean isRight) {
-        return new ParallelCommandGroup(
-                ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.REST),
-                IntakeCommands.getSetTargetStateCommand(IntakeConstants.IntakeState.COLLECT),
-                getDriveToCoralCommand(isRight)
-        )
-                .until(RobotContainer.INTAKE::hasCoral)
-                .unless(() -> RobotContainer.INTAKE.hasCoral() || RobotContainer.ARM.hasGamePiece());
-    }
-
-    public static Command getDriveToCoralCommand(boolean isRight) {
-        return new SequentialCommandGroup(
-                getFindCoralCommand(isRight).unless(() -> CORAL_POSE_ESTIMATOR.getClosestObjectToRobot() != null).until(() -> CORAL_POSE_ESTIMATOR.getClosestObjectToRobot() != null),
-                IntakeAssistCommand.getAssistIntakeCommand(IntakeAssistCommand.AssistMode.FULL_ASSIST, IntakeAssistCommand::calculateDistanceFromTrackedCGamePiece).withTimeout(1.5)
-        ).repeatedly();
-    }
-
     public static Command getFindCoralCommand(boolean isRight) {
         return new SequentialCommandGroup(
                 SwerveCommands.getDriveToPoseCommand(() -> isRight ? FieldConstants.AUTO_FIND_CORAL_POSE_RIGHT : FieldConstants.AUTO_FIND_CORAL_POSE_LEFT, AutonomousConstants.DRIVE_TO_REEF_CONSTRAINTS, 2.3),
@@ -78,9 +63,20 @@ public class AutonomousCommands {
         );
     }
 
+    public static Command getCollectCoralCommand(boolean isRight) {
+        return new ParallelCommandGroup(
+                ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.REST),
+                IntakeCommands.getSetTargetStateCommand(IntakeConstants.IntakeState.COLLECT),
+                TransporterCommands.getSetTargetStateCommand(TransporterConstants.TransporterState.COLLECT),
+                getDriveToCoralCommand(isRight)
+        )
+                .until(RobotContainer.INTAKE::hasCoral)
+                .unless(() -> RobotContainer.INTAKE.hasCoral() || RobotContainer.ARM.hasGamePiece());
+    }
+
     public static Command getDriveToReefCommand() {
         return new SequentialCommandGroup(
-                new InstantCommand(() -> TARGET_SCORING_POSE = calculateClosestScoringPose(true)),
+                new InstantCommand(() -> TARGET_SCORING_POSE = calculateClosestOpenScoringPose()),
                 new WaitUntilCommand(() -> TARGET_SCORING_POSE != null).raceWith(SwerveCommands.getClosedLoopSelfRelativeDriveCommand(() -> 0, () -> 0, () -> 0)),
                 SwerveCommands.getDriveToPoseCommand(() -> TARGET_SCORING_POSE, AutonomousConstants.DRIVE_TO_REEF_CONSTRAINTS).repeatedly()
         );
@@ -88,34 +84,52 @@ public class AutonomousCommands {
 
     public static Command getCoralSequenceCommand() {
         return new SequentialCommandGroup(
-//TODO: when scoring commands implemented                CoralPlacementCommands.getLoadCoralCommand(),
+                //CoralPlacementCommands.getLoadCoralCommand(),TODO
                 new WaitUntilCommand(() -> TARGET_SCORING_POSE != null),
                 getScoreCommand()
         );
     }
 
+    public static Command getDriveToCoralCommand(boolean isRight) {
+        return new SequentialCommandGroup(
+                getFindCoralCommand(isRight).unless(() -> CORAL_POSE_ESTIMATOR.getClosestObjectToRobot() != null).until(() -> CORAL_POSE_ESTIMATOR.getClosestObjectToRobot() != null),
+                IntakeAssistCommand.getAssistIntakeCommand(IntakeAssistCommand.AssistMode.FULL_ASSIST, IntakeAssistCommand::calculateDistanceFromTrackedCGamePiece).withTimeout(1.5)
+        ).repeatedly();
+    }
+
     public static Command getScoreCommand() {
         return new SequentialCommandGroup(
-                getPrepareForScoreCommand().until(AutonomousCommands::canFeed),
-                getFeedCoralCommand()
-        ).raceWith(
-                new SequentialCommandGroup(
-                        new WaitUntilCommand(() -> TARGET_SCORING_POSE.get().getTranslation().getDistance(RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().getTranslation()) < 0.15),
-                        IntakeCommands.getPrepareForStateCommand(IntakeConstants.IntakeState.COLLECT)
-                )
+                getPrepareForScoreCommand().until(AutonomousCommands::canScore),
+                getPlaceCoralCommand()
         );
     }
 
     public static Command getPrepareForScoreCommand() {
         return new ParallelCommandGroup(
                 getOpenElevatorWhenCloseToReefCommand(),
-                ArmCommands.getPrepareForStateCommand(ArmConstants.ArmState.SCORE_L4)
+                ArmCommands.getSetTargetStateCommand(ArmConstants.ArmState.PREPARE_L4)
         );
+    }
+
+    private static boolean canScore() {
+        return RobotContainer.ELEVATOR.atState(ElevatorConstants.ElevatorState.PREPARE_L4) &&
+                RobotContainer.ARM.atState(ArmConstants.ArmState.PREPARE_L4) &&
+                TARGET_SCORING_POSE != null &&
+                Math.abs(RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().relativeTo(TARGET_SCORING_POSE.get()).getX()) < AutonomousConstants.REEF_RELATIVE_X_TOLERANCE_METERS &&
+                Math.abs(RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().relativeTo(TARGET_SCORING_POSE.get()).getY()) < AutonomousConstants.REEF_RELATIVE_Y_TOLERANCE_METERS;
+    }
+
+    public static Command getPlaceCoralCommand() {
+        return new ParallelCommandGroup(
+                ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.SCORE_L4),
+                ArmCommands.getSetTargetStateCommand(ArmConstants.ArmState.SCORE_L4),
+                getAddCurrentScoringBranchToScoredBranchesCommand()
+        ).withTimeout(0.25);
     }
 
     private static Command getOpenElevatorWhenCloseToReefCommand() {
         return GeneralCommands.runWhen(
-                ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.SCORE_L4),
+                ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.PREPARE_L4),
                 () -> calculateDistanceToTargetScoringPose() < AutonomousConstants.MINIMUM_DISTANCE_FROM_REEF_TO_OPEN_ELEVATOR
         );
     }
@@ -126,15 +140,7 @@ public class AutonomousCommands {
         return currentTranslation.getDistance(targetTranslation);
     }
 
-    public static Command getFeedCoralCommand() {
-        return new ParallelCommandGroup(
-                ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.SCORE_L4),
-                ArmCommands.getSetTargetStateCommand(ArmConstants.ArmState.SCORE_L4),
-                getAddCurrentScoringBranchToScoredBranchesCommand()
-        ).withTimeout(0.25);
-    }
-
-    public static FlippablePose2d calculateClosestScoringPose(boolean shouldOnlyCheckOpenBranches) {
+    public static FlippablePose2d calculateClosestOpenScoringPose() {
         final boolean[] scoredBranchesAtL4 = getScoredBranchesAtL4();
         final Pose2d currentRobotPose = RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose();
 
@@ -194,14 +200,6 @@ public class AutonomousCommands {
             booleanArray[i] = SCORED_L4S[i].get();
 
         return booleanArray;
-    }
-
-    private static boolean canFeed() {
-        return RobotContainer.ELEVATOR.atState(ElevatorConstants.ElevatorState.SCORE_L4) &&
-                RobotContainer.ARM.atState(ArmConstants.ArmState.SCORE_L4) &&
-                TARGET_SCORING_POSE != null &&
-                Math.abs(RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().relativeTo(TARGET_SCORING_POSE.get()).getX()) < 0.085 &&
-                Math.abs(RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().relativeTo(TARGET_SCORING_POSE.get()).getY()) < 0.03;
     }
 
     /**

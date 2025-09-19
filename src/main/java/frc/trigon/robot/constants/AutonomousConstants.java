@@ -28,6 +28,9 @@ public class AutonomousConstants {
     public static final String DEFAULT_AUTO_NAME = "DefaultAutoName";
     public static final RobotConfig ROBOT_CONFIG = getRobotConfig();
     public static final double FEEDFORWARD_SCALAR = 0.5;//TODO: Calibrate
+    public static final double
+            REEF_RELATIVE_X_TOLERANCE_METERS = 0.085,
+            REEF_RELATIVE_Y_TOLERANCE_METERS = 0.03;
 
     private static final PIDConstants
             AUTO_TRANSLATION_PID_CONSTANTS = RobotHardwareStats.isSimulation() ?
