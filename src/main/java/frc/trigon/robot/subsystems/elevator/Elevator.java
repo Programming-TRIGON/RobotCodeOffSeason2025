@@ -89,6 +89,10 @@ public class Elevator extends MotorSubsystem {
         return getPositionMeters() - ElevatorConstants.MINIMUM_ELEVATOR_SAFE_ZONE_METERS;
     }
 
+    public boolean atState(ElevatorConstants.ElevatorState targetState) {
+        return Math.abs(getPositionMeters() - targetState.targetPositionMeters) > ElevatorConstants.POSITION_TOLERANCE_METERS;
+    }
+
     void setTargetState(ElevatorConstants.ElevatorState targetState) {
         this.targetState = targetState;
         scalePositionRequestSpeed(targetState.speedScalar);
