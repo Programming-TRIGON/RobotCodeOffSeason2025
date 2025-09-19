@@ -6,6 +6,7 @@ import frc.trigon.robot.RobotContainer;
 import frc.trigon.robot.subsystems.arm.ArmConstants;
 import frc.trigon.robot.subsystems.intake.IntakeConstants;
 import frc.trigon.robot.subsystems.transporter.TransporterConstants;
+import lib.utilities.flippable.FlippablePose3d;
 import org.littletonrobotics.junction.Logger;
 
 import java.util.ArrayList;
@@ -81,10 +82,21 @@ public class SimulationFieldHandler {
 
         if (isCollectingCoral() && HELD_CORAL_INDEX == null) {
             HELD_CORAL_INDEX = getIndexOfCollectedGamePiece(coralCollectionPose, CORAL_ON_FIELD, SimulatedGamePieceConstants.CORAL_INTAKE_TOLERANCE_METERS);
+
             IS_CORAL_IN_END_EFFECTOR = false;
         }
         if (isCollectingAlgae() && HELD_ALGAE_INDEX == null)
             HELD_ALGAE_INDEX = getIndexOfCollectedGamePiece(algaeCollectionPose, ALGAE_ON_FIELD, SimulatedGamePieceConstants.ALGAE_INTAKE_TOLERANCE_METERS);
+    }
+
+    public static void updateCoralSpawning(Pose3d robotPose) {
+        final double
+                distanceFromLeftFeeder = robotPose.toPose2d().getTranslation().getDistance(SimulatedGamePieceConstants.LEFT_FEEDER_POSITION.get()),
+                distanceFromRightFeeder = robotPose.toPose2d().getTranslation().getDistance(SimulatedGamePieceConstants.RIGHT_FEEDER_POSITION.get());
+        final FlippablePose3d coralSpawnPose = distanceFromLeftFeeder < distanceFromRightFeeder
+                ? SimulatedGamePieceConstants.LEFT_CORAL_SPAWN_POSE
+                : SimulatedGamePieceConstants.RIGHT_CORAL_SPAWN_POSE;
+        CORAL_ON_FIELD.add(new SimulatedGamePiece(coralSpawnPose.get(), SimulatedGamePieceConstants.GamePieceType.CORAL));
     }
 
     private static void updateLoad() {

@@ -67,6 +67,9 @@ public class SimulatedGamePieceConstants {
     public static final FlippableTranslation2d
             LEFT_FEEDER_POSITION = new FlippableTranslation2d(0.923, 7.370, true),
             RIGHT_FEEDER_POSITION = new FlippableTranslation2d(0.923, 0.668, true);
+    static final FlippablePose3d
+            RIGHT_CORAL_SPAWN_POSE = new FlippablePose3d(new Pose3d(1.5, 1.5, 0, new Rotation3d()), true),
+            LEFT_CORAL_SPAWN_POSE = new FlippablePose3d(new Pose3d(1.5, 6.5, 0, new Rotation3d()), true);
 
     private static SimulatedGamePiece createNewCoral(Pose3d startingPose) {
         return new SimulatedGamePiece(startingPose, GamePieceType.CORAL);
