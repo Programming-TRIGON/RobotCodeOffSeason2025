@@ -9,6 +9,7 @@ import lib.commands.GearRatioCalculationCommand;
 import lib.commands.NetworkTablesCommand;
 
 import java.util.Set;
+import java.util.function.Supplier;
 
 public class ArmCommands {
     public static Command getDebuggingCommand() {
@@ -33,6 +34,10 @@ public class ArmCommands {
         );
     }
 
+    public static Command getSetTargetStateCommand(Supplier<ArmConstants.ArmState> targetState) {
+        return getSetTargetStateCommand(targetState.get(), false);
+    }
+
     public static Command getSetTargetStateCommand(ArmConstants.ArmState targetState) {
         return getSetTargetStateCommand(targetState, false);
     }
@@ -45,6 +50,10 @@ public class ArmCommands {
                 () -> false,
                 RobotContainer.ARM
         );
+    }
+
+    public static Command getPrepareForStateCommand(Supplier<ArmConstants.ArmState> targetState) {
+        return getPrepareForStateCommand(targetState.get(), false);
     }
 
     public static Command getPrepareForStateCommand(ArmConstants.ArmState targetState) {
