@@ -62,7 +62,7 @@ public class ArmCommands {
 
     public static Command getPrepareForStateCommand(ArmConstants.ArmState targetState, boolean isStateReversed) {
         return new ExecuteEndCommand(
-                () -> RobotContainer.ARM.setArmState(targetState, isStateReversed),
+                () -> RobotContainer.ARM.setPrepareState(targetState, isStateReversed),
                 RobotContainer.ARM::stop,
                 RobotContainer.ARM
         );
