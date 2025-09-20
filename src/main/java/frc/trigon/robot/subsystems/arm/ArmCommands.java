@@ -24,7 +24,7 @@ public class ArmCommands {
         );
     }
 
-    public static Command getGearRatioCalulationCommand() {
+    public static Command getGearRatioCalculationCommand() {
         return new GearRatioCalculationCommand(
                 ArmConstants.ARM_MASTER_MOTOR,
                 ArmConstants.ANGLE_ENCODER,

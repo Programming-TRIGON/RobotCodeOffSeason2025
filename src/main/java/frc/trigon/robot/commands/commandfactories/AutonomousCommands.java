@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj2.command.*;
 import frc.trigon.robot.RobotContainer;
 import frc.trigon.robot.commands.commandclasses.IntakeAssistCommand;
 import frc.trigon.robot.constants.AutonomousConstants;
-import frc.trigon.robot.constants.FieldConstants;
 import frc.trigon.robot.subsystems.arm.ArmCommands;
 import frc.trigon.robot.subsystems.arm.ArmConstants;
 import frc.trigon.robot.subsystems.elevator.ElevatorCommands;
@@ -47,11 +46,11 @@ public class AutonomousCommands {
 
     public static Command getFindCoralCommand(boolean isRight) {
         return new SequentialCommandGroup(
-                SwerveCommands.getDriveToPoseCommand(() -> isRight ? FieldConstants.AUTO_FIND_CORAL_POSE_RIGHT : FieldConstants.AUTO_FIND_CORAL_POSE_LEFT, AutonomousConstants.DRIVE_TO_REEF_CONSTRAINTS, 2.3),
+                SwerveCommands.getDriveToPoseCommand(() -> isRight ? AutonomousConstants.AUTO_FIND_CORAL_POSE_RIGHT : AutonomousConstants.AUTO_FIND_CORAL_POSE_LEFT, AutonomousConstants.DRIVE_TO_REEF_CONSTRAINTS, AutonomousConstants.AUTO_FIND_CORAL_END_VELOCITY_METERS_PER_SECOND),
                 SwerveCommands.getClosedLoopSelfRelativeDriveCommand(
                         () -> 0,
                         () -> 0,
-                        () -> 0.2
+                        () -> AutonomousConstants.AUTO_FIND_CORAL_ROTATION_POWER
                 )
         );
     }
@@ -93,7 +92,7 @@ public class AutonomousCommands {
     public static Command getDriveToCoralCommand(boolean isRight) {
         return new SequentialCommandGroup(
                 getFindCoralCommand(isRight).unless(() -> CORAL_POSE_ESTIMATOR.getClosestObjectToRobot() != null).until(() -> CORAL_POSE_ESTIMATOR.getClosestObjectToRobot() != null),
-                IntakeAssistCommand.getAssistIntakeCommand(IntakeAssistCommand.AssistMode.FULL_ASSIST, IntakeAssistCommand::calculateDistanceFromTrackedCGamePiece).withTimeout(1.5)
+                IntakeAssistCommand.getAssistIntakeCommand(IntakeAssistCommand.AssistMode.FULL_ASSIST, IntakeAssistCommand::calculateDistanceFromTrackedGamePiece).withTimeout(1.5)
         ).repeatedly();
     }
 
