@@ -41,4 +41,19 @@ public class ElevatorCommands {
                 RobotContainer.ELEVATOR
         );
     }
+
+    public static Command getSetPrepareTargetStateCommand(Supplier<ElevatorConstants.ElevatorState> targetState) {
+        return new ExecuteEndCommand(
+                () -> RobotContainer.ELEVATOR.setPrepareState(targetState.get()),
+                RobotContainer.ELEVATOR::stop,
+                RobotContainer.ELEVATOR
+        );
+    }
+
+    public static Command getSetPrepareTargetStateCommand(ElevatorConstants.ElevatorState targetState) {
+        return new ExecuteEndCommand(
+                () -> RobotContainer.ELEVATOR.setPrepareState(targetState),
+                RobotContainer.ELEVATOR::stop,
+                RobotContainer.ELEVATOR);
+    }
 }

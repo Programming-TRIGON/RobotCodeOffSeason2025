@@ -4,13 +4,12 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.trigon.robot.RobotContainer;
-import frc.trigon.robot.commands.commandclasses.WaitUntilChangeCommand;
 import frc.trigon.robot.constants.FieldConstants;
 import frc.trigon.robot.constants.OperatorConstants;
 import frc.trigon.robot.misc.ReefChooser;
-import frc.trigon.robot.subsystems.arm.ArmCommands;
 import frc.trigon.robot.subsystems.arm.ArmConstants;
 import frc.trigon.robot.subsystems.elevator.ElevatorCommands;
 import frc.trigon.robot.subsystems.elevator.ElevatorConstants;
@@ -21,73 +20,6 @@ import lib.utilities.flippable.FlippableTranslation2d;
 public class CoralPlacingCommands {
     public static boolean SHOULD_SCORE_AUTONOMOUSLY = true;
     private static final ReefChooser REEF_CHOOSER = OperatorConstants.REEF_CHOOSER;
-
-    public static Command getScoreInReefCommand(boolean shouldScoreRight) {
-        return getScoreInReefFromGripperCommand(shouldScoreRight).asProxy();
-    }
-
-    private static Command getScoreInReefFromGripperCommand(boolean shouldScoreRight) {
-        return GeneralCommands.getContinuousConditionalCommand(
-                getAutonomouslyScoreInReefFromGripperCommand(shouldScoreRight).asProxy(),
-                getManuallyScoreInReefFromGripperCommand().asProxy(),
-                () -> SHOULD_SCORE_AUTONOMOUSLY
-        );
-    }
-
-    private static Command getManuallyScoreInReefFromGripperCommand() {
-        return CoralCollectionCommands.getLoadCoralCommand().asProxy().andThen(
-                new ParallelCommandGroup(
-                        ElevatorCommands.getSetTargetStateCommand(REEF_CHOOSER::getElevatorState).raceWith(new WaitUntilChangeCommand<>(REEF_CHOOSER::getElevatorState)).repeatedly(),
-                        getArmScoringSequenceCommand()
-                ).asProxy()
-        );
-    }
-
-    private static Command getAutonomouslyScoreInReefFromGripperCommand(boolean shouldScoreRight) {
-        return new ParallelRaceGroup(
-                CoralCollectionCommands.getLoadCoralCommand().asProxy().andThen(
-                        new ParallelCommandGroup(
-                                getOpenElevatorWhenCloseToReefCommand(shouldScoreRight),
-                                getAutoGripperScoringSequenceCommand(shouldScoreRight)
-                        ).asProxy().raceWith(new WaitUntilChangeCommand<>(REEF_CHOOSER::getElevatorState)).repeatedly()
-                ),
-                getAutonomousDriveToReefThenManualDriveCommand(shouldScoreRight)
-        ).andThen();
-    }
-
-    private static Command getArmScoringSequenceCommand() {
-        return new SequentialCommandGroup(
-                ArmCommands.getSetTargetStateCommand(REEF_CHOOSER.getArmState())
-                        .unless(() -> RobotContainer.ELEVATOR.atState(REEF_CHOOSER.getElevatorState()) || REEF_CHOOSER.getScoringLevel() == ScoringLevel.L2 || REEF_CHOOSER.getScoringLevel() == ScoringLevel.L1),
-                scoreReefChooserCommand()
-        );
-    }
-
-    private static Command getAutoGripperScoringSequenceCommand(boolean shouldScoreRight) {
-        return new SequentialCommandGroup(
-                ArmCommands.getSetTargetStateCommand(REEF_CHOOSER.getArmState()),
-                scoreReefChooserCommand(shouldScoreRight)
-        );
-    }
-
-    private static Command scoreReefChooserCommand(boolean shouldScoreRight) {
-        return new SequentialCommandGroup(
-                ArmCommands.getPrepareForStateCommand(REEF_CHOOSER::getArmState).raceWith(
-                        new SequentialCommandGroup(
-                                new WaitUntilCommand(() -> canAutonomouslyReleaseFromEndEffector(shouldScoreRight)),
-                                new WaitUntilChangeCommand<>(RobotContainer.ROBOT_POSE_ESTIMATOR::getEstimatedRobotPose)
-                        )
-                ).until(OperatorConstants.CONTINUE_TRIGGER),
-                ArmCommands.getSetTargetStateCommand(REEF_CHOOSER.getArmState()).finallyDo(OperatorConstants.REEF_CHOOSER::switchReefSide)
-        );
-    }
-
-    private static Command scoreReefChooserCommand() {
-        return new SequentialCommandGroup(
-                ArmCommands.getPrepareForStateCommand(REEF_CHOOSER::getArmState).until(OperatorConstants.CONTINUE_TRIGGER),
-                ArmCommands.getSetTargetStateCommand(REEF_CHOOSER::getArmState).finallyDo(OperatorConstants.REEF_CHOOSER::switchReefSide)
-        );
-    }
 
     private static Command getOpenElevatorWhenCloseToReefCommand(boolean shouldScoreRight) {
         return GeneralCommands.runWhen(

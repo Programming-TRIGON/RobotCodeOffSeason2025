@@ -86,6 +86,11 @@ public class Elevator extends MotorSubsystem {
         return currentToTargetStateDifferenceMeters < ElevatorConstants.HEIGHT_TOLERANCE_METERS;
     }
 
+    public boolean atPreparedTargetState() {
+        final double currentToTargetStateDifferenceMeters = Math.abs(targetState.prepareStatePositionMeters - getPositionMeters());
+        return currentToTargetStateDifferenceMeters < ElevatorConstants.HEIGHT_TOLERANCE_METERS;
+    }
+
     public double getPositionMeters() {
         return rotationsToMeters(getPositionRotations());
     }
@@ -106,6 +111,12 @@ public class Elevator extends MotorSubsystem {
             return;
         }
         setTargetPositionRotations(metersToRotations(targetState.targetPositionMeters));
+    }
+
+    void setPrepareState(ElevatorConstants.ElevatorState targetState) {
+        this.targetState = targetState;
+        scalePositionRequestSpeed(targetState.speedScalar);
+        setTargetPositionRotations(metersToRotations(targetState.prepareStatePositionMeters));
     }
 
     void setTargetPositionRotations(double targetPositionRotations) {
