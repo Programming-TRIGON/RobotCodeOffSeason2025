@@ -21,9 +21,10 @@ public class CoralPlacingCommands {
     public static boolean SHOULD_SCORE_AUTONOMOUSLY = true;
     private static final ReefChooser REEF_CHOOSER = OperatorConstants.REEF_CHOOSER;
 
-    private static Command getOpenElevatorWhenCloseToReefCommand(boolean shouldScoreRight) {
+
+    private static Command getOpenElevatorPreparedStateWhenCloseToReefCommand(boolean shouldScoreRight) {
         return GeneralCommands.runWhen(
-                ElevatorCommands.getSetTargetStateCommand(REEF_CHOOSER::getElevatorState),
+                ElevatorCommands.getSetPrepareTargetStateCommand(REEF_CHOOSER::getElevatorState),
                 () -> calculateDistanceToTargetScoringPose(shouldScoreRight) < AutonomousConstants.MINIMUM_DISTANCE_FROM_REEF_TO_OPEN_ELEVATOR
         );
     }

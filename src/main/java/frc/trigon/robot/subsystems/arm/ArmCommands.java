@@ -2,6 +2,7 @@ package frc.trigon.robot.subsystems.arm;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import frc.trigon.robot.RobotContainer;
 import lib.commands.ExecuteEndCommand;
@@ -65,6 +66,14 @@ public class ArmCommands {
                 () -> RobotContainer.ARM.setPrepareState(targetState, isStateReversed),
                 RobotContainer.ARM::stop,
                 RobotContainer.ARM
+        );
+    }
+
+    public static Command getRestCommand() {
+        return new ConditionalCommand(
+                getSetTargetStateCommand(ArmConstants.ArmState.REST_WITH_CORAL),
+                getSetTargetStateCommand(ArmConstants.ArmState.REST),
+                RobotContainer.ARM::hasGamePiece
         );
     }
 }
