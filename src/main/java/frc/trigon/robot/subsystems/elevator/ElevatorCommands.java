@@ -42,17 +42,17 @@ public class ElevatorCommands {
         );
     }
 
-    public static Command getSetPrepareTargetStateCommand(Supplier<ElevatorConstants.ElevatorState> targetState) {
+    public static Command getPrepareStateCommand(Supplier<ElevatorConstants.ElevatorState> targetState) {
         return new ExecuteEndCommand(
-                () -> RobotContainer.ELEVATOR.setPrepareState(targetState.get()),
+                () -> RobotContainer.ELEVATOR.prepareState(targetState.get()),
                 RobotContainer.ELEVATOR::stop,
                 RobotContainer.ELEVATOR
         );
     }
 
-    public static Command getSetPrepareTargetStateCommand(ElevatorConstants.ElevatorState targetState) {
+    public static Command getPrepareStateCommand(ElevatorConstants.ElevatorState targetState) {
         return new ExecuteEndCommand(
-                () -> RobotContainer.ELEVATOR.setPrepareState(targetState),
+                () -> RobotContainer.ELEVATOR.prepareState(targetState),
                 RobotContainer.ELEVATOR::stop,
                 RobotContainer.ELEVATOR);
     }

@@ -5,11 +5,14 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.trigon.robot.RobotContainer;
+import frc.trigon.robot.constants.AutonomousConstants;
 import frc.trigon.robot.constants.FieldConstants;
 import frc.trigon.robot.constants.OperatorConstants;
 import frc.trigon.robot.misc.ReefChooser;
+import frc.trigon.robot.subsystems.arm.ArmCommands;
 import frc.trigon.robot.subsystems.arm.ArmConstants;
 import frc.trigon.robot.subsystems.elevator.ElevatorCommands;
 import frc.trigon.robot.subsystems.elevator.ElevatorConstants;
@@ -21,11 +24,21 @@ public class CoralPlacingCommands {
     public static boolean SHOULD_SCORE_AUTONOMOUSLY = true;
     private static final ReefChooser REEF_CHOOSER = OperatorConstants.REEF_CHOOSER;
 
+    public static Command getScoreCommand(boolean shouldScoreRight) {
+        return new SequentialCommandGroup(
+                getAutonomouslyPrepareScoreCommand(shouldScoreRight),
+                new ParallelCommandGroup(
+                        ElevatorCommands.getSetTargetStateCommand(REEF_CHOOSER.getElevatorState()),
+                        ArmCommands.getSetTargetStateCommand(REEF_CHOOSER.getArmState())
+                ).onlyIf(OperatorConstants.CONTINUE_TRIGGER)
+        );
+    }
 
-    private static Command getOpenElevatorPreparedStateWhenCloseToReefCommand(boolean shouldScoreRight) {
-        return GeneralCommands.runWhen(
-                ElevatorCommands.getSetPrepareTargetStateCommand(REEF_CHOOSER::getElevatorState),
-                () -> calculateDistanceToTargetScoringPose(shouldScoreRight) < AutonomousConstants.MINIMUM_DISTANCE_FROM_REEF_TO_OPEN_ELEVATOR
+    private static Command getAutonomouslyPrepareScoreCommand(boolean shouldScoreRight) {
+        return new ParallelCommandGroup(
+                ElevatorCommands.getPrepareStateCommand(REEF_CHOOSER.getElevatorState()),
+                ArmCommands.getPrepareForStateCommand(REEF_CHOOSER.getArmState()),
+                getAutonomousDriveToReefThenManualDriveCommand(shouldScoreRight)
         );
     }
 
@@ -56,9 +69,7 @@ public class CoralPlacingCommands {
 
         double distanceFromClosestScoringPoseMeters = Double.POSITIVE_INFINITY;
         Pose2d closestScoringPose = new Pose2d();
-        for (Rotation2d targetRotation : reefClockAngles) {
-            if (Math.abs(robotOrientationOnField.minus(targetRotation).getDegrees()) > 90)
-                targetRotation.rotateBy(Rotation2d.k180deg);
+        for (final Rotation2d targetRotation : reefClockAngles) {
             final Pose2d reefCenterAtTargetRotation = new Pose2d(reefCenterPosition, targetRotation);
 
 

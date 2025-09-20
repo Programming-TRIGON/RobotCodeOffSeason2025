@@ -113,7 +113,7 @@ public class Elevator extends MotorSubsystem {
         setTargetPositionRotations(metersToRotations(targetState.targetPositionMeters));
     }
 
-    void setPrepareState(ElevatorConstants.ElevatorState targetState) {
+    void prepareState(ElevatorConstants.ElevatorState targetState) {
         this.targetState = targetState;
         scalePositionRequestSpeed(targetState.speedScalar);
         setTargetPositionRotations(metersToRotations(targetState.prepareStatePositionMeters));
