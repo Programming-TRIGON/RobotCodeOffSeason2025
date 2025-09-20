@@ -36,8 +36,13 @@ public class ArmCommands {
     }
 
     public static Command getSetTargetStateCommand(Supplier<ArmConstants.ArmState> targetState) {
-        return getSetTargetStateCommand(targetState.get(), false);
-    }
+        return new FunctionalCommand(
+                () -> RobotContainer.ARM.setEndEffectorState(targetState.get()),
+                () -> RobotContainer.ARM.setArmState(targetState.get(), false),
+                interrupted -> RobotContainer.ARM.stop(),
+                () -> false,
+                RobotContainer.ARM
+        );    }
 
     public static Command getSetTargetStateCommand(ArmConstants.ArmState targetState) {
         return getSetTargetStateCommand(targetState, false);
@@ -54,7 +59,11 @@ public class ArmCommands {
     }
 
     public static Command getPrepareForStateCommand(Supplier<ArmConstants.ArmState> targetState) {
-        return getPrepareForStateCommand(targetState.get(), false);
+        return new ExecuteEndCommand(
+                () -> RobotContainer.ARM.setPrepareState(targetState.get(), false),
+                RobotContainer.ARM::stop,
+                RobotContainer.ARM
+        );
     }
 
     public static Command getPrepareForStateCommand(ArmConstants.ArmState targetState) {

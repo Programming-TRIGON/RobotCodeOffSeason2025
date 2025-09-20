@@ -26,18 +26,18 @@ public class CoralPlacingCommands {
 
     public static Command getScoreCommand(boolean shouldScoreRight) {
         return new SequentialCommandGroup(
-                getAutonomouslyPrepareScoreCommand(shouldScoreRight),
+                getAutonomouslyPrepareScoreCommand(shouldScoreRight).until(OperatorConstants.CONTINUE_TRIGGER),
                 new ParallelCommandGroup(
-                        ElevatorCommands.getSetTargetStateCommand(REEF_CHOOSER.getElevatorState()),
-                        ArmCommands.getSetTargetStateCommand(REEF_CHOOSER.getArmState())
-                ).onlyIf(OperatorConstants.CONTINUE_TRIGGER)
+                        ElevatorCommands.getSetTargetStateCommand(REEF_CHOOSER::getElevatorState),
+                        ArmCommands.getSetTargetStateCommand(REEF_CHOOSER::getArmState)
+                )
         );
     }
 
     private static Command getAutonomouslyPrepareScoreCommand(boolean shouldScoreRight) {
         return new ParallelCommandGroup(
-                ElevatorCommands.getPrepareStateCommand(REEF_CHOOSER.getElevatorState()),
-                ArmCommands.getPrepareForStateCommand(REEF_CHOOSER.getArmState()),
+                ElevatorCommands.getPrepareStateCommand(REEF_CHOOSER::getElevatorState),
+                ArmCommands.getPrepareForStateCommand(REEF_CHOOSER::getArmState),
                 getAutonomousDriveToReefThenManualDriveCommand(shouldScoreRight)
         );
     }
@@ -82,12 +82,6 @@ public class CoralPlacingCommands {
         }
 
         return new FlippablePose2d(closestScoringPose.transformBy(shouldScoreRight ? scoringPoseToRightBranch : scoringPoseToRightBranch.inverse()), false);
-    }
-
-    private static boolean canAutonomouslyReleaseFromEndEffector(boolean shouldScoreRight) {
-        return RobotContainer.ELEVATOR.atTargetState() &&
-                RobotContainer.ARM.atTargetAngle() &&
-                RobotContainer.SWERVE.atPose(calculateClosestScoringPose(shouldScoreRight));
     }
 
     /**
@@ -145,8 +139,7 @@ public class CoralPlacingCommands {
         }
 
         private ElevatorConstants.ElevatorState determineElevatorState() {
-            return switch (ordinal()) {
-                case 0 -> ElevatorConstants.ElevatorState.REST;
+            return switch (level) {
                 case 1 -> ElevatorConstants.ElevatorState.SCORE_L1;
                 case 2 -> ElevatorConstants.ElevatorState.SCORE_L2;
                 case 3 -> ElevatorConstants.ElevatorState.SCORE_L3;
@@ -156,8 +149,7 @@ public class CoralPlacingCommands {
         }
 
         private ArmConstants.ArmState determineArmState() {
-            return switch (ordinal()) {
-                case 0 -> ArmConstants.ArmState.REST;
+            return switch (level) {
                 case 1 -> ArmConstants.ArmState.SCORE_L1;
                 case 2 -> ArmConstants.ArmState.SCORE_L2;
                 case 3 -> ArmConstants.ArmState.SCORE_L3;
@@ -167,9 +159,7 @@ public class CoralPlacingCommands {
         }
 
         private int calculateLevel() {
-            if (ordinal() == 0)
-                return 1;
-            return ordinal();
+            return ordinal() + 1;
         }
     }
 }
