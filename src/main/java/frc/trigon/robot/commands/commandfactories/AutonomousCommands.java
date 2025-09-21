@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.*;
 import frc.trigon.robot.RobotContainer;
 import frc.trigon.robot.commands.commandclasses.IntakeAssistCommand;
 import frc.trigon.robot.constants.AutonomousConstants;
+import frc.trigon.robot.constants.FieldConstants;
 import frc.trigon.robot.subsystems.arm.ArmCommands;
 import frc.trigon.robot.subsystems.arm.ArmConstants;
 import frc.trigon.robot.subsystems.elevator.ElevatorCommands;
@@ -144,22 +145,19 @@ public class AutonomousCommands {
         final Pose2d currentRobotPose = RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose();
 
         double closestDistance = Double.POSITIVE_INFINITY;
-        Pose2d closestScoringPose = null; //TODO: this stuff
-//        for (FieldConstants.ReefClockPosition currentClockPosition : reefClockPositions) {
-//            for (FieldConstants.ReefSide currentSide : FieldConstants.ReefSide.values()) {
-//                if (shouldOnlyCheckOpenBranches && scoredBranchesAtL4[currentClockPosition.ordinal() * 2 + currentSide.ordinal()])
-//                    continue;
-//                final Pose2d reefSideScoringPose = CoralPlacingCommands.ScoringLevel.L4.calculateTargetPlacingPosition(currentClockPosition, currentSide).get();
-//                final double distance = currentRobotPose.getTranslation().getDistance(reefSideScoringPose.getTranslation());
-//                if (distance < closestDistance) {
-//                    closestDistance = distance;
-//                    if (shouldStayBehindAlgae)
-//                        closestScoringPose = reefSideScoringPose.transformBy(new Transform2d(new Translation2d(0.1, 0), new Rotation2d()));
-//                    else
-//                        closestScoringPose = reefSideScoringPose;
-//                }
-//            }
-//        }
+        Pose2d closestScoringPose = null;
+        for (FieldConstants.ReefClockPosition currentClockPosition : FieldConstants.ReefClockPosition.values()) {
+            for (FieldConstants.ReefSide currentSide : FieldConstants.ReefSide.values()) {
+                if (scoredBranchesAtL4[currentClockPosition.ordinal() * 2 + currentSide.ordinal()])
+                    continue;
+                final Pose2d reefSideScoringPose = CoralPlacingCommands.ScoringLevel.L4.calculateTargetPlacingPosition(currentClockPosition, currentSide).get();
+                final double distance = currentRobotPose.getTranslation().getDistance(reefSideScoringPose.getTranslation());
+                if (distance < closestDistance) {
+                    closestDistance = distance;
+                    closestScoringPose = reefSideScoringPose;
+                }
+            }
+        }
 
         return closestScoringPose == null ? null : new FlippablePose2d(closestScoringPose, false);
     }
@@ -173,14 +171,14 @@ public class AutonomousCommands {
         );
     }
 
-    private static int getBranchNumberFromScoringPose(Pose2d scoringPose) { //TODO: this stuff
-//        for (FieldConstants.ReefClockPosition currentClockPosition : FieldConstants.ReefClockPosition.values()) {
-//            for (FieldConstants.ReefSide currentSide : FieldConstants.ReefSide.values()) {
-//                final Pose2d reefSideScoringPose = CoralPlacingCommands.ScoringLevel.L4.calculateTargetPlacingPosition(currentClockPosition, currentSide).get();
-//                if (reefSideScoringPose.getTranslation().getDistance(scoringPose.getTranslation()) < 0.01)
-//                    return currentClockPosition.ordinal() * 2 + currentSide.ordinal();
-//            }
-//        }
+    private static int getBranchNumberFromScoringPose(Pose2d scoringPose) {
+        for (FieldConstants.ReefClockPosition currentClockPosition : FieldConstants.ReefClockPosition.values()) {
+            for (FieldConstants.ReefSide currentSide : FieldConstants.ReefSide.values()) {
+                final Pose2d reefSideScoringPose = CoralPlacingCommands.ScoringLevel.L4.calculateTargetPlacingPosition(currentClockPosition, currentSide).get();
+                if (reefSideScoringPose.getTranslation().getDistance(scoringPose.getTranslation()) < 0.01)
+                    return currentClockPosition.ordinal() * 2 + currentSide.ordinal();
+            }
+        }
 
         return 0;
     }
