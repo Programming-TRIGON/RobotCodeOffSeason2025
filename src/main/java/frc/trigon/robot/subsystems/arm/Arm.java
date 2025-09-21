@@ -13,6 +13,7 @@ import lib.hardware.phoenix6.cancoder.CANcoderEncoder;
 import lib.hardware.phoenix6.cancoder.CANcoderSignal;
 import lib.hardware.phoenix6.talonfx.TalonFXMotor;
 import lib.hardware.phoenix6.talonfx.TalonFXSignal;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Arm extends MotorSubsystem {
@@ -108,6 +109,18 @@ public class Arm extends MotorSubsystem {
         return atAngle(targetState.targetAngle);
     }
 
+    public boolean atPrepareAngle() {
+        if (isStateReversed) {
+            return atAngle(subtractFrom360Degrees(targetState.prepareAngle));
+        }
+        return atAngle(targetState.prepareAngle);
+    }
+
+    @AutoLogOutput(key = "Arm/HasCoral")
+    public boolean hasGamePiece() {
+        return ArmConstants.COLLECTION_DETECTION_BOOLEAN_EVENT.getAsBoolean();
+    }
+
     public Rotation2d getAngle() {
         return Rotation2d.fromRotations(angleEncoder.getSignal(CANcoderSignal.POSITION));
     }
@@ -137,6 +150,21 @@ public class Arm extends MotorSubsystem {
     void setTargetState(Rotation2d targetAngle, double targetVoltage) {
         setTargetAngle(targetAngle);
         setEndEffectorTargetVoltage(targetVoltage);
+    }
+
+    void setPrepareState(ArmConstants.ArmState targetState) {
+        setPrepareState(targetState, false);
+    }
+
+    void setPrepareState(ArmConstants.ArmState targetState, boolean isStateReversed) {
+        this.isStateReversed = isStateReversed;
+        this.targetState = targetState;
+
+        if (isStateReversed) {
+            setTargetAngle(subtractFrom360Degrees(targetState.prepareAngle));
+            return;
+        }
+        setTargetAngle(targetState.prepareAngle);
     }
 
     void setArmState(ArmConstants.ArmState targetState) {

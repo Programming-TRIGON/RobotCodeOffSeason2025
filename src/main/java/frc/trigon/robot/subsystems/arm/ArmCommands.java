@@ -2,6 +2,7 @@ package frc.trigon.robot.subsystems.arm;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import frc.trigon.robot.RobotContainer;
 import lib.commands.ExecuteEndCommand;
@@ -9,6 +10,7 @@ import lib.commands.GearRatioCalculationCommand;
 import lib.commands.NetworkTablesCommand;
 
 import java.util.Set;
+import java.util.function.Supplier;
 
 public class ArmCommands {
     public static Command getDebuggingCommand() {
@@ -33,6 +35,15 @@ public class ArmCommands {
         );
     }
 
+    public static Command getSetTargetStateCommand(Supplier<ArmConstants.ArmState> targetState, Supplier<Boolean> isStateReversed) {
+        return new FunctionalCommand(
+                () -> RobotContainer.ARM.setEndEffectorState(targetState.get()),
+                () -> RobotContainer.ARM.setArmState(targetState.get(), isStateReversed.get()),
+                interrupted -> RobotContainer.ARM.stop(),
+                () -> false,
+                RobotContainer.ARM
+        );
+    }
 
     public static Command getSetTargetStateCommand(ArmConstants.ArmState targetState) {
         return getSetTargetStateCommand(targetState, false);
@@ -48,15 +59,31 @@ public class ArmCommands {
         );
     }
 
+    public static Command getPrepareForStateCommand(Supplier<ArmConstants.ArmState> targetState, Supplier<Boolean> isStateReversed) {
+        return new ExecuteEndCommand(
+                () -> RobotContainer.ARM.setPrepareState(targetState.get(), isStateReversed.get()),
+                RobotContainer.ARM::stop,
+                RobotContainer.ARM
+        );
+    }
+
     public static Command getPrepareForStateCommand(ArmConstants.ArmState targetState) {
         return getPrepareForStateCommand(targetState, false);
     }
 
     public static Command getPrepareForStateCommand(ArmConstants.ArmState targetState, boolean isStateReversed) {
         return new ExecuteEndCommand(
-                () -> RobotContainer.ARM.setArmState(targetState, isStateReversed),
+                () -> RobotContainer.ARM.setPrepareState(targetState, isStateReversed),
                 RobotContainer.ARM::stop,
                 RobotContainer.ARM
+        );
+    }
+
+    public static Command getRestCommand() {
+        return new ConditionalCommand(
+                getSetTargetStateCommand(ArmConstants.ArmState.REST_WITH_CORAL),
+                getSetTargetStateCommand(ArmConstants.ArmState.REST),
+                RobotContainer.ARM::hasGamePiece
         );
     }
 }
