@@ -29,7 +29,7 @@ public class CoralPlacingCommands {
                 getAutonomouslyPrepareScoreCommand(shouldScoreRight).until(OperatorConstants.CONTINUE_TRIGGER),
                 new ParallelCommandGroup(
                         ElevatorCommands.getSetTargetStateCommand(REEF_CHOOSER::getElevatorState),
-                        ArmCommands.getSetTargetStateCommand(REEF_CHOOSER::getArmState)
+                        ArmCommands.getSetTargetStateCommand(REEF_CHOOSER::getArmState, CoralPlacingCommands::shouldReverseScore)
                 )
         );
     }
@@ -37,7 +37,7 @@ public class CoralPlacingCommands {
     private static Command getAutonomouslyPrepareScoreCommand(boolean shouldScoreRight) {
         return new ParallelCommandGroup(
                 ElevatorCommands.getPrepareStateCommand(REEF_CHOOSER::getElevatorState),
-                ArmCommands.getPrepareForStateCommand(REEF_CHOOSER::getArmState),
+                ArmCommands.getPrepareForStateCommand(REEF_CHOOSER::getArmState, CoralPlacingCommands::shouldReverseScore),
                 getAutonomousDriveToReefThenManualDriveCommand(shouldScoreRight)
         );
     }
@@ -70,7 +70,7 @@ public class CoralPlacingCommands {
         double distanceFromClosestScoringPoseMeters = Double.POSITIVE_INFINITY;
         Pose2d closestScoringPose = new Pose2d();
         for (final Rotation2d targetRotation : reefClockAngles) {
-            final Pose2d reefCenterAtTargetRotation = new Pose2d(reefCenterPosition, targetRotation);
+            final Pose2d reefCenterAtTargetRotation = new Pose2d(reefCenterPosition, shouldReverseScore() ? targetRotation.unaryMinus() : targetRotation);
 
 
             final Pose2d currentScoringPose = reefCenterAtTargetRotation.transformBy(reefCenterToScoringPose);
@@ -82,6 +82,17 @@ public class CoralPlacingCommands {
         }
 
         return new FlippablePose2d(closestScoringPose.transformBy(shouldScoreRight ? scoringPoseToRightBranch : scoringPoseToRightBranch.inverse()), false);
+    }
+
+    private static boolean shouldReverseScore() {
+        final Rotation2d robotRotation = RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().getRotation();
+        final Translation2d robotTranslation = RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().getTranslation();
+        final Translation2d reefCenterTranslation = FieldConstants.FLIPPABLE_REEF_CENTER_TRANSLATION.get();
+        final double reefCenterToRobotX = robotTranslation.getX() - reefCenterTranslation.getX();
+        final double reefCenterToRobotY = robotTranslation.getY() - reefCenterTranslation.getY();
+        final Rotation2d robotRotationRelativeToReef = Rotation2d.fromRadians(Math.atan2(reefCenterToRobotX, reefCenterToRobotY));
+        final Rotation2d robotRotationFacingReef = robotRotation.minus(robotRotationRelativeToReef);
+        return robotRotationFacingReef.getDegrees() > Rotation2d.kCW_90deg.getDegrees() && robotRotationFacingReef.getDegrees() < Rotation2d.kCCW_90deg.getDegrees();
     }
 
     /**
