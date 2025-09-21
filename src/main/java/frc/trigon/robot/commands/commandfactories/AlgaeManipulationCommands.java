@@ -30,7 +30,7 @@ public class AlgaeManipulationCommands {
         return new SequentialCommandGroup(
                 CoralCollectionCommands.getUnloadCoralCommand().onlyIf(RobotContainer.ARM::hasGamePiece),
                 getInitiateAlgaeCollectionCommand().until(RobotContainer.ARM::hasGamePiece),
-                new InstantCommand(() -> getScoreAlgaeCommand().schedule()).alongWith(getAlgaeCollectionConfirmationCommand()) //TODO: add coral unloading if needed
+                new InstantCommand(() -> getScoreAlgaeCommand().schedule()).alongWith(getAlgaeCollectionConfirmationCommand())
         ).alongWith(getAlignToReefCommand());
     }
 
@@ -83,7 +83,7 @@ public class AlgaeManipulationCommands {
                         () -> CommandConstants.calculateDriveStickAxisValue(OperatorConstants.DRIVER_CONTROLLER.getLeftY()),
                         () -> CommandConstants.calculateDriveStickAxisValue(OperatorConstants.DRIVER_CONTROLLER.getLeftX()),
                         () -> new FlippableRotation2d(Rotation2d.kCW_90deg, true)
-                ).asProxy()//.onlyWhile(() -> CoralPlacingCommands.SHOULD_SCORE_AUTONOMOUSLY)
+                ).asProxy().onlyWhile(() -> CoralPlacingCommands.SHOULD_SCORE_AUTONOMOUSLY)
         );
     }
 
