@@ -65,7 +65,7 @@ public class AlgaeManipulationCommands {
     private static Command getScoreInNetCommand() {
         return new ParallelRaceGroup(
                 ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.SCORE_NET),
-                getArmScoringSequenceCommand(ArmConstants.ArmState.PREPARE_NET_SCORE, ArmConstants.ArmState.SCORE_NET),
+                getArmScoringSequenceCommand(ArmConstants.ArmState.SCORE_NET),
                 SwerveCommands.getClosedLoopFieldRelativeDriveCommand(
                         () -> CommandConstants.calculateDriveStickAxisValue(OperatorConstants.DRIVER_CONTROLLER.getLeftY()),
                         () -> CommandConstants.calculateDriveStickAxisValue(OperatorConstants.DRIVER_CONTROLLER.getLeftX()),
@@ -77,7 +77,7 @@ public class AlgaeManipulationCommands {
     private static Command getScoreInProcessorCommand() {
         return new ParallelRaceGroup(
                 ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.SCORE_PROCESSOR),
-                getArmScoringSequenceCommand(ArmConstants.ArmState.PREPARE_PROCESSOR_SCORE, ArmConstants.ArmState.SCORE_PROCESSOR),
+                getArmScoringSequenceCommand(ArmConstants.ArmState.SCORE_PROCESSOR),
                 SwerveCommands.getClosedLoopFieldRelativeDriveCommand(
                         () -> CommandConstants.calculateDriveStickAxisValue(OperatorConstants.DRIVER_CONTROLLER.getLeftY()),
                         () -> CommandConstants.calculateDriveStickAxisValue(OperatorConstants.DRIVER_CONTROLLER.getLeftX()),
@@ -93,9 +93,9 @@ public class AlgaeManipulationCommands {
         ).until(() -> !RobotContainer.ARM.hasGamePiece());
     }
 
-    private static Command getArmScoringSequenceCommand(ArmConstants.ArmState prepareState, ArmConstants.ArmState scoreState) {
+    private static Command getArmScoringSequenceCommand(ArmConstants.ArmState scoreState) {
         return new SequentialCommandGroup(
-                ArmCommands.getSetTargetStateCommand(prepareState).until(OperatorConstants.CONTINUE_TRIGGER),
+                ArmCommands.getPrepareForStateCommand(scoreState).until(OperatorConstants.CONTINUE_TRIGGER),
                 ArmCommands.getSetTargetStateCommand(scoreState)
         );
     }

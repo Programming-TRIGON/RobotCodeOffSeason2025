@@ -244,7 +244,8 @@ public class ArmConstants {
         SCORE_NET(Rotation2d.fromDegrees(160), Rotation2d.fromDegrees(160), 4),
         SCORE_PROCESSOR(Rotation2d.fromDegrees(90), Rotation2d.fromDegrees(90), 4),
         COLLECT_ALGAE_L2(Rotation2d.fromDegrees(90), Rotation2d.fromDegrees(90), -4),
-        COLLECT_ALGAE_L3(Rotation2d.fromDegrees(90), Rotation2d.fromDegrees(90), -4);
+        COLLECT_ALGAE_L3(Rotation2d.fromDegrees(90), Rotation2d.fromDegrees(90), -4),
+        EJECT_ALGAE(Rotation2d.fromDegrees(90), Rotation2d.fromDegrees(90), 4);
 
         public final Rotation2d targetAngle;
         public final Rotation2d prepareAngle;
