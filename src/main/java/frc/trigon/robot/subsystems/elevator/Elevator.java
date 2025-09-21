@@ -77,18 +77,18 @@ public class Elevator extends MotorSubsystem {
         Logger.recordOutput("Elevator/CurrentPositionMeters", getPositionMeters());
     }
 
-    public boolean atState(ElevatorConstants.ElevatorState targetState) {
-        return targetState == this.targetState && atTargetState();
+    public boolean atState(ElevatorConstants.ElevatorState targetState, boolean atPrepareState) {
+        return targetState == this.targetState && (atPrepareState ? atPreparedTargetState() : atTargetState());
     }
 
     public boolean atTargetState() {
         final double currentToTargetStateDifferenceMeters = Math.abs(targetState.targetPositionMeters - getPositionMeters());
-        return currentToTargetStateDifferenceMeters < ElevatorConstants.HEIGHT_TOLERANCE_METERS;
+        return currentToTargetStateDifferenceMeters < ElevatorConstants.POSITION_TOLERANCE_METERS;
     }
 
     public boolean atPreparedTargetState() {
         final double currentToTargetStateDifferenceMeters = Math.abs(targetState.prepareStatePositionMeters - getPositionMeters());
-        return currentToTargetStateDifferenceMeters < ElevatorConstants.HEIGHT_TOLERANCE_METERS;
+        return currentToTargetStateDifferenceMeters < ElevatorConstants.POSITION_TOLERANCE_METERS;
     }
 
     public double getPositionMeters() {

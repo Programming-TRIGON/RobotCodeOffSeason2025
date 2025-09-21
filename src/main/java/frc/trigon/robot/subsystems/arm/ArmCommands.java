@@ -26,7 +26,7 @@ public class ArmCommands {
         );
     }
 
-    public static Command getGearRatioCalulationCommand() {
+    public static Command getGearRatioCalculationCommand() {
         return new GearRatioCalculationCommand(
                 ArmConstants.ARM_MASTER_MOTOR,
                 ArmConstants.ANGLE_ENCODER,
@@ -42,7 +42,8 @@ public class ArmCommands {
                 interrupted -> RobotContainer.ARM.stop(),
                 () -> false,
                 RobotContainer.ARM
-        );    }
+        );
+    }
 
     public static Command getSetTargetStateCommand(ArmConstants.ArmState targetState) {
         return getSetTargetStateCommand(targetState, false);

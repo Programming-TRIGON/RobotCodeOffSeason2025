@@ -89,6 +89,15 @@ public class Intake extends MotorSubsystem {
         return IntakeConstants.COLLECTION_DETECTION_BOOLEAN_EVENT.getAsBoolean();
     }
 
+    void prepareForState(IntakeConstants.IntakeState targetState) {
+        this.targetState = targetState;
+
+        setTargetState(
+                targetState.targetAngle,
+                0
+        );
+    }
+
     void setTargetState(IntakeConstants.IntakeState targetState) {
         this.targetState = targetState;
         setTargetState(targetState.targetAngle, targetState.targetVoltage);

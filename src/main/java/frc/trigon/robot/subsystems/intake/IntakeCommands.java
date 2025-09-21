@@ -19,6 +19,14 @@ public class IntakeCommands {
         );
     }
 
+    public static Command getPrepareForStateCommand(IntakeConstants.IntakeState targetState) {
+        return new StartEndCommand(
+                () -> RobotContainer.INTAKE.prepareForState(targetState),
+                RobotContainer.INTAKE::stop,
+                RobotContainer.INTAKE
+        );
+    }
+
     public static Command getSetTargetStateCommand(IntakeConstants.IntakeState targetState) {
         return new StartEndCommand(
                 () -> RobotContainer.INTAKE.setTargetState(targetState),

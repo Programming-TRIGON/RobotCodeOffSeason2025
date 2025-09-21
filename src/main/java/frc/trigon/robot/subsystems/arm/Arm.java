@@ -88,14 +88,14 @@ public class Arm extends MotorSubsystem {
         return getAngle().getDegrees() >= ArmConstants.MAXIMUM_ARM_SAFE_ANGLE.getDegrees();
     }
 
-    public boolean atState(ArmConstants.ArmState targetState, boolean isStateReversed) {
+    public boolean atState(ArmConstants.ArmState targetState, boolean atPrepareState, boolean isStateReversed) {
         if (isStateReversed)
-            return this.targetState == targetState && atAngle(subtractFrom360Degrees(targetState.targetAngle));
-        return atState(targetState);
+            return this.targetState == targetState && atAngle(subtractFrom360Degrees(atPrepareState ? targetState.prepareAngle : targetState.targetAngle));
+        return atState(targetState, atPrepareState);
     }
 
-    public boolean atState(ArmConstants.ArmState targetState) {
-        return this.targetState == targetState && atAngle(targetState.targetAngle);
+    public boolean atState(ArmConstants.ArmState targetState, boolean atPrepareState) {
+        return this.targetState == targetState && atAngle(atPrepareState ? targetState.prepareAngle : targetState.targetAngle);
     }
 
     public boolean atTargetAngle() {
