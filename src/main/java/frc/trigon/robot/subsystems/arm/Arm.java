@@ -8,6 +8,7 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.trigon.robot.RobotContainer;
+import frc.trigon.robot.misc.simulatedfield.SimulationFieldHandler;
 import frc.trigon.robot.subsystems.MotorSubsystem;
 import lib.hardware.phoenix6.cancoder.CANcoderEncoder;
 import lib.hardware.phoenix6.cancoder.CANcoderSignal;
@@ -84,6 +85,11 @@ public class Arm extends MotorSubsystem {
         armMasterMotor.setControl(voltageRequest.withOutput(targetVoltage));
     }
 
+    public Pose3d calculateGamePieceCollectionPose() {
+        return calculateVisualizationPose()
+                .transformBy(ArmConstants.ARM_TO_HELD_GAME_PIECE);
+    }
+
     public boolean isArmAboveSafeAngle() {
         return getAngle().getDegrees() >= ArmConstants.MAXIMUM_ARM_SAFE_ANGLE.getDegrees();
     }
@@ -119,6 +125,36 @@ public class Arm extends MotorSubsystem {
 
     public Rotation2d getAngle() {
         return Rotation2d.fromRotations(angleEncoder.getSignal(CANcoderSignal.POSITION));
+    }
+
+    @AutoLogOutput(key = "Arm/InEndEffector")
+    public boolean inEndEffector() {
+        return SimulationFieldHandler.isCoralInEndEffector();
+    }
+
+    public Translation3d calculateLinearArmAndEndEffectorVelocity() {
+        double velocityMetersPerSecond = endEffectorMotor.getSignal(TalonFXSignal.VELOCITY) * 2 * Math.PI * ArmConstants.WHEEL_RADIUS_METERS;
+        return calculateLinearArmVelocity().plus(
+                new Translation3d(
+                        getAngle().getCos() * velocityMetersPerSecond,
+                        getAngle().getSin() * velocityMetersPerSecond,
+                        0
+                )
+        );
+    }
+
+    public boolean isEjecting() {
+        return endEffectorMotor.getSignal(TalonFXSignal.MOTOR_VOLTAGE) > 2;
+    }
+
+    public Translation3d calculateLinearArmVelocity() {
+        double velocityRotationsPerSecond = armMasterMotor.getSignal(TalonFXSignal.VELOCITY);
+        double velocityMagnitude = velocityRotationsPerSecond * 2 * Math.PI * ArmConstants.ARM_LENGTH_METERS;
+        return new Translation3d(
+                getAngle().getCos() * velocityMagnitude,
+                0,
+                getAngle().getSin() * velocityMagnitude
+        );
     }
 
     void setTargetState(ArmConstants.ArmState targetState) {

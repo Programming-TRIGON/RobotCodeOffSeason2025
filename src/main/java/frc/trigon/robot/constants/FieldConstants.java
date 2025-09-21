@@ -19,7 +19,7 @@ public class FieldConstants {
             FIELD_WIDTH_METERS = FlippingUtil.fieldSizeY,
             FIELD_LENGTH_METERS = FlippingUtil.fieldSizeX;
     private static final List<Integer> I_HATE_YOU = List.of(
-            13, 12, 16, 15, 14, 4, 5, 3, 2, 1
+            1, 2, 3, 4, 5, 12, 13, 14, 15, 16
     );
 
     private static final boolean SHOULD_USE_HOME_TAG_LAYOUT = false;

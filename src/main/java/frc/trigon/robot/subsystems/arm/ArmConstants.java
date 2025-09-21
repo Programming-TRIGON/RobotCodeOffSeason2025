@@ -4,10 +4,7 @@ import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.signals.*;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.event.BooleanEvent;
@@ -91,7 +88,7 @@ public class ArmConstants {
             END_EFFECTOR_GEAR_RATIO,
             END_EFFECTOR_MOMENT_OF_INERTIA
     );
-    private static final DoubleSupplier DISTANCE_SENSOR_SIMULATION_SUPPLIER = () -> SimulationFieldHandler.isHoldingGamePiece() ? 0 : 1;
+    private static final DoubleSupplier DISTANCE_SENSOR_SIMULATION_SUPPLIER = () -> (SimulationFieldHandler.isHoldingCoral() && SimulationFieldHandler.isCoralInEndEffector()) || SimulationFieldHandler.isHoldingAlgae() ? 1 : 0;
 
     static final SysIdRoutine.Config ARM_SYSID_CONFIG = new SysIdRoutine.Config(
             Units.Volts.of(1.5).per(Units.Seconds),
@@ -108,21 +105,27 @@ public class ArmConstants {
             "EndEffectorMechanism",
             END_EFFECTOR_MAXIMUM_DISPLAYABLE_VELOCITY
     );
-
     static final Pose3d ARM_VISUALIZATION_ORIGIN_POINT = new Pose3d(
             new Translation3d(0, -0.0954, 0.3573),
             new Rotation3d(0, 0, 0)
     );
+
+    static final Transform3d ARM_TO_HELD_GAME_PIECE = new Transform3d(
+            new Translation3d(0, 0.1, -0.5855),
+            new Rotation3d(0, edu.wpi.first.math.util.Units.degreesToRadians(0), 0)
+    );
+    static final Rotation2d ANGLE_TOLERANCE = Rotation2d.fromDegrees(5);
     /**
      * The highest point of the arms angular zone where the safety logic applies.
      */
     static final Rotation2d MAXIMUM_ARM_SAFE_ANGLE = Rotation2d.fromDegrees(90);
-    static final Rotation2d ANGLE_TOLERANCE = Rotation2d.fromDegrees(5);
+
     private static final double COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS = 0.2;
     static final BooleanEvent COLLECTION_DETECTION_BOOLEAN_EVENT = new BooleanEvent(
             CommandScheduler.getInstance().getActiveButtonLoop(),
             DISTANCE_SENSOR::getBinaryValue
     ).debounce(COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS);
+    static final double WHEEL_RADIUS_METERS = edu.wpi.first.math.util.Units.inchesToMeters(1.5);
 
     static {
         configureArmMasterMotor();
@@ -241,7 +244,7 @@ public class ArmConstants {
         SCORE_L1(Rotation2d.fromDegrees(110), Rotation2d.fromDegrees(110), 4),
         SCORE_L2(Rotation2d.fromDegrees(90), Rotation2d.fromDegrees(100), 4),
         SCORE_L3(Rotation2d.fromDegrees(90), Rotation2d.fromDegrees(100), 4),
-        SCORE_L4(Rotation2d.fromDegrees(90), Rotation2d.fromDegrees(100), 4),
+        SCORE_L4(Rotation2d.fromDegrees(100), Rotation2d.fromDegrees(120), 4),
         SCORE_NET(Rotation2d.fromDegrees(160), Rotation2d.fromDegrees(160), 4),
         SCORE_PROCESSOR(Rotation2d.fromDegrees(90), Rotation2d.fromDegrees(90), 4),
         COLLECT_ALGAE_L2(Rotation2d.fromDegrees(90), Rotation2d.fromDegrees(90), -4),
