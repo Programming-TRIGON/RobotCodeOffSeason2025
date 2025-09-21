@@ -35,7 +35,7 @@ public class CoralPlacingCommands {
 
     private static Command getAutonomouslyScoreCommand(boolean shouldScoreRight) {
         return new SequentialCommandGroup(
-                getAutonomouslyPrepareScoreCommand(shouldScoreRight).until(() -> isArmAndElevatorAtPrepareState(shouldScoreRight)),
+                getAutonomouslyPrepareScoreCommand(shouldScoreRight).until(() -> isReadyToScore(shouldScoreRight)),
                 new ParallelCommandGroup(
                         ElevatorCommands.getSetTargetStateCommand(REEF_CHOOSER::getElevatorState),
                         ArmCommands.getSetTargetStateCommand(REEF_CHOOSER::getArmState, CoralPlacingCommands::shouldReverseScore)
@@ -106,7 +106,7 @@ public class CoralPlacingCommands {
         return new FlippablePose2d(closestScoringPose.transformBy(scoringPoseToBranch), false);
     }
 
-    private static boolean isArmAndElevatorAtPrepareState(boolean shouldScoreRight) {
+    private static boolean isReadyToScore(boolean shouldScoreRight) {
         return RobotContainer.ELEVATOR.atPreparedTargetState()
                 && RobotContainer.ARM.atPrepareAngle()
                 && RobotContainer.SWERVE.atPose(calculateClosestScoringPose(shouldScoreRight));

@@ -83,7 +83,7 @@ public class AutonomousCommands {
 
     public static Command getCoralSequenceCommand() {
         return new SequentialCommandGroup(
-                //CoralPlacementCommands.getLoadCoralCommand(),TODO
+                CoralCollectionCommands.getLoadCoralCommand(),
                 new WaitUntilCommand(() -> TARGET_SCORING_POSE != null),
                 getScoreCommand()
         );
@@ -106,13 +106,13 @@ public class AutonomousCommands {
     public static Command getPrepareForScoreCommand() {
         return new ParallelCommandGroup(
                 getOpenElevatorWhenCloseToReefCommand(),
-                ArmCommands.getSetTargetStateCommand(ArmConstants.ArmState.PREPARE_L4)
+                ArmCommands.getPrepareForStateCommand(ArmConstants.ArmState.SCORE_L4)
         );
     }
 
     private static boolean canScore() {
-        return RobotContainer.ELEVATOR.atState(ElevatorConstants.ElevatorState.PREPARE_L4) &&
-                RobotContainer.ARM.atState(ArmConstants.ArmState.PREPARE_L4) &&
+        return RobotContainer.ELEVATOR.atState(ElevatorConstants.ElevatorState.SCORE_L4, true) &&
+                RobotContainer.ARM.atState(ArmConstants.ArmState.SCORE_L4, true) &&
                 TARGET_SCORING_POSE != null &&
                 Math.abs(RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().relativeTo(TARGET_SCORING_POSE.get()).getX()) < AutonomousConstants.REEF_RELATIVE_X_TOLERANCE_METERS &&
                 Math.abs(RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().relativeTo(TARGET_SCORING_POSE.get()).getY()) < AutonomousConstants.REEF_RELATIVE_Y_TOLERANCE_METERS;
@@ -128,7 +128,7 @@ public class AutonomousCommands {
 
     private static Command getOpenElevatorWhenCloseToReefCommand() {
         return GeneralCommands.runWhen(
-                ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.PREPARE_L4),
+                ElevatorCommands.getPrepareStateCommand(ElevatorConstants.ElevatorState.SCORE_L4),
                 () -> calculateDistanceToTargetScoringPose() < AutonomousConstants.MINIMUM_DISTANCE_FROM_REEF_TO_OPEN_ELEVATOR
         );
     }
