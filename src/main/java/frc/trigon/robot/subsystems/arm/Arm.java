@@ -127,7 +127,7 @@ public class Arm extends MotorSubsystem {
         return Rotation2d.fromRotations(angleEncoder.getSignal(CANcoderSignal.POSITION));
     }
 
-    @AutoLogOutput(key = "Arm/InEndeffector")
+    @AutoLogOutput(key = "Arm/InEndEffector")
     public boolean inEndEffector() {
         return SimulationFieldHandler.isCoralInEndEffector();
     }
