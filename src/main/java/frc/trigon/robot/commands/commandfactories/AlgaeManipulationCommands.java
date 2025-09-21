@@ -25,7 +25,6 @@ import lib.utilities.flippable.FlippableTranslation2d;
 import java.util.Map;
 
 public class AlgaeManipulationCommands {
-
     public static Command getAlgaeCollectionCommandCommand() {
         return new SequentialCommandGroup(
                 CoralCollectionCommands.getUnloadCoralCommand().onlyIf(RobotContainer.ARM::hasGamePiece),
@@ -96,8 +95,8 @@ public class AlgaeManipulationCommands {
 
     private static Command getArmScoringSequenceCommand(ArmConstants.ArmState scoreState) {
         return new SequentialCommandGroup(
-                ArmCommands.getPrepareForStateCommand(scoreState).until(OperatorConstants.CONTINUE_TRIGGER),
-                ArmCommands.getSetTargetStateCommand(scoreState)
+                ArmCommands.getPrepareForStateCommand(scoreState, CoralPlacingCommands.shouldReverseScore()).until(OperatorConstants.CONTINUE_TRIGGER),
+                ArmCommands.getSetTargetStateCommand(scoreState, CoralPlacingCommands.shouldReverseScore())
         );
     }
 
@@ -150,7 +149,7 @@ public class AlgaeManipulationCommands {
             }
         }
 
-        return new FlippablePose2d(closestScoringPose, false);
+        return new FlippablePose2d(closestScoringPose.rotateBy(CoralPlacingCommands.shouldReverseScore() ? Rotation2d.k180deg : new Rotation2d()), false);
     }
 
     private static boolean isScoreAlgaeButtonPressed() {

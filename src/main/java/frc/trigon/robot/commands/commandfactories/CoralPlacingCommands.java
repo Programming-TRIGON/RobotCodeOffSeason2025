@@ -33,6 +33,16 @@ public class CoralPlacingCommands {
         );
     }
 
+    static boolean shouldReverseScore() {
+        final Rotation2d robotRotation = RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().getRotation();
+        final Translation2d robotTranslation = RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().getTranslation();
+        final Translation2d reefCenterTranslation = FieldConstants.FLIPPABLE_REEF_CENTER_TRANSLATION.get();
+        final Translation2d difference = reefCenterTranslation.minus(robotTranslation);
+        final Rotation2d robotRotationRelativeToReef = difference.getAngle();
+        final Rotation2d robotRotationFacingReef = robotRotation.minus(robotRotationRelativeToReef);
+        return robotRotationFacingReef.getDegrees() > Rotation2d.kCW_90deg.getDegrees() && robotRotationFacingReef.getDegrees() < Rotation2d.kCCW_90deg.getDegrees();
+    }
+
     private static Command getAutonomouslyScoreCommand(boolean shouldScoreRight) {
         return new SequentialCommandGroup(
                 getAutonomouslyPrepareScoreCommand(shouldScoreRight).until(() -> isArmAndElevatorAtPrepareState(shouldScoreRight)),
@@ -110,16 +120,6 @@ public class CoralPlacingCommands {
         return RobotContainer.ELEVATOR.atPreparedTargetState()
                 && RobotContainer.ARM.atPrepareAngle()
                 && RobotContainer.SWERVE.atPose(calculateClosestScoringPose(shouldScoreRight));
-    }
-
-    private static boolean shouldReverseScore() {
-        final Rotation2d robotRotation = RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().getRotation();
-        final Translation2d robotTranslation = RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().getTranslation();
-        final Translation2d reefCenterTranslation = FieldConstants.FLIPPABLE_REEF_CENTER_TRANSLATION.get();
-        final Translation2d difference = reefCenterTranslation.minus(robotTranslation);
-        final Rotation2d robotRotationRelativeToReef = difference.getAngle();
-        final Rotation2d robotRotationFacingReef = robotRotation.minus(robotRotationRelativeToReef);
-        return robotRotationFacingReef.getDegrees() > Rotation2d.kCW_90deg.getDegrees() && robotRotationFacingReef.getDegrees() < Rotation2d.kCCW_90deg.getDegrees();
     }
 
     /**
