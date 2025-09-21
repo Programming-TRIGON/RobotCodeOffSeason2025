@@ -70,7 +70,7 @@ public class CoralPlacingCommands {
         double distanceFromClosestScoringPoseMeters = Double.POSITIVE_INFINITY;
         Pose2d closestScoringPose = new Pose2d();
         for (final Rotation2d targetRotation : reefClockAngles) {
-            final Pose2d reefCenterAtTargetRotation = new Pose2d(reefCenterPosition, shouldReverseScore() ? targetRotation.unaryMinus() : targetRotation);
+            final Pose2d reefCenterAtTargetRotation = new Pose2d(reefCenterPosition, targetRotation);
 
 
             final Pose2d currentScoringPose = reefCenterAtTargetRotation.transformBy(reefCenterToScoringPose);
@@ -88,11 +88,10 @@ public class CoralPlacingCommands {
         final Rotation2d robotRotation = RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().getRotation();
         final Translation2d robotTranslation = RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().getTranslation();
         final Translation2d reefCenterTranslation = FieldConstants.FLIPPABLE_REEF_CENTER_TRANSLATION.get();
-        final double reefCenterToRobotX = robotTranslation.getX() - reefCenterTranslation.getX();
-        final double reefCenterToRobotY = robotTranslation.getY() - reefCenterTranslation.getY();
-        final Rotation2d robotRotationRelativeToReef = Rotation2d.fromRadians(Math.atan2(reefCenterToRobotX, reefCenterToRobotY));
+        final Translation2d difference = reefCenterTranslation.minus(robotTranslation);
+        final Rotation2d robotRotationRelativeToReef = difference.getAngle();
         final Rotation2d robotRotationFacingReef = robotRotation.minus(robotRotationRelativeToReef);
-        return robotRotationFacingReef.getDegrees() < Rotation2d.kCW_90deg.getDegrees() && robotRotationFacingReef.getDegrees() > Rotation2d.kCCW_90deg.getDegrees();
+        return robotRotationFacingReef.getDegrees() > Rotation2d.kCW_90deg.getDegrees() && robotRotationFacingReef.getDegrees() < Rotation2d.kCCW_90deg.getDegrees();
     }
 
     /**
