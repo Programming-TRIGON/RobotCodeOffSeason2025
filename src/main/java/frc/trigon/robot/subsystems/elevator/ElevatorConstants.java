@@ -84,7 +84,6 @@ public class ElevatorConstants {
             MINIMUM_ELEVATOR_HEIGHT_METERS,
             Color.kYellow
     );
-    static final double HEIGHT_TOLERANCE_METERS = 0.01;
     static final double SECOND_ELEVATOR_COMPONENT_EXTENDED_LENGTH_METERS = 0.603;
     static final double DRUM_DIAMETER_METERS = DRUM_RADIUS_METERS * 2;
     private static final double REVERSE_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS = 0.1;
