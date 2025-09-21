@@ -84,10 +84,6 @@ public class Arm extends MotorSubsystem {
         armMasterMotor.setControl(voltageRequest.withOutput(targetVoltage));
     }
 
-    public boolean hasGamePiece() {
-        return ArmConstants.COLLECTION_DETECTION_BOOLEAN_EVENT.getAsBoolean();
-    }
-
     public boolean isArmAboveSafeAngle() {
         return getAngle().getDegrees() >= ArmConstants.MAXIMUM_ARM_SAFE_ANGLE.getDegrees();
     }
