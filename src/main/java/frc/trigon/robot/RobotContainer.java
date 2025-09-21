@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.trigon.robot.commands.CommandConstants;
 import frc.trigon.robot.commands.commandfactories.CoralCollectionCommands;
 import frc.trigon.robot.commands.commandfactories.CoralEjectionCommands;
+import frc.trigon.robot.commands.commandfactories.CoralPlacingCommands;
 import frc.trigon.robot.commands.commandfactories.GeneralCommands;
 import frc.trigon.robot.constants.CameraConstants;
 import frc.trigon.robot.constants.LEDConstants;
@@ -105,8 +106,10 @@ public class RobotContainer {
         OperatorConstants.SPAWN_CORAL_TRIGGER.onTrue(new InstantCommand(() -> SimulationFieldHandler.updateCoralSpawning(new Pose3d(ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose()))));
         OperatorConstants.CORAL_COLLECTION_TRIGGER.whileTrue(CoralCollectionCommands.getCoralCollectionCommand());
         OperatorConstants.DRIVER_CONTROLLER.rightTrigger().whileTrue(CoralEjectionCommands.getCoralEjectionCommand());
-        OperatorConstants.DRIVER_CONTROLLER.a().whileTrue(CoralCollectionCommands.getLoadCoralCommand());
-        OperatorConstants.DRIVER_CONTROLLER.x().whileTrue(ArmCommands.getSetTargetStateCommand(ArmConstants.ArmState.SCORE_L4));
+        OperatorConstants.DRIVER_CONTROLLER.rightStick().whileTrue(CoralCollectionCommands.getLoadCoralCommand());
+
+        OperatorConstants.DRIVER_CONTROLLER.leftBumper().whileTrue(CoralPlacingCommands.getScoreInReefCommand(false));
+        OperatorConstants.DRIVER_CONTROLLER.rightBumper().whileTrue(CoralPlacingCommands.getScoreInReefCommand(true));
     }
 
     private void configureSysIDBindings(MotorSubsystem subsystem) {

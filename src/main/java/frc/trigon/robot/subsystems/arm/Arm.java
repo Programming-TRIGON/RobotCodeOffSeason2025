@@ -143,6 +143,10 @@ public class Arm extends MotorSubsystem {
         );
     }
 
+    public boolean isEjecting() {
+        return endEffectorMotor.getSignal(TalonFXSignal.MOTOR_VOLTAGE) > 2;
+    }
+
     public Translation3d calculateLinearArmVelocity() {
         double velocityRotationsPerSecond = armMasterMotor.getSignal(TalonFXSignal.VELOCITY);
         double velocityMagnitude = velocityRotationsPerSecond * 2 * Math.PI * ArmConstants.ARM_LENGTH_METERS;

@@ -119,8 +119,6 @@ public class ArmConstants {
      * The highest point of the arms angular zone where the safety logic applies.
      */
     static final Rotation2d MAXIMUM_ARM_SAFE_ANGLE = Rotation2d.fromDegrees(90);
-]
-    static final Rotation2d ANGLE_TOLERANCE = Rotation2d.fromDegrees(5);
 
     private static final double COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS = 0.2;
     static final BooleanEvent COLLECTION_DETECTION_BOOLEAN_EVENT = new BooleanEvent(
@@ -246,7 +244,7 @@ public class ArmConstants {
         SCORE_L1(Rotation2d.fromDegrees(110), Rotation2d.fromDegrees(110), 4),
         SCORE_L2(Rotation2d.fromDegrees(90), Rotation2d.fromDegrees(100), 4),
         SCORE_L3(Rotation2d.fromDegrees(90), Rotation2d.fromDegrees(100), 4),
-        SCORE_L4(Rotation2d.fromDegrees(90), Rotation2d.fromDegrees(100), 4),
+        SCORE_L4(Rotation2d.fromDegrees(100), Rotation2d.fromDegrees(120), 4),
         SCORE_NET(Rotation2d.fromDegrees(160), Rotation2d.fromDegrees(160), 4),
         SCORE_PROCESSOR(Rotation2d.fromDegrees(90), Rotation2d.fromDegrees(90), 4),
         COLLECT_ALGAE_L2(Rotation2d.fromDegrees(90), Rotation2d.fromDegrees(90), -4),

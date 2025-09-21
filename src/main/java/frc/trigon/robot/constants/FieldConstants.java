@@ -47,15 +47,6 @@ public class FieldConstants {
             REEF_CENTER_TO_TARGET_SCORING_POSITION_Y_TRANSFORM_METERS = 0.17,
             REEF_CENTER_TO_TARGET_ALGAE_COLLECTION_POSITION_X_TRANSFORM_METERS = 1.6;
 
-    public static final int REEF_CLOCK_POSITIONS = 6;
-    public static final Rotation2d REEF_CLOCK_POSITION_DIFFERENCE = Rotation2d.fromDegrees(Conversions.DEGREES_PER_ROTATIONS / REEF_CLOCK_POSITIONS);
-    public static final Rotation2d[] REEF_CLOCK_ANGLES = ReefClockPosition.getClockAngles();
-    public static final Translation2d BLUE_REEF_CENTER_TRANSLATION = new Translation2d(4.48945, FIELD_WIDTH_METERS / 2);
-    public static final double
-            REEF_CENTER_TO_TARGET_SCORING_POSITION_X_TRANSFORM_METERS = 1.3,
-            REEF_CENTER_TO_TARGET_SCORING_POSITION_Y_TRANSFORM_METERS = 0.17,
-            REEF_CENTER_TO_TARGET_ALGAE_COLLECTION_POSITION_X_TRANSFORM_METERS = 1.6;
-
     private static AprilTagFieldLayout createAprilTagFieldLayout() {
         try {
             return SHOULD_USE_HOME_TAG_LAYOUT ?
@@ -74,52 +65,6 @@ public class FieldConstants {
         }
 
         return tagIdToPose;
-    }
-
-    public enum ReefSide {
-        RIGHT(true),
-        LEFT(false);
-
-        public final boolean doesFlipYTransformWhenFacingDriverStation;
-
-        ReefSide(boolean doesFlipYTransformWhenFacingDriverStation) {
-            this.doesFlipYTransformWhenFacingDriverStation = doesFlipYTransformWhenFacingDriverStation;
-        }
-
-        public boolean shouldFlipYTransform(ReefClockPosition reefClockPosition) {
-            return doesFlipYTransformWhenFacingDriverStation ^ reefClockPosition.isFacingDriverStation; // In Java, ^ acts as an XOR (exclusive OR) operator, which fits in this case
-        }
-    }
-
-    public enum ReefClockPosition {
-        REEF_12_OCLOCK(true),
-        REEF_2_OCLOCK(true),
-        REEF_4_OCLOCK(true),
-        REEF_6_OCLOCK(true),
-        REEF_8_OCLOCK(true),
-        REEF_10_OCLOCK(true);
-
-        public final Rotation2d clockAngle;
-        public final boolean isFacingDriverStation;
-        public final int clockPosition;
-
-        ReefClockPosition(boolean isFacingDriverStation) {
-            this.clockAngle = calculateClockAngle();
-            this.isFacingDriverStation = isFacingDriverStation;
-            this.clockPosition = ordinal() == 0 ? 12 : ordinal() * 2;
-        }
-
-        public static Rotation2d[] getClockAngles() {
-            final Rotation2d[] clockAngles = new Rotation2d[ReefClockPosition.values().length];
-            for (int i = 0; i < clockAngles.length; i++)
-                clockAngles[i] = ReefClockPosition.values()[i].clockAngle;
-
-            return clockAngles;
-        }
-
-        private Rotation2d calculateClockAngle() {
-            return REEF_CLOCK_POSITION_DIFFERENCE.times(-ordinal());
-        }
     }
 
     public enum ReefSide {

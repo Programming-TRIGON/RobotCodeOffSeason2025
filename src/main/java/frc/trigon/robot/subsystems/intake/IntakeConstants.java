@@ -22,6 +22,7 @@ import lib.hardware.phoenix6.talonfx.TalonFXMotor;
 import lib.hardware.phoenix6.talonfx.TalonFXSignal;
 import lib.hardware.simulation.SimpleMotorSimulation;
 import lib.hardware.simulation.SingleJointedArmSimulation;
+import lib.utilities.Conversions;
 import lib.utilities.mechanisms.SingleJointedArmMechanism2d;
 import lib.utilities.mechanisms.SpeedMechanism2d;
 
@@ -64,8 +65,8 @@ public class IntakeConstants {
             INTAKE_LENGTH_METERS = 0.365,
             INTAKE_MASS_KILOGRAMS = 3.26;
     private static final Rotation2d
-            MINIMUM_ANGLE = Rotation2d.fromDegrees(8.34),
-            MAXIMUM_ANGLE = Rotation2d.fromDegrees(70);
+            MINIMUM_ANGLE = Rotation2d.fromDegrees(-12),
+            MAXIMUM_ANGLE = Rotation2d.fromDegrees(110);
     private static final boolean SHOULD_SIMULATE_GRAVITY = true;
     private static final SimpleMotorSimulation INTAKE_SIMULATION = new SimpleMotorSimulation(
             INTAKE_GEARBOX,
@@ -94,7 +95,7 @@ public class IntakeConstants {
 
     static final Pose3d INTAKE_VISUALIZATION_ORIGIN_POINT = new Pose3d(
             new Translation3d(0.3234, 0, 0.2944),
-            new Rotation3d(0, MINIMUM_ANGLE.getRadians(), 0)
+            new Rotation3d(0, -2, 0)
     );
 
     private static final double MAXIMUM_DISPLAYABLE_VELOCITY = 12;
