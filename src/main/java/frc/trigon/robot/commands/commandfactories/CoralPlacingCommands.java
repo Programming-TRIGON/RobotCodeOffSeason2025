@@ -92,7 +92,7 @@ public class CoralPlacingCommands {
         final double reefCenterToRobotY = robotTranslation.getY() - reefCenterTranslation.getY();
         final Rotation2d robotRotationRelativeToReef = Rotation2d.fromRadians(Math.atan2(reefCenterToRobotX, reefCenterToRobotY));
         final Rotation2d robotRotationFacingReef = robotRotation.minus(robotRotationRelativeToReef);
-        return robotRotationFacingReef.getDegrees() > Rotation2d.kCW_90deg.getDegrees() && robotRotationFacingReef.getDegrees() < Rotation2d.kCCW_90deg.getDegrees();
+        return robotRotationFacingReef.getDegrees() < Rotation2d.kCW_90deg.getDegrees() && robotRotationFacingReef.getDegrees() > Rotation2d.kCCW_90deg.getDegrees();
     }
 
     /**
