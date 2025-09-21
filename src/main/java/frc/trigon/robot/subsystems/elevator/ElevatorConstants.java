@@ -84,6 +84,7 @@ public class ElevatorConstants {
             MINIMUM_ELEVATOR_HEIGHT_METERS,
             Color.kYellow
     );
+    static final double HEIGHT_TOLERANCE_METERS = 0.01;
     static final double SECOND_ELEVATOR_COMPONENT_EXTENDED_LENGTH_METERS = 0.603;
     static final double DRUM_DIAMETER_METERS = DRUM_RADIUS_METERS * 2;
     private static final double REVERSE_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS = 0.1;
@@ -172,27 +173,25 @@ public class ElevatorConstants {
     }
 
     public enum ElevatorState {
-        REST(0.603, 0.7),
-        LOAD_CORAL(0.5519, 0.7),
-        SCORE_L1(0.203, 1),
-        SCORE_L2(0.203, 1),
-        SCORE_L3(1.003, 1),
-        SCORE_L4(1.382, 1),
-        PREPARE_L1(0.603, 1),
-        PREPARE_L2(0.603, 1),
-        PREPARE_L3(1.003, 1),
-        PREPARE_L4(1.382, 1),
-        COLLECT_ALGAE_FROM_L2(0.603, 1),
-        COLLECT_ALGAE_FROM_L3(0.953, 1),
-        COLLECT_ALGAE_FROM_GROUND(0, 0.7),
-        REST_WITH_ALGAE(0.603, 0.3),
-        SCORE_NET(1.382, 0.3);
+        REST(0.603, 0.603, 0.7),
+        LOAD_CORAL(0.5519, 0.5519, 0.7),
+        SCORE_L1(0.1, 0.1, 1),
+        SCORE_L2(0.3, 0.4, 1),
+        SCORE_L3(0.7, 0.8, 1),
+        SCORE_L4(1.2, 1.3, 1),
+        COLLECT_ALGAE_FROM_L2(0.603, 0.603, 1),
+        COLLECT_ALGAE_FROM_L3(0.953, 0.953, 1),
+        COLLECT_ALGAE_FROM_GROUND(0, 0, 0.7),
+        REST_WITH_ALGAE(0.603, 0.603, 0.3),
+        SCORE_NET(1.382, 1.382, 0.3);
 
         public final double targetPositionMeters;
+        public final double prepareStatePositionMeters;
         final double speedScalar;
 
-        ElevatorState(double targetPositionMeters, double speedScalar) {
+        ElevatorState(double targetPositionMeters, double prepareStatePositionMeters, double speedScalar) {
             this.targetPositionMeters = targetPositionMeters;
+            this.prepareStatePositionMeters = prepareStatePositionMeters;
             this.speedScalar = speedScalar;
         }
     }
