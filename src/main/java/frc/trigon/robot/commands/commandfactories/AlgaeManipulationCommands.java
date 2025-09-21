@@ -71,7 +71,7 @@ public class AlgaeManipulationCommands {
                         () -> CommandConstants.calculateDriveStickAxisValue(OperatorConstants.DRIVER_CONTROLLER.getLeftY()),
                         () -> CommandConstants.calculateDriveStickAxisValue(OperatorConstants.DRIVER_CONTROLLER.getLeftX()),
                         () -> new FlippableRotation2d(Rotation2d.k180deg, true)
-                ).asProxy()//.onlyWhile(() -> CoralPlacingCommands.SHOULD_SCORE_AUTONOMOUSLY)
+                ).asProxy().onlyWhile(() -> CoralPlacingCommands.SHOULD_SCORE_AUTONOMOUSLY)
         );
     }
 
