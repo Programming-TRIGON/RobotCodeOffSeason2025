@@ -28,6 +28,7 @@ public class AlgaeManipulationCommands {
 
     public static Command getAlgaeCollectionCommandCommand() {
         return new SequentialCommandGroup(
+                CoralCollectionCommands.getUnloadCoralCommand().onlyIf(RobotContainer.ARM::hasGamePiece),
                 getInitiateAlgaeCollectionCommand().until(RobotContainer.ARM::hasGamePiece),
                 new InstantCommand(() -> getScoreAlgaeCommand().schedule()).alongWith(getAlgaeCollectionConfirmationCommand()) //TODO: add coral unloading if needed
         ).alongWith(getAlignToReefCommand());
@@ -47,7 +48,7 @@ public class AlgaeManipulationCommands {
         ).raceWith(
                 new WaitCommand(1).andThen(new WaitUntilCommand(RobotContainer.ARM::hasGamePiece)),
                 new WaitUntilCommand(OperatorConstants.STOP_ALGAE_AUTO_ALIGN_OVERRIDE_TRIGGER)
-        ); // TODO: .onlyIf(() -> CoralPlacingCommands.SHOULD_SCORE_AUTONOMOUSLY).asProxy();
+        ).onlyIf(() -> CoralPlacingCommands.SHOULD_SCORE_AUTONOMOUSLY).asProxy();
     }
 
     private static Command getScoreAlgaeCommand() {
@@ -112,8 +113,8 @@ public class AlgaeManipulationCommands {
 
     private static Command getInitiateAlgaeCollectionCommand() {
         return new ParallelCommandGroup(
-                ArmCommands.getSetTargetStateCommand(ArmConstants.ArmState.COLLECT_ALGAE_FROM_REEF), //TODO: make this depend on the target scoring level
-                ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.COLLECT_ALGAE_FROM_L3)
+                ArmCommands.getSetTargetStateCommand(CoralPlacingCommands.REEF_CHOOSER.getArmAlgaeCollectionState()),
+                ElevatorCommands.getSetTargetStateCommand(CoralPlacingCommands.REEF_CHOOSER.getElevatorAlgaeCollectionState())
         );
     }
 

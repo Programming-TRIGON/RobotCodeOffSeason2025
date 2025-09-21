@@ -26,6 +26,13 @@ public class CoralCollectionCommands {
         ).until(RobotContainer.ARM::hasGamePiece);
     }
 
+    public static Command getUnloadCoralCommand() {
+        return new ParallelCommandGroup(
+                ArmCommands.getSetTargetStateCommand(ArmConstants.ArmState.UNLOAD_CORAL),
+                ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.UNLOAD_CORAL)
+        ).until(() -> !RobotContainer.ARM.hasGamePiece());
+    }
+
     public static Command getCoralCollectionCommand() {
         return new ParallelCommandGroup(
                 getIntakeSequenceCommand(),

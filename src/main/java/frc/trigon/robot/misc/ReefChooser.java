@@ -7,8 +7,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import frc.trigon.robot.commands.commandfactories.CoralPlacingCommands;
 import frc.trigon.robot.constants.FieldConstants;
 import frc.trigon.robot.constants.OperatorConstants;
-import frc.trigon.robot.subsystems.elevator.ElevatorConstants;
 import frc.trigon.robot.subsystems.arm.ArmConstants;
+import frc.trigon.robot.subsystems.elevator.ElevatorConstants;
 import lib.utilities.flippable.FlippablePose2d;
 
 import java.util.function.Supplier;
@@ -45,12 +45,20 @@ public class ReefChooser {
         return scoringLevel.calculateTargetPlacingPosition(clockPosition, reefSide);
     }
 
-    public ArmConstants.ArmState getArmState() {
-        return scoringLevel.armState;
+    public ArmConstants.ArmState getArmCoralState() {
+        return scoringLevel.armCoralState;
     }
 
-    public ElevatorConstants.ElevatorState getElevatorState() {
-        return scoringLevel.elevatorState;
+    public ArmConstants.ArmState getArmAlgaeCollectionState() {
+        return scoringLevel.armAlgaeCollectionState;
+    }
+
+    public ElevatorConstants.ElevatorState getElevatorCoralState() {
+        return scoringLevel.elevatorCoralState;
+    }
+
+    public ElevatorConstants.ElevatorState getElevatorAlgaeCollectionState() {
+        return scoringLevel.elevatorAlgaeCollectionState;
     }
 
     private void configureBindings() {

@@ -235,6 +235,7 @@ public class ArmConstants {
         REST_WITH_CORAL(Rotation2d.fromDegrees(180), Rotation2d.fromDegrees(180), 0),
         REST_FOR_CLIMB(Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0), 0),
         LOAD_CORAL(Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0), -4),
+        UNLOAD_CORAL(Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0), 4),
         HOLD_ALGAE(Rotation2d.fromDegrees(90), Rotation2d.fromDegrees(90), -4),
         EJECT(Rotation2d.fromDegrees(60), Rotation2d.fromDegrees(60), 4),
         SCORE_L1(Rotation2d.fromDegrees(110), Rotation2d.fromDegrees(110), 4),
@@ -243,8 +244,10 @@ public class ArmConstants {
         SCORE_L4(Rotation2d.fromDegrees(90), Rotation2d.fromDegrees(100), 4),
         SCORE_NET(Rotation2d.fromDegrees(160), Rotation2d.fromDegrees(160), 4),
         SCORE_PROCESSOR(Rotation2d.fromDegrees(90), Rotation2d.fromDegrees(90), 4),
+        COLLECT_ALGAE_FLOOR(Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0), -4),
         COLLECT_ALGAE_L2(Rotation2d.fromDegrees(90), Rotation2d.fromDegrees(90), -4),
         COLLECT_ALGAE_L3(Rotation2d.fromDegrees(90), Rotation2d.fromDegrees(90), -4),
+        COLLECT_ALGAE_LOLLIPOP(Rotation2d.fromDegrees(45), Rotation2d.fromDegrees(45), -4),
         EJECT_ALGAE(Rotation2d.fromDegrees(90), Rotation2d.fromDegrees(90), 4);
 
         public final Rotation2d targetAngle;

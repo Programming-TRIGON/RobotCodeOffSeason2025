@@ -23,7 +23,7 @@ import lib.utilities.flippable.FlippableTranslation2d;
 
 public class CoralPlacingCommands {
     public static boolean SHOULD_SCORE_AUTONOMOUSLY = true;
-    private static final ReefChooser REEF_CHOOSER = OperatorConstants.REEF_CHOOSER;
+    static final ReefChooser REEF_CHOOSER = OperatorConstants.REEF_CHOOSER;
 
     public static Command getScoreInReefCommand(boolean shouldScoreRight) {
         return new ConditionalCommand(
@@ -37,8 +37,8 @@ public class CoralPlacingCommands {
         return new SequentialCommandGroup(
                 getAutonomouslyPrepareScoreCommand(shouldScoreRight).until(() -> isArmAndElevatorAtPrepareState(shouldScoreRight)),
                 new ParallelCommandGroup(
-                        ElevatorCommands.getSetTargetStateCommand(REEF_CHOOSER::getElevatorState),
-                        ArmCommands.getSetTargetStateCommand(REEF_CHOOSER::getArmState, CoralPlacingCommands::shouldReverseScore)
+                        ElevatorCommands.getSetTargetStateCommand(REEF_CHOOSER::getElevatorCoralState),
+                        ArmCommands.getSetTargetStateCommand(REEF_CHOOSER::getArmCoralState, CoralPlacingCommands::shouldReverseScore)
                 )
         );
     }
@@ -47,16 +47,16 @@ public class CoralPlacingCommands {
         return new SequentialCommandGroup(
                 getAutonomouslyPrepareScoreCommand(shouldScoreRight).until(OperatorConstants.CONTINUE_TRIGGER),
                 new ParallelCommandGroup(
-                        ElevatorCommands.getSetTargetStateCommand(REEF_CHOOSER::getElevatorState),
-                        ArmCommands.getSetTargetStateCommand(REEF_CHOOSER::getArmState, CoralPlacingCommands::shouldReverseScore)
+                        ElevatorCommands.getSetTargetStateCommand(REEF_CHOOSER::getElevatorCoralState),
+                        ArmCommands.getSetTargetStateCommand(REEF_CHOOSER::getArmCoralState, CoralPlacingCommands::shouldReverseScore)
                 )
         );
     }
 
     private static Command getAutonomouslyPrepareScoreCommand(boolean shouldScoreRight) {
         return new ParallelCommandGroup(
-                ElevatorCommands.getPrepareStateCommand(REEF_CHOOSER::getElevatorState),
-                ArmCommands.getPrepareForStateCommand(REEF_CHOOSER::getArmState, CoralPlacingCommands::shouldReverseScore),
+                ElevatorCommands.getPrepareStateCommand(REEF_CHOOSER::getElevatorCoralState),
+                ArmCommands.getPrepareForStateCommand(REEF_CHOOSER::getArmCoralState, CoralPlacingCommands::shouldReverseScore),
                 getAutonomousDriveToReefThenManualDriveCommand(shouldScoreRight).asProxy()
         );
     }
@@ -134,8 +134,12 @@ public class CoralPlacingCommands {
         L3(L2.xTransformMeters, L2.positiveYTransformMeters, Rotation2d.fromDegrees(0)),
         L4(L2.xTransformMeters, L2.positiveYTransformMeters, Rotation2d.fromDegrees(0));
 
-        public final ElevatorConstants.ElevatorState elevatorState;
-        public final ArmConstants.ArmState armState;
+        public final ElevatorConstants.ElevatorState
+                elevatorCoralState,
+                elevatorAlgaeCollectionState;
+        public final ArmConstants.ArmState
+                armCoralState,
+                armAlgaeCollectionState;
         public final int level = calculateLevel();
         final double xTransformMeters, positiveYTransformMeters;
         final Rotation2d rotationTransform;
@@ -153,8 +157,10 @@ public class CoralPlacingCommands {
             this.xTransformMeters = xTransformMeters;
             this.positiveYTransformMeters = positiveYTransformMeters;
             this.rotationTransform = rotationTransform;
-            this.elevatorState = determineElevatorState();
-            this.armState = determineArmState();
+            this.elevatorCoralState = determineElevatorCoralState();
+            this.elevatorAlgaeCollectionState = determineElevatorAlgaeCollectionState();
+            this.armCoralState = determineArmCoralState();
+            this.armAlgaeCollectionState = determineArmAlgaeCollectionState();
         }
 
         /**
@@ -176,7 +182,7 @@ public class CoralPlacingCommands {
             return new FlippablePose2d(reefCenterPose.plus(transform), true);
         }
 
-        private ElevatorConstants.ElevatorState determineElevatorState() {
+        private ElevatorConstants.ElevatorState determineElevatorCoralState() {
             return switch (level) {
                 case 1 -> ElevatorConstants.ElevatorState.SCORE_L1;
                 case 2 -> ElevatorConstants.ElevatorState.SCORE_L2;
@@ -186,12 +192,32 @@ public class CoralPlacingCommands {
             };
         }
 
-        private ArmConstants.ArmState determineArmState() {
+        private ElevatorConstants.ElevatorState determineElevatorAlgaeCollectionState() {
+            return switch (level) {
+                case 1 -> ElevatorConstants.ElevatorState.COLLECT_ALGAE_GROUND;
+                case 2 -> ElevatorConstants.ElevatorState.COLLECT_ALGAE_L2;
+                case 3 -> ElevatorConstants.ElevatorState.COLLECT_ALGAE_L3;
+                case 4 -> ElevatorConstants.ElevatorState.COLLECT_ALGAE_LOLLIPOP;
+                default -> throw new IllegalStateException("Unexpected value: " + ordinal());
+            };
+        }
+
+        private ArmConstants.ArmState determineArmCoralState() {
             return switch (level) {
                 case 1 -> ArmConstants.ArmState.SCORE_L1;
                 case 2 -> ArmConstants.ArmState.SCORE_L2;
                 case 3 -> ArmConstants.ArmState.SCORE_L3;
                 case 4 -> ArmConstants.ArmState.SCORE_L4;
+                default -> throw new IllegalStateException("Unexpected value: " + ordinal());
+            };
+        }
+
+        private ArmConstants.ArmState determineArmAlgaeCollectionState() {
+            return switch (level) {
+                case 1 -> ArmConstants.ArmState.COLLECT_ALGAE_FLOOR;
+                case 2 -> ArmConstants.ArmState.COLLECT_ALGAE_L2;
+                case 3 -> ArmConstants.ArmState.COLLECT_ALGAE_L3;
+                case 4 -> ArmConstants.ArmState.COLLECT_ALGAE_LOLLIPOP;
                 default -> throw new IllegalStateException("Unexpected value: " + ordinal());
             };
         }
