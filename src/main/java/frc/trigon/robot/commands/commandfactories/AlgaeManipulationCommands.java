@@ -154,7 +154,8 @@ public class AlgaeManipulationCommands {
 
     private static boolean isScoreAlgaeButtonPressed() {
         return OperatorConstants.SCORE_ALGAE_IN_NET_TRIGGER.getAsBoolean() ||
-                OperatorConstants.SCORE_ALGAE_IN_PROCESSOR_TRIGGER.getAsBoolean();
+                OperatorConstants.SCORE_ALGAE_IN_PROCESSOR_TRIGGER.getAsBoolean() ||
+                OperatorConstants.EJECT_ALGAE_TRIGGER.getAsBoolean();
     }
 
     private static double fieldRelativePowersToSelfRelativeXPower(double xPower, double yPower) {
