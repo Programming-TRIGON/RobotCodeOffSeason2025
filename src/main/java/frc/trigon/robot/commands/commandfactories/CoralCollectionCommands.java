@@ -8,6 +8,10 @@ import frc.trigon.robot.RobotContainer;
 import frc.trigon.robot.commands.commandclasses.IntakeAssistCommand;
 import frc.trigon.robot.constants.LEDConstants;
 import frc.trigon.robot.constants.OperatorConstants;
+import frc.trigon.robot.subsystems.arm.ArmCommands;
+import frc.trigon.robot.subsystems.arm.ArmConstants;
+import frc.trigon.robot.subsystems.elevator.ElevatorCommands;
+import frc.trigon.robot.subsystems.elevator.ElevatorConstants;
 import frc.trigon.robot.subsystems.intake.IntakeCommands;
 import frc.trigon.robot.subsystems.intake.IntakeConstants;
 import frc.trigon.robot.subsystems.transporter.TransporterCommands;
@@ -15,6 +19,13 @@ import frc.trigon.robot.subsystems.transporter.TransporterConstants;
 import lib.hardware.misc.leds.LEDCommands;
 
 public class CoralCollectionCommands {
+    public static Command getLoadCoralCommand() {
+        return new ParallelCommandGroup(
+                ArmCommands.getSetTargetStateCommand(ArmConstants.ArmState.LOAD_CORAL),
+                ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.LOAD_CORAL)
+        ).until(RobotContainer.ARM::hasGamePiece);
+    }
+
     public static Command getCoralCollectionCommand() {
         return new ParallelCommandGroup(
                 getIntakeSequenceCommand(),

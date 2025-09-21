@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.trigon.robot.RobotContainer;
 import frc.trigon.robot.commands.commandclasses.IntakeAssistCommand;
+import frc.trigon.robot.misc.ReefChooser;
 import lib.hardware.misc.KeyboardController;
 import lib.hardware.misc.XboxController;
 
@@ -12,7 +13,9 @@ public class OperatorConstants {
     public static final double
             RUMBLE_DURATION_SECONDS = 0.7,
             RUMBLE_POWER = 1;
-    private static final int DRIVER_CONTROLLER_PORT = 0;
+    private static final int
+            DRIVER_CONTROLLER_PORT = 0,
+            REEF_CHOOSER_PORT = 1;
     private static final int
             DRIVER_CONTROLLER_RIGHT_STICK_EXPONENT = 1,
             DRIVER_CONTROLLER_LEFT_STICK_EXPONENT = 2;
@@ -20,6 +23,7 @@ public class OperatorConstants {
             DRIVER_CONTROLLER_PORT, DRIVER_CONTROLLER_RIGHT_STICK_EXPONENT, DRIVER_CONTROLLER_LEFT_STICK_EXPONENT, DRIVER_CONTROLLER_DEADBAND
     );
     public static final KeyboardController OPERATOR_CONTROLLER = new KeyboardController();
+    public static final ReefChooser REEF_CHOOSER = new ReefChooser(REEF_CHOOSER_PORT);
 
     public static final double
             POV_DIVIDER = 2,
@@ -46,5 +50,17 @@ public class OperatorConstants {
             EJECT_ALGAE_TRIGGER = OPERATOR_CONTROLLER.p().and(RobotContainer.ARM::hasGamePiece),
             STOP_ALGAE_AUTO_ALIGN_OVERRIDE_TRIGGER = DRIVER_CONTROLLER.x().and(RobotContainer.ARM::hasGamePiece),
             ALGAE_COLLECTION_TRIGGER = DRIVER_CONTROLLER.a().or(OPERATOR_CONTROLLER.a());
-
+    public static final Trigger
+            SET_TARGET_SCORING_REEF_LEVEL_L1_TRIGGER = OPERATOR_CONTROLLER.numpad0().or(DRIVER_CONTROLLER.povDown()),
+            SET_TARGET_SCORING_REEF_LEVEL_L2_TRIGGER = OPERATOR_CONTROLLER.numpad1().or(DRIVER_CONTROLLER.povRight()),
+            SET_TARGET_SCORING_REEF_LEVEL_L3_TRIGGER = OPERATOR_CONTROLLER.numpad2().or(DRIVER_CONTROLLER.povLeft()),
+            SET_TARGET_SCORING_REEF_LEVEL_L4_TRIGGER = OPERATOR_CONTROLLER.numpad3().or(DRIVER_CONTROLLER.povUp()),
+            SET_TARGET_SCORING_REEF_CLOCK_POSITION_2_OCLOCK_TRIGGER = OPERATOR_CONTROLLER.numpad9(),
+            SET_TARGET_SCORING_REEF_CLOCK_POSITION_4_OCLOCK_TRIGGER = OPERATOR_CONTROLLER.numpad6(),
+            SET_TARGET_SCORING_REEF_CLOCK_POSITION_6_OCLOCK_TRIGGER = OPERATOR_CONTROLLER.numpad5(),
+            SET_TARGET_SCORING_REEF_CLOCK_POSITION_8_OCLOCK_TRIGGER = OPERATOR_CONTROLLER.numpad4(),
+            SET_TARGET_SCORING_REEF_CLOCK_POSITION_10_OCLOCK_TRIGGER = OPERATOR_CONTROLLER.numpad7(),
+            SET_TARGET_SCORING_REEF_CLOCK_POSITION_12_OCLOCK_TRIGGER = OPERATOR_CONTROLLER.numpad8(),
+            SET_TARGET_REEF_SCORING_SIDE_LEFT_TRIGGER = OPERATOR_CONTROLLER.left(),
+            SET_TARGET_REEF_SCORING_SIDE_RIGHT_TRIGGER = OPERATOR_CONTROLLER.right();
 }

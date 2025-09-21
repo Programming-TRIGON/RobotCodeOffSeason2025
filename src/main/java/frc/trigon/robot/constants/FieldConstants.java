@@ -7,6 +7,8 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.*;
 import lib.utilities.Conversions;
 import lib.utilities.FilesHandler;
+import lib.utilities.flippable.FlippablePose2d;
+import lib.utilities.flippable.FlippableTranslation2d;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -17,7 +19,7 @@ public class FieldConstants {
             FIELD_WIDTH_METERS = FlippingUtil.fieldSizeY,
             FIELD_LENGTH_METERS = FlippingUtil.fieldSizeX;
     private static final List<Integer> I_HATE_YOU = List.of(
-            //Tags to ignore
+            13, 12, 16, 15, 14, 4, 5, 3, 2, 1
     );
 
     public static final int REEF_CLOCK_POSITIONS = 6;
@@ -32,7 +34,18 @@ public class FieldConstants {
     private static final boolean SHOULD_USE_HOME_TAG_LAYOUT = false;
     public static final AprilTagFieldLayout APRIL_TAG_FIELD_LAYOUT = createAprilTagFieldLayout();
     private static final Transform3d TAG_OFFSET = new Transform3d(0, 0, 0, new Rotation3d(0, 0, 0));
-    public static final HashMap<Integer, Pose3d> TAG_ID_TO_POSE = fieldLayoutToTagIDToPoseMap();
+    public static final HashMap<Integer, Pose3d> TAG_ID_TO_POSE = fieldLayoutToTagIdToPoseMap();
+
+    private static final double
+            AUTO_FIND_CORAL_POSE_X = 3.3,
+            AUTO_FIND_CORAL_POSE_LEFT_Y = 5.5;
+    private static final Rotation2d AUTO_FIND_CORAL_POSE_LEFT_ROTATION = Rotation2d.fromDegrees(130);
+    public static final FlippablePose2d
+            AUTO_FIND_CORAL_POSE_LEFT = new FlippablePose2d(AUTO_FIND_CORAL_POSE_X, AUTO_FIND_CORAL_POSE_LEFT_Y, AUTO_FIND_CORAL_POSE_LEFT_ROTATION, true),
+            AUTO_FIND_CORAL_POSE_RIGHT = new FlippablePose2d(AUTO_FIND_CORAL_POSE_X, FieldConstants.FIELD_WIDTH_METERS - AUTO_FIND_CORAL_POSE_LEFT_Y, AUTO_FIND_CORAL_POSE_LEFT_ROTATION.unaryMinus(), true);
+
+    public static final Rotation2d LEFT_FEEDER_ANGLE = Rotation2d.fromDegrees(54);
+    public static final FlippableTranslation2d FLIPPABLE_REEF_CENTER_TRANSLATION = new FlippableTranslation2d(BLUE_REEF_CENTER_TRANSLATION, true);
 
     private static AprilTagFieldLayout createAprilTagFieldLayout() {
         try {
@@ -44,15 +57,30 @@ public class FieldConstants {
         }
     }
 
-    private static HashMap<Integer, Pose3d> fieldLayoutToTagIDToPoseMap() {
-        final HashMap<Integer, Pose3d> tagIDToPose = new HashMap<>();
-        for (AprilTag aprilTag : APRIL_TAG_FIELD_LAYOUT.getTags())
+    private static HashMap<Integer, Pose3d> fieldLayoutToTagIdToPoseMap() {
+        final HashMap<Integer, Pose3d> tagIdToPose = new HashMap<>();
+        for (AprilTag aprilTag : APRIL_TAG_FIELD_LAYOUT.getTags()) {
             if (!I_HATE_YOU.contains(aprilTag.ID))
-                tagIDToPose.put(aprilTag.ID, aprilTag.pose.transformBy(TAG_OFFSET));
+                tagIdToPose.put(aprilTag.ID, aprilTag.pose.transformBy(TAG_OFFSET));
+        }
 
-        return tagIDToPose;
+        return tagIdToPose;
     }
 
+    public enum ReefSide {
+        RIGHT(true),
+        LEFT(false);
+
+        public final boolean doesFlipYTransformWhenFacingDriverStation;
+
+        ReefSide(boolean doesFlipYTransformWhenFacingDriverStation) {
+            this.doesFlipYTransformWhenFacingDriverStation = doesFlipYTransformWhenFacingDriverStation;
+        }
+
+        public boolean shouldFlipYTransform(ReefClockPosition reefClockPosition) {
+            return doesFlipYTransformWhenFacingDriverStation ^ reefClockPosition.isFacingDriverStation; // In Java, ^ acts as an XOR (exclusive OR) operator, which fits in this case
+        }
+    }
 
     public enum ReefClockPosition {
         REEF_12_OCLOCK(true),

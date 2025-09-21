@@ -9,12 +9,14 @@ import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import frc.trigon.robot.RobotContainer;
 import lib.hardware.RobotHardwareStats;
 import lib.utilities.LocalADStarAK;
 import lib.utilities.flippable.Flippable;
+import lib.utilities.flippable.FlippablePose2d;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
@@ -27,7 +29,21 @@ public class AutonomousConstants {
     public static final RobotConfig ROBOT_CONFIG = getRobotConfig();
     public static final double FEEDFORWARD_SCALAR = 0.5;//TODO: Calibrate
     public static final PathConstraints DRIVE_TO_REEF_CONSTRAINTS = new PathConstraints(2.5, 4, Units.degreesToRadians(450), Units.degreesToRadians(900));
-
+    public static final double MINIMUM_DISTANCE_FROM_REEF_TO_OPEN_ELEVATOR = 2.2;
+    public static final double
+            REEF_RELATIVE_X_TOLERANCE_METERS = 0.085,
+            REEF_RELATIVE_Y_TOLERANCE_METERS = 0.03;
+    
+    private static final double
+            AUTO_FIND_CORAL_POSE_X = 3.3,
+            AUTO_FIND_CORAL_POSE_LEFT_Y = 5.5;
+    private static final Rotation2d AUTO_FIND_CORAL_POSE_LEFT_ROTATION = Rotation2d.fromDegrees(130);
+    public static final FlippablePose2d
+            AUTO_FIND_CORAL_POSE_LEFT = new FlippablePose2d(AUTO_FIND_CORAL_POSE_X, AUTO_FIND_CORAL_POSE_LEFT_Y, AUTO_FIND_CORAL_POSE_LEFT_ROTATION, true),
+            AUTO_FIND_CORAL_POSE_RIGHT = new FlippablePose2d(AUTO_FIND_CORAL_POSE_X, FieldConstants.FIELD_WIDTH_METERS - AUTO_FIND_CORAL_POSE_LEFT_Y, AUTO_FIND_CORAL_POSE_LEFT_ROTATION.unaryMinus(), true);
+    public static final double
+            AUTO_FIND_CORAL_END_VELOCITY_METERS_PER_SECOND = 2.5,
+            AUTO_FIND_CORAL_ROTATION_POWER = 0.2;
 
     private static final PIDConstants
             AUTO_TRANSLATION_PID_CONSTANTS = RobotHardwareStats.isSimulation() ?

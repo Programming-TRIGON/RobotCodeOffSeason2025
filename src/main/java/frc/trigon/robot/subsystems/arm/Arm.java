@@ -105,6 +105,13 @@ public class Arm extends MotorSubsystem {
         return atAngle(targetState.targetAngle);
     }
 
+    public boolean atPrepareAngle() {
+        if (isStateReversed) {
+            return atAngle(subtractFrom360Degrees(targetState.prepareAngle));
+        }
+        return atAngle(targetState.prepareAngle);
+    }
+
     @AutoLogOutput(key = "Arm/HasGamePiece")
     public boolean hasGamePiece() {
         return ArmConstants.COLLECTION_DETECTION_BOOLEAN_EVENT.getAsBoolean();
@@ -139,6 +146,21 @@ public class Arm extends MotorSubsystem {
     void setTargetState(Rotation2d targetAngle, double targetVoltage) {
         setTargetAngle(targetAngle);
         setEndEffectorTargetVoltage(targetVoltage);
+    }
+
+    void setPrepareState(ArmConstants.ArmState targetState) {
+        setPrepareState(targetState, false);
+    }
+
+    void setPrepareState(ArmConstants.ArmState targetState, boolean isStateReversed) {
+        this.isStateReversed = isStateReversed;
+        this.targetState = targetState;
+
+        if (isStateReversed) {
+            setTargetAngle(subtractFrom360Degrees(targetState.prepareAngle));
+            return;
+        }
+        setTargetAngle(targetState.prepareAngle);
     }
 
     void setArmState(ArmConstants.ArmState targetState) {

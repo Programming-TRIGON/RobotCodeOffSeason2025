@@ -116,7 +116,7 @@ public class ArmConstants {
      * The highest point of the arms angular zone where the safety logic applies.
      */
     static final Rotation2d MAXIMUM_ARM_SAFE_ANGLE = Rotation2d.fromDegrees(90);
-    static final Rotation2d ANGLE_TOLERANCE = Rotation2d.fromDegrees(0);
+    static final Rotation2d ANGLE_TOLERANCE = Rotation2d.fromDegrees(5);
     private static final double COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS = 0.2;
     static final BooleanEvent COLLECTION_DETECTION_BOOLEAN_EVENT = new BooleanEvent(
             CommandScheduler.getInstance().getActiveButtonLoop(),
@@ -231,31 +231,28 @@ public class ArmConstants {
     }
 
     public enum ArmState {
-        REST(Rotation2d.fromDegrees(0), 0),
-        REST_FOR_CLIMB(Rotation2d.fromDegrees(0), 0),
-        HOLD_ALGAE(Rotation2d.fromDegrees(90), -4),
-        EJECT(Rotation2d.fromDegrees(60), 4),
-        PREPARE_SCORE_L1(Rotation2d.fromDegrees(80), 0),
-        SCORE_L1(Rotation2d.fromDegrees(75), 4),
-        PREPARE_SCORE_L2(Rotation2d.fromDegrees(95), 0),
-        SCORE_L2(Rotation2d.fromDegrees(180), 4),
-        PREPARE_SCORE_L3(Rotation2d.fromDegrees(95), 0),
-        SCORE_L3(Rotation2d.fromDegrees(90), 4),
-        PREPARE_SCORE_L4(Rotation2d.fromDegrees(95), 0),
-        SCORE_L4(Rotation2d.fromDegrees(90), 4),
-        PREPARE_NET_SCORE(Rotation2d.fromDegrees(90), HOLD_ALGAE.targetEndEffectorVoltage),
-        SCORE_NET(Rotation2d.fromDegrees(160), 4),
-        PREPARE_PROCESSOR_SCORE(Rotation2d.fromDegrees(90), HOLD_ALGAE.targetEndEffectorVoltage),
-        SCORE_PROCESSOR(Rotation2d.fromDegrees(90), 4),
-        COLLECT_ALGAE_FROM_REEF(Rotation2d.fromDegrees(90), -4),
-        COLLECT_ALGAE_GROUND(Rotation2d.fromDegrees(90), -4),
-        EJECT_ALGAE(Rotation2d.fromDegrees(90), 4);
+        REST(Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0), 0),
+        REST_WITH_CORAL(Rotation2d.fromDegrees(180), Rotation2d.fromDegrees(180), 0),
+        REST_FOR_CLIMB(Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0), 0),
+        LOAD_CORAL(Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0), -4),
+        HOLD_ALGAE(Rotation2d.fromDegrees(90), Rotation2d.fromDegrees(90), -4),
+        EJECT(Rotation2d.fromDegrees(60), Rotation2d.fromDegrees(60), 4),
+        SCORE_L1(Rotation2d.fromDegrees(110), Rotation2d.fromDegrees(110), 4),
+        SCORE_L2(Rotation2d.fromDegrees(90), Rotation2d.fromDegrees(100), 4),
+        SCORE_L3(Rotation2d.fromDegrees(90), Rotation2d.fromDegrees(100), 4),
+        SCORE_L4(Rotation2d.fromDegrees(90), Rotation2d.fromDegrees(100), 4),
+        SCORE_NET(Rotation2d.fromDegrees(160), Rotation2d.fromDegrees(160), 4),
+        SCORE_PROCESSOR(Rotation2d.fromDegrees(90), Rotation2d.fromDegrees(90), 4),
+        COLLECT_ALGAE_L2(Rotation2d.fromDegrees(90), Rotation2d.fromDegrees(90), -4),
+        COLLECT_ALGAE_L3(Rotation2d.fromDegrees(90), Rotation2d.fromDegrees(90), -4);
 
         public final Rotation2d targetAngle;
+        public final Rotation2d prepareAngle;
         public final double targetEndEffectorVoltage;
 
-        ArmState(Rotation2d targetAngle, double targetEndEffectorVoltage) {
+        ArmState(Rotation2d targetAngle, Rotation2d prepareAngle, double targetEndEffectorVoltage) {
             this.targetAngle = targetAngle;
+            this.prepareAngle = prepareAngle;
             this.targetEndEffectorVoltage = targetEndEffectorVoltage;
         }
     }
