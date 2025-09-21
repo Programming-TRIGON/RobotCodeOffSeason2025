@@ -106,10 +106,9 @@ public class RobotContainer {
         OperatorConstants.SPAWN_CORAL_TRIGGER.onTrue(new InstantCommand(() -> SimulationFieldHandler.updateCoralSpawning(new Pose3d(ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose()))));
         OperatorConstants.CORAL_COLLECTION_TRIGGER.whileTrue(CoralCollectionCommands.getCoralCollectionCommand());
 
-        OperatorConstants.DRIVER_CONTROLLER.back().whileTrue(CoralEjectionCommands.getCoralEjectionCommand());
-
-        OperatorConstants.DRIVER_CONTROLLER.leftBumper().whileTrue(CoralPlacingCommands.getScoreInReefCommand(false));
-        OperatorConstants.DRIVER_CONTROLLER.rightBumper().whileTrue(CoralPlacingCommands.getScoreInReefCommand(true));
+        OperatorConstants.EJECT_CORAL_TRIGGER.whileTrue(CoralEjectionCommands.getCoralEjectionCommand());
+        OperatorConstants.SCORE_CORAL_LEFT_TRIGGER.whileTrue(CoralPlacingCommands.getScoreInReefCommand(false));
+        OperatorConstants.SCORE_CORAL_RIGHT_TRIGGER.whileTrue(CoralPlacingCommands.getScoreInReefCommand(true));
     }
 
     private void configureSysIDBindings(MotorSubsystem subsystem) {

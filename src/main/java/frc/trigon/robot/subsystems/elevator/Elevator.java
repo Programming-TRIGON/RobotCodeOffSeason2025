@@ -77,7 +77,6 @@ public class Elevator extends MotorSubsystem {
         Logger.recordOutput("Elevator/CurrentPositionMeters", getPositionMeters());
     }
 
-
     public boolean atState(ElevatorConstants.ElevatorState targetState) {
         return targetState == this.targetState && atTargetState();
     }
