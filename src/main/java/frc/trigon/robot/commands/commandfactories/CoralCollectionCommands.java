@@ -18,25 +18,29 @@ import frc.trigon.robot.subsystems.transporter.TransporterConstants;
 import lib.hardware.misc.leds.LEDCommands;
 
 public class CoralCollectionCommands {
-    public static Command getLoadCoralCommand() {
+
+    public static Command getCoralCollectionCommand() {
+        return new SequentialCommandGroup(
+                getIntakeSequenceCommand(),
+                new InstantCommand(
+                        () -> getLoadCoralCommand().schedule()
+                )
+        );
+        // new IntakeAssistCommand(OperatorConstants.DEFAULT_INTAKE_ASSIST_MODE)
+    }
+
+    private static Command getLoadCoralCommand() {
         return new ParallelCommandGroup(
                 ArmCommands.getSetTargetStateCommand(ArmConstants.ArmState.LOAD_CORAL),
                 ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.LOAD_CORAL)
-        ).until(RobotContainer.ARM::hasGamePiece);
-    }
-
-    public static Command getCoralCollectionCommand() {
-        return new ParallelCommandGroup(
-                getIntakeSequenceCommand()
-                // new IntakeAssistCommand(OperatorConstants.DEFAULT_INTAKE_ASSIST_MODE)
-        );
+        ).until(RobotContainer.ARM::hasGamePiece).asProxy();
     }
 
     private static Command getIntakeSequenceCommand() {
         return new SequentialCommandGroup(
                 getInitiateCollectionCommand().until(RobotContainer.INTAKE::hasCoral),
                 new InstantCommand(() -> getAlignCoralCommand().schedule()).alongWith(getCollectionConfirmationCommand())
-        );
+        ).until(RobotContainer.INTAKE::hasCoral);
     }
 
     private static Command getInitiateCollectionCommand() {

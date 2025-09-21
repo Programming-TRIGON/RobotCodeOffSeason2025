@@ -33,7 +33,7 @@ public class OperatorConstants {
     public static final IntakeAssistCommand.AssistMode DEFAULT_INTAKE_ASSIST_MODE = IntakeAssistCommand.AssistMode.ALTERNATE_ASSIST;
 
     public static final Trigger
-            RESET_HEADING_TRIGGER = OPERATOR_CONTROLLER.y(),
+            RESET_HEADING_TRIGGER = DRIVER_CONTROLLER.rightStick(),
             DRIVE_FROM_DPAD_TRIGGER = new Trigger(() -> DRIVER_CONTROLLER.getPov() != -1),
             TOGGLE_BRAKE_TRIGGER = OPERATOR_CONTROLLER.g().or(RobotController::getUserButton),
             DEBUGGING_TRIGGER = OPERATOR_CONTROLLER.f2(),

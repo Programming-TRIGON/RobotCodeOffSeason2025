@@ -106,7 +106,6 @@ public class RobotContainer {
         OperatorConstants.SPAWN_CORAL_TRIGGER.onTrue(new InstantCommand(() -> SimulationFieldHandler.updateCoralSpawning(new Pose3d(ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose()))));
         OperatorConstants.CORAL_COLLECTION_TRIGGER.whileTrue(CoralCollectionCommands.getCoralCollectionCommand());
         OperatorConstants.DRIVER_CONTROLLER.rightTrigger().whileTrue(CoralEjectionCommands.getCoralEjectionCommand());
-        OperatorConstants.DRIVER_CONTROLLER.rightStick().whileTrue(CoralCollectionCommands.getLoadCoralCommand());
 
         OperatorConstants.DRIVER_CONTROLLER.leftBumper().whileTrue(CoralPlacingCommands.getScoreInReefCommand(false));
         OperatorConstants.DRIVER_CONTROLLER.rightBumper().whileTrue(CoralPlacingCommands.getScoreInReefCommand(true));
