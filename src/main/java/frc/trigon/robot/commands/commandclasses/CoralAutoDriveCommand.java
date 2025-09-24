@@ -8,26 +8,23 @@ import frc.trigon.robot.RobotContainer;
 import frc.trigon.robot.commands.commandfactories.GeneralCommands;
 import frc.trigon.robot.constants.AutonomousConstants;
 import frc.trigon.robot.misc.objectdetectioncamera.ObjectPoseEstimator;
-import frc.trigon.robot.misc.simulatedfield.SimulatedGamePieceConstants;
 import frc.trigon.robot.subsystems.swerve.SwerveCommands;
 import lib.utilities.flippable.FlippableRotation2d;
 import org.littletonrobotics.junction.Logger;
 
 import java.util.function.Supplier;
 
-public class GamePieceAutoDriveCommand extends ParallelCommandGroup {
-    private static final ObjectPoseEstimator OBJECT_POSE_ESTIMATOR = RobotContainer.OBJECT_POSE_ESTIMATOR;
-    private final SimulatedGamePieceConstants.GamePieceType targetGamePieceType;
+public class CoralAutoDriveCommand extends ParallelCommandGroup {
+    private static final ObjectPoseEstimator CORAL_POSE_ESTIMATOR = RobotContainer.CORAL_POSE_ESTIMATOR;
     private Translation2d distanceFromTrackedGamePiece;
 
-    public GamePieceAutoDriveCommand(SimulatedGamePieceConstants.GamePieceType targetGamePieceType) {
-        this.targetGamePieceType = targetGamePieceType;
+    public CoralAutoDriveCommand() {
         addCommands(
                 getTrackGamePieceCommand(),
                 GeneralCommands.getContinuousConditionalCommand(
                         getDriveToGamePieceCommand(() -> distanceFromTrackedGamePiece),
                         GeneralCommands.getFieldRelativeDriveCommand(),
-                        () -> OBJECT_POSE_ESTIMATOR.getClosestObjectToRobot() != null && shouldMoveTowardsGamePiece(distanceFromTrackedGamePiece)
+                        () -> CORAL_POSE_ESTIMATOR.getClosestObjectToRobot() != null && shouldMoveTowardsGamePiece(distanceFromTrackedGamePiece)
                 )
         );
     }
@@ -40,7 +37,7 @@ public class GamePieceAutoDriveCommand extends ParallelCommandGroup {
 
     public static Translation2d calculateDistanceFromTrackedGamePiece() {
         final Pose2d robotPose = RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose();
-        final Translation2d trackedObjectPositionOnField = OBJECT_POSE_ESTIMATOR.getClosestObjectToRobot();
+        final Translation2d trackedObjectPositionOnField = CORAL_POSE_ESTIMATOR.getClosestObjectToRobot();
         if (trackedObjectPositionOnField == null)
             return null;
 
@@ -57,7 +54,7 @@ public class GamePieceAutoDriveCommand extends ParallelCommandGroup {
                 SwerveCommands.getClosedLoopSelfRelativeDriveCommand(
                         () -> AutonomousConstants.GAME_PIECE_AUTO_DRIVE_X_PID_CONTROLLER.calculate(distanceFromTrackedGamePiece.get().getX()),
                         () -> AutonomousConstants.GAME_PIECE_AUTO_DRIVE_Y_PID_CONTROLLER.calculate(distanceFromTrackedGamePiece.get().getY()),
-                        GamePieceAutoDriveCommand::calculateTargetAngle
+                        CoralAutoDriveCommand::calculateTargetAngle
                 )
         );
     }
@@ -69,7 +66,7 @@ public class GamePieceAutoDriveCommand extends ParallelCommandGroup {
 
     public static FlippableRotation2d calculateTargetAngle() {
         final Pose2d robotPose = RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose();
-        final Translation2d trackedObjectFieldRelativePosition = OBJECT_POSE_ESTIMATOR.getClosestObjectToRobot();
+        final Translation2d trackedObjectFieldRelativePosition = CORAL_POSE_ESTIMATOR.getClosestObjectToRobot();
         if (trackedObjectFieldRelativePosition == null)
             return null;
 

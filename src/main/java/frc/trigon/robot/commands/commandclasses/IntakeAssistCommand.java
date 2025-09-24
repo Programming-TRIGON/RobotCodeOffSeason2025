@@ -11,8 +11,8 @@ import frc.trigon.robot.RobotContainer;
 import frc.trigon.robot.commands.commandfactories.GeneralCommands;
 import frc.trigon.robot.constants.OperatorConstants;
 import frc.trigon.robot.subsystems.swerve.SwerveCommands;
-import org.littletonrobotics.junction.Logger;
 import lib.hardware.RobotHardwareStats;
+import org.littletonrobotics.junction.Logger;
 
 import java.util.function.Supplier;
 
@@ -43,7 +43,7 @@ public class IntakeAssistCommand extends ParallelCommandGroup {
                 GeneralCommands.getContinuousConditionalCommand(
                         GeneralCommands.getFieldRelativeDriveCommand(),
                         getAssistIntakeCommand(assistMode, () -> distanceFromTrackedGamePiece),
-                        () -> RobotContainer.OBJECT_POSE_ESTIMATOR.getClosestObjectToRobot() == null || distanceFromTrackedGamePiece == null
+                        () -> RobotContainer.CORAL_POSE_ESTIMATOR.getClosestObjectToRobot() == null || distanceFromTrackedGamePiece == null
                 )
         );
     }
@@ -53,7 +53,7 @@ public class IntakeAssistCommand extends ParallelCommandGroup {
      * This command is for intaking a game piece with a specific robot-relative position.
      * To create an intake assist command that selects the closest game piece automatically, use {@link IntakeAssistCommand#IntakeAssistCommand(AssistMode)} instead.
      *
-     * @param assistMode               the type of assistance
+     * @param assistMode                   the type of assistance
      * @param distanceFromTrackedGamePiece the position of the game piece relative to the robot
      * @return the command
      */
@@ -70,14 +70,14 @@ public class IntakeAssistCommand extends ParallelCommandGroup {
 
     private Command getTrackGamePieceCommand() {
         return new RunCommand(() -> {
-            if (RobotContainer.OBJECT_POSE_ESTIMATOR.getClosestObjectToRobot() != null)
+            if (RobotContainer.CORAL_POSE_ESTIMATOR.getClosestObjectToRobot() != null)
                 distanceFromTrackedGamePiece = calculateDistanceFromTrackedCGamePiece();
         });
     }
 
     private static Translation2d calculateDistanceFromTrackedCGamePiece() {
         final Pose2d robotPose = RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose();
-        final Translation2d trackedObjectPositionOnField = RobotContainer.OBJECT_POSE_ESTIMATOR.getClosestObjectToRobot();
+        final Translation2d trackedObjectPositionOnField = RobotContainer.CORAL_POSE_ESTIMATOR.getClosestObjectToRobot();
         if (trackedObjectPositionOnField == null)
             return null;
 

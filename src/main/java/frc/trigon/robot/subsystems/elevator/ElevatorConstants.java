@@ -104,6 +104,7 @@ public class ElevatorConstants {
     public static final double MAXIMUM_ELEVATOR_SAFE_ZONE_METERS = MINIMUM_ELEVATOR_SAFE_ZONE_METERS + ArmConstants.ARM_LENGTH_METERS;
     private static final DoubleSupplier REVERSE_LIMIT_SENSOR_SIMULATION_SUPPLIER = () -> 0;
     static final double TOLERANCE_METERS = 0.05;
+    static final double ELEVATOR_POSITION_TOLERANCE_METERS = 0.02;
 
     static {
         configureMasterMotor();

@@ -6,19 +6,20 @@
 package frc.trigon.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.trigon.robot.commands.CommandConstants;
-import frc.trigon.robot.commands.commandfactories.AlgaeManipulationCommands;
-import frc.trigon.robot.commands.commandfactories.CoralCollectionCommands;
-import frc.trigon.robot.commands.commandfactories.GeneralCommands;
+import frc.trigon.robot.commands.commandfactories.*;
 import frc.trigon.robot.constants.AutonomousConstants;
 import frc.trigon.robot.constants.CameraConstants;
 import frc.trigon.robot.constants.LEDConstants;
 import frc.trigon.robot.constants.OperatorConstants;
 import frc.trigon.robot.misc.objectdetectioncamera.ObjectPoseEstimator;
 import frc.trigon.robot.misc.simulatedfield.SimulatedGamePieceConstants;
+import frc.trigon.robot.misc.simulatedfield.SimulationFieldHandler;
 import frc.trigon.robot.poseestimation.poseestimator.PoseEstimator;
 import frc.trigon.robot.subsystems.MotorSubsystem;
 import frc.trigon.robot.subsystems.arm.Arm;
@@ -41,10 +42,10 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
     public static final PoseEstimator ROBOT_POSE_ESTIMATOR = new PoseEstimator();
-    public static final ObjectPoseEstimator OBJECT_POSE_ESTIMATOR = new ObjectPoseEstimator(
+    public static final ObjectPoseEstimator CORAL_POSE_ESTIMATOR = new ObjectPoseEstimator(
             CameraConstants.OBJECT_POSE_ESTIMATOR_DELETION_THRESHOLD_SECONDS,
             ObjectPoseEstimator.DistanceCalculationMethod.ROTATION_AND_TRANSLATION,
-            SimulatedGamePieceConstants.GamePieceType.GAME_PIECE_TYPE,
+            SimulatedGamePieceConstants.GamePieceType.CORAL,
             CameraConstants.OBJECT_DETECTION_CAMERA
     );
     public static final Swerve SWERVE = new Swerve();
@@ -99,9 +100,13 @@ public class RobotContainer {
         OperatorConstants.DRIVE_FROM_DPAD_TRIGGER.whileTrue(CommandConstants.SELF_RELATIVE_DRIVE_FROM_DPAD_COMMAND);
         OperatorConstants.TOGGLE_BRAKE_TRIGGER.onTrue(GeneralCommands.getToggleBrakeCommand());
 
+        OperatorConstants.SPAWN_CORAL_TRIGGER.onTrue(new InstantCommand(() -> SimulationFieldHandler.updateCoralSpawning(new Pose3d(ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose()))));
         OperatorConstants.CORAL_COLLECTION_TRIGGER.whileTrue(CoralCollectionCommands.getCoralCollectionCommand());
 
         OperatorConstants.ALGAE_COLLECTION_TRIGGER.whileTrue(AlgaeManipulationCommands.getAlgaeCollectionCommandCommand());
+        OperatorConstants.EJECT_CORAL_TRIGGER.whileTrue(CoralEjectionCommands.getCoralEjectionCommand());
+        OperatorConstants.SCORE_CORAL_LEFT_TRIGGER.whileTrue(CoralPlacingCommands.getScoreInReefCommand(false));
+        OperatorConstants.SCORE_CORAL_RIGHT_TRIGGER.whileTrue(CoralPlacingCommands.getScoreInReefCommand(true));
     }
 
     private void configureSysIDBindings(MotorSubsystem subsystem) {
