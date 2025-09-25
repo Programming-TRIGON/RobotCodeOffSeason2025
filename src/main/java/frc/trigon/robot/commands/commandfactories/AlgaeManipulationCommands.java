@@ -56,6 +56,7 @@ public class AlgaeManipulationCommands {
                 CoralCollectionCommands.getUnloadCoralCommand().onlyIf(RobotContainer.ARM::hasGamePiece),
                 getInitiateFloorAlgaeCollectionCommand().until(RobotContainer.ARM::hasGamePiece),
                 getScoreAlgaeCommand().alongWith(getAlgaeCollectionConfirmationCommand())
+                        .until(() -> !RobotContainer.ARM.hasGamePiece() && !isScoreAlgaeButtonPressed())
         ).finallyDo(() -> IS_HOLDING_ALGAE = false);
     }
 
@@ -66,7 +67,10 @@ public class AlgaeManipulationCommands {
                 CoralCollectionCommands.getUnloadCoralCommand().onlyIf(RobotContainer.ARM::hasGamePiece),
                 getInitiateReefAlgaeCollectionCommand().until(RobotContainer.ARM::hasGamePiece),
                 getScoreAlgaeCommand().alongWith(getAlgaeCollectionConfirmationCommand())
-        ).alongWith(getAlignToReefCommand()).finallyDo(() -> IS_HOLDING_ALGAE = false);
+                        .until(() -> !RobotContainer.ARM.hasGamePiece() && !isScoreAlgaeButtonPressed())
+        )
+                .alongWith(getAlignToReefCommand())
+                .finallyDo(() -> IS_HOLDING_ALGAE = false);
     }
 
     private static Command getAlignToReefCommand() {
@@ -94,7 +98,7 @@ public class AlgaeManipulationCommands {
                         2, getScoreInProcessorCommand()
                 ),
                 AlgaeManipulationCommands::getAlgaeScoreMethodSelector
-        ).raceWith(new WaitUntilChangeCommand<>(AlgaeManipulationCommands::isScoreAlgaeButtonPressed)).repeatedly().until(() -> !RobotContainer.ARM.hasGamePiece() && !isScoreAlgaeButtonPressed());
+        ).raceWith(new WaitUntilChangeCommand<>(AlgaeManipulationCommands::isScoreAlgaeButtonPressed)).repeatedly();
     }
 
     private static Command getHoldAlgaeCommand() {
