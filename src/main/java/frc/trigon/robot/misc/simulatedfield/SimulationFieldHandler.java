@@ -124,7 +124,10 @@ public class SimulationFieldHandler {
     }
 
     private static boolean isCollectingAlgae() {
-        return RobotContainer.ARM.atState(ArmConstants.ArmState.COLLECT_ALGAE_L2) || RobotContainer.ARM.atState(ArmConstants.ArmState.COLLECT_ALGAE_L3);
+        return RobotContainer.ARM.atState(ArmConstants.ArmState.COLLECT_ALGAE_L2)
+                || RobotContainer.ARM.atState(ArmConstants.ArmState.COLLECT_ALGAE_L3)
+                || RobotContainer.ARM.atState(ArmConstants.ArmState.COLLECT_ALGAE_FLOOR)
+                || RobotContainer.ARM.atState(ArmConstants.ArmState.COLLECT_ALGAE_LOLLIPOP);
     }
 
     private static boolean isCoralLoading() {
