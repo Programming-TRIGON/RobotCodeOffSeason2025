@@ -120,11 +120,18 @@ public class ArmConstants {
      */
     static final Rotation2d MAXIMUM_ARM_SAFE_ANGLE = Rotation2d.fromDegrees(90);
 
-    private static final double COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS = 0.2;
-    static final BooleanEvent COLLECTION_DETECTION_BOOLEAN_EVENT = new BooleanEvent(
+    private static final double
+            COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS = 0.2,
+            IS_EJECTING_ALGAE_DEBOUNCE_TIME_SECONDS = 0.1;
+    static final BooleanEvent
+            COLLECTION_DETECTION_BOOLEAN_EVENT = new BooleanEvent(
             CommandScheduler.getInstance().getActiveButtonLoop(),
             DISTANCE_SENSOR::getBinaryValue
-    ).debounce(COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS);
+    ).debounce(COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS),
+            IS_EJECTING_ALGAE_BOOLEAN_EVENT = new BooleanEvent(
+                    CommandScheduler.getInstance().getActiveButtonLoop(),
+                    () -> END_EFFECTOR_MOTOR.getSignal(TalonFXSignal.MOTOR_VOLTAGE) >= 0
+            ).debounce(IS_EJECTING_ALGAE_DEBOUNCE_TIME_SECONDS);
     static final double WHEEL_RADIUS_METERS = edu.wpi.first.math.util.Units.inchesToMeters(1.5);
 
     static {
