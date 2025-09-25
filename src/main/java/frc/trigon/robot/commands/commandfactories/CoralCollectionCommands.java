@@ -30,7 +30,7 @@ public class CoralCollectionCommands {
         return new ParallelCommandGroup(
                 ArmCommands.getSetTargetStateCommand(ArmConstants.ArmState.LOAD_CORAL),
                 ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.LOAD_CORAL)
-        ).until(RobotContainer.ARM::hasGamePiece);
+        ).unless(AlgaeManipulationCommands::isHoldingAlgae).until(RobotContainer.ARM::hasGamePiece);
     }
 
     public static Command getUnloadCoralCommand() {

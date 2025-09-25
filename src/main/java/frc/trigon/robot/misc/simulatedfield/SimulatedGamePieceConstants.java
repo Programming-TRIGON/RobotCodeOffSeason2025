@@ -49,9 +49,10 @@ public class SimulatedGamePieceConstants {
             REEF_CENTER_TO_L2_VECTOR = new Translation3d(0.652, 0.1643, 0.6983),
             REEF_CENTER_TO_L3_VECTOR = new Translation3d(0.652, 0.1643, 1.1101),
             REEF_CENTER_TO_L4_VECTOR = new Translation3d(0.7796, 0.1643, 1.7345);
+    private static final double ALGAE_RADIUS_METERS = 0.2032;
     private static final Translation3d
-            REEF_CENTER_TO_L2_ALGAE_VECTOR = new Translation3d(0.652, 0.1643, 0.75),
-            REEF_CENTER_TO_L3_ALGAE_VECTOR = new Translation3d(0.652, 0.1643, 1.218);
+            REEF_CENTER_TO_L2_ALGAE_VECTOR = new Translation3d(0.652, 0.1643, 0.70612 + ALGAE_RADIUS_METERS),
+            REEF_CENTER_TO_L3_ALGAE_VECTOR = new Translation3d(0.652, 0.1643, 1.01196 + ALGAE_RADIUS_METERS);
     private static final Rotation3d
             REEF_TO_2_OCLOCK_ROTATION = new Rotation3d(0, 0, Math.PI / 3),
             REEF_TO_4_OCLOCK_ROTATION = new Rotation3d(0, 0, Math.PI / 3 * 2),
