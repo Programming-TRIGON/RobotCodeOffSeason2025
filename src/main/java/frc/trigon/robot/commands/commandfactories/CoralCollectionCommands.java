@@ -11,6 +11,8 @@ import frc.trigon.robot.subsystems.arm.ArmCommands;
 import frc.trigon.robot.subsystems.arm.ArmConstants;
 import frc.trigon.robot.subsystems.elevator.ElevatorCommands;
 import frc.trigon.robot.subsystems.elevator.ElevatorConstants;
+import frc.trigon.robot.subsystems.endEffector.EndEffectorCommands;
+import frc.trigon.robot.subsystems.endEffector.EndEffectorConstants;
 import frc.trigon.robot.subsystems.intake.IntakeCommands;
 import frc.trigon.robot.subsystems.intake.IntakeConstants;
 import frc.trigon.robot.subsystems.transporter.TransporterCommands;
@@ -32,8 +34,9 @@ public class CoralCollectionCommands {
     private static Command getLoadCoralCommand() {
         return new ParallelCommandGroup(
                 ArmCommands.getSetTargetStateCommand(ArmConstants.ArmState.LOAD_CORAL),
-                ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.LOAD_CORAL)
-        ).until(RobotContainer.ARM::hasGamePiece).asProxy();
+                ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.LOAD_CORAL),
+                EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.LOAD_CORAL)
+        ).until(RobotContainer.END_EFFECTOR::hasGamePiece).asProxy();
     }
 
     private static Command getIntakeSequenceCommand() {

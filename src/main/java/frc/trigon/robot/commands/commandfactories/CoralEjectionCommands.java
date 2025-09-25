@@ -7,6 +7,8 @@ import frc.trigon.robot.RobotContainer;
 import frc.trigon.robot.misc.simulatedfield.SimulationFieldHandler;
 import frc.trigon.robot.subsystems.arm.ArmCommands;
 import frc.trigon.robot.subsystems.arm.ArmConstants;
+import frc.trigon.robot.subsystems.endEffector.EndEffectorCommands;
+import frc.trigon.robot.subsystems.endEffector.EndEffectorConstants;
 import frc.trigon.robot.subsystems.intake.IntakeCommands;
 import frc.trigon.robot.subsystems.intake.IntakeConstants;
 import frc.trigon.robot.subsystems.transporter.TransporterCommands;
@@ -16,7 +18,7 @@ public class CoralEjectionCommands {
     public static Command getCoralEjectionCommand() {
         return GeneralCommands.getContinuousConditionalCommand(
                 getEjectCoralFromIntakeCommand(),
-                getEjectCoralFromArmCommand(),
+                getEjectCoralFromEndEffectorCommand(),
                 () -> RobotContainer.TRANSPORTER.hasCoral() || RobotContainer.INTAKE.hasCoral()
         ).onlyIf(SimulationFieldHandler::isHoldingCoral);
     }
@@ -28,10 +30,10 @@ public class CoralEjectionCommands {
         );
     }
 
-    private static Command getEjectCoralFromArmCommand() {
+    private static Command getEjectCoralFromEndEffectorCommand() {
         return new SequentialCommandGroup(
-                ArmCommands.getPrepareForStateCommand(ArmConstants.ArmState.EJECT).until(RobotContainer.ARM::atPrepareAngle),
-                ArmCommands.getSetTargetStateCommand(ArmConstants.ArmState.EJECT)
+                ArmCommands.getSetTargetStateCommand(ArmConstants.ArmState.EJECT).until(RobotContainer.ARM::atTargetAngle),
+                EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.EJECT)
         );
     }
 }

@@ -11,44 +11,30 @@ import edu.wpi.first.wpilibj.event.BooleanEvent;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.trigon.robot.misc.simulatedfield.SimulationFieldHandler;
 import lib.hardware.RobotHardwareStats;
-import lib.hardware.misc.simplesensor.SimpleSensor;
 import lib.hardware.phoenix6.cancoder.CANcoderEncoder;
 import lib.hardware.phoenix6.cancoder.CANcoderSignal;
 import lib.hardware.phoenix6.talonfx.TalonFXMotor;
 import lib.hardware.phoenix6.talonfx.TalonFXSignal;
-import lib.hardware.simulation.SimpleMotorSimulation;
 import lib.hardware.simulation.SingleJointedArmSimulation;
 import lib.utilities.Conversions;
 import lib.utilities.mechanisms.SingleJointedArmMechanism2d;
-import lib.utilities.mechanisms.SpeedMechanism2d;
-
-import java.util.function.DoubleSupplier;
 
 public class ArmConstants {
     private static final int
             ARM_MASTER_MOTOR_ID = 13,
             ARM_FOLLOWER_MOTOR_ID = 14,
-            END_EFFECTOR_MOTOR_ID = 15,
-            ANGLE_ENCODER_ID = 13,
-            DISTANCE_SENSOR_CHANNEL = 3;
+            ANGLE_ENCODER_ID = 13;
     private static final String
             ARM_MASTER_MOTOR_NAME = "ArmMasterMotor",
             ARM_FOLLOWER_MOTOR_NAME = "ArmFollowerMotor",
-            END_EFFECTOR_MOTOR_NAME = "EndEffectorMotor",
-            ANGLE_ENCODER_NAME = "ArmEncoder",
-            DISTANCE_SENSOR_NAME = "EndEffectorDistanceSensor";
+            ANGLE_ENCODER_NAME = "ArmEncoder";
     static final TalonFXMotor
             ARM_MASTER_MOTOR = new TalonFXMotor(ARM_MASTER_MOTOR_ID, ARM_MASTER_MOTOR_NAME),
-            ARM_FOLLOWER_MOTOR = new TalonFXMotor(ARM_FOLLOWER_MOTOR_ID, ARM_FOLLOWER_MOTOR_NAME),
-            END_EFFECTOR_MOTOR = new TalonFXMotor(END_EFFECTOR_MOTOR_ID, END_EFFECTOR_MOTOR_NAME);
+            ARM_FOLLOWER_MOTOR = new TalonFXMotor(ARM_FOLLOWER_MOTOR_ID, ARM_FOLLOWER_MOTOR_NAME);
     static final CANcoderEncoder ANGLE_ENCODER = new CANcoderEncoder(ANGLE_ENCODER_ID, ANGLE_ENCODER_NAME);
-    static final SimpleSensor DISTANCE_SENSOR = SimpleSensor.createDigitalSensor(DISTANCE_SENSOR_CHANNEL, DISTANCE_SENSOR_NAME);
 
-    private static final double
-            ARM_GEAR_RATIO = 40,
-            END_EFFECTOR_GEAR_RATIO = 17;
+    private static final double ARM_GEAR_RATIO = 40;
     private static final double ARM_MOTOR_CURRENT_LIMIT = 50;
     private static final double ANGLE_ENCODER_GRAVITY_OFFSET = 0;
     static final double POSITION_OFFSET_FROM_GRAVITY_OFFSET = RobotHardwareStats.isSimulation() ? 0 - Conversions.degreesToRotations(90) : 0 + Conversions.degreesToRotations(0) - ANGLE_ENCODER_GRAVITY_OFFSET;
@@ -61,15 +47,11 @@ public class ArmConstants {
 
     public static final double ARM_LENGTH_METERS = 0.52;
     private static final int
-            ARM_MOTOR_AMOUNT = 2,
-            END_EFFECTOR_MOTOR_AMOUNT = 1;
+            ARM_MOTOR_AMOUNT = 2;
     private static final DCMotor
-            ARM_GEARBOX = DCMotor.getKrakenX60Foc(ARM_MOTOR_AMOUNT),
-            END_EFFECTOR_GEARBOX = DCMotor.getKrakenX60Foc(END_EFFECTOR_MOTOR_AMOUNT);
+            ARM_GEARBOX = DCMotor.getKrakenX60Foc(ARM_MOTOR_AMOUNT);
     private static final double
-            ARM_MASS_KILOGRAMS = 3.5,
-            END_EFFECTOR_MOMENT_OF_INERTIA = 0.003,
-            END_EFFECTOR_MAXIMUM_DISPLAYABLE_VELOCITY = 12;
+            ARM_MASS_KILOGRAMS = 3.5;
     private static final Rotation2d
             ARM_MINIMUM_ANGLE = Rotation2d.fromDegrees(0),
             ARM_MAXIMUM_ANGLE = Rotation2d.fromDegrees(360);
@@ -83,12 +65,6 @@ public class ArmConstants {
             ARM_MAXIMUM_ANGLE,
             SHOULD_SIMULATE_GRAVITY
     );
-    private static final SimpleMotorSimulation END_EFFECTOR_SIMULATION = new SimpleMotorSimulation(
-            END_EFFECTOR_GEARBOX,
-            END_EFFECTOR_GEAR_RATIO,
-            END_EFFECTOR_MOMENT_OF_INERTIA
-    );
-    private static final DoubleSupplier DISTANCE_SENSOR_SIMULATION_SUPPLIER = () -> (SimulationFieldHandler.isHoldingCoral() && SimulationFieldHandler.isCoralInEndEffector()) || SimulationFieldHandler.isHoldingAlgae() ? 1 : 0;
 
     static final SysIdRoutine.Config ARM_SYSID_CONFIG = new SysIdRoutine.Config(
             Units.Volts.of(1.5).per(Units.Seconds),
@@ -101,10 +77,7 @@ public class ArmConstants {
             ARM_LENGTH_METERS,
             Color.kBlue
     );
-    static final SpeedMechanism2d END_EFFECTOR_MECHANISM = new SpeedMechanism2d(
-            "EndEffectorMechanism",
-            END_EFFECTOR_MAXIMUM_DISPLAYABLE_VELOCITY
-    );
+
     static final Pose3d ARM_VISUALIZATION_ORIGIN_POINT = new Pose3d(
             new Translation3d(0, -0.0954, 0.3573),
             new Rotation3d(0, 0, 0)
@@ -114,25 +87,17 @@ public class ArmConstants {
             new Translation3d(0, 0.1, -0.5855),
             new Rotation3d(0, edu.wpi.first.math.util.Units.degreesToRadians(0), 0)
     );
+
     static final Rotation2d ANGLE_TOLERANCE = Rotation2d.fromDegrees(5);
     /**
      * The highest point of the arms angular zone where the safety logic applies.
      */
     static final Rotation2d MAXIMUM_ARM_SAFE_ANGLE = Rotation2d.fromDegrees(90);
 
-    private static final double COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS = 0.2;
-    static final BooleanEvent COLLECTION_DETECTION_BOOLEAN_EVENT = new BooleanEvent(
-            CommandScheduler.getInstance().getActiveButtonLoop(),
-            DISTANCE_SENSOR::getBinaryValue
-    ).debounce(COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS);
-    static final double WHEEL_RADIUS_METERS = edu.wpi.first.math.util.Units.inchesToMeters(1.5);
-
     static {
         configureArmMasterMotor();
         configureArmFollowerMotor();
-        configureEndEffectorMotor();
         configureAngleEncoder();
-        configureDistanceSensor();
     }
 
     private static void configureArmMasterMotor() {
@@ -194,28 +159,6 @@ public class ArmConstants {
         ARM_FOLLOWER_MOTOR.setControl(followerRequest);
     }
 
-    private static void configureEndEffectorMotor() {
-        final TalonFXConfiguration config = new TalonFXConfiguration();
-        config.Audio.BeepOnBoot = false;
-        config.Audio.BeepOnConfig = false;
-
-        config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-        config.Feedback.RotorToSensorRatio = END_EFFECTOR_GEAR_RATIO;
-
-        config.CurrentLimits.StatorCurrentLimitEnable = true;
-        config.CurrentLimits.StatorCurrentLimit = 80;
-
-        END_EFFECTOR_MOTOR.applyConfiguration(config);
-        END_EFFECTOR_MOTOR.setPhysicsSimulation(END_EFFECTOR_SIMULATION);
-
-        END_EFFECTOR_MOTOR.registerSignal(TalonFXSignal.POSITION, 100);
-        END_EFFECTOR_MOTOR.registerSignal(TalonFXSignal.VELOCITY, 100);
-        END_EFFECTOR_MOTOR.registerSignal(TalonFXSignal.MOTOR_VOLTAGE, 100);
-        END_EFFECTOR_MOTOR.registerSignal(TalonFXSignal.CLOSED_LOOP_REFERENCE, 100);
-        END_EFFECTOR_MOTOR.registerSignal(TalonFXSignal.STATOR_CURRENT, 100);
-    }
-
     private static void configureAngleEncoder() {
         final CANcoderConfiguration config = new CANcoderConfiguration();
 
@@ -228,10 +171,6 @@ public class ArmConstants {
 
         ANGLE_ENCODER.registerSignal(CANcoderSignal.POSITION, 100);
         ANGLE_ENCODER.registerSignal(CANcoderSignal.VELOCITY, 100);
-    }
-
-    private static void configureDistanceSensor() {
-        DISTANCE_SENSOR.setSimulationSupplier(DISTANCE_SENSOR_SIMULATION_SUPPLIER);
     }
 
     public enum ArmState {
@@ -252,12 +191,10 @@ public class ArmConstants {
 
         public final Rotation2d targetAngle;
         public final Rotation2d prepareAngle;
-        public final double targetEndEffectorVoltage;
 
         ArmState(Rotation2d targetAngle, Rotation2d prepareAngle, double targetEndEffectorVoltage) {
             this.targetAngle = targetAngle;
             this.prepareAngle = prepareAngle;
-            this.targetEndEffectorVoltage = targetEndEffectorVoltage;
         }
     }
 }

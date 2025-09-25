@@ -33,6 +33,9 @@ import frc.trigon.robot.subsystems.climber.ClimberConstants;
 import frc.trigon.robot.subsystems.elevator.Elevator;
 import frc.trigon.robot.subsystems.elevator.ElevatorCommands;
 import frc.trigon.robot.subsystems.elevator.ElevatorConstants;
+import frc.trigon.robot.subsystems.endEffector.EndEffector;
+import frc.trigon.robot.subsystems.endEffector.EndEffectorCommands;
+import frc.trigon.robot.subsystems.endEffector.EndEffectorConstants;
 import frc.trigon.robot.subsystems.intake.Intake;
 import frc.trigon.robot.subsystems.intake.IntakeCommands;
 import frc.trigon.robot.subsystems.intake.IntakeConstants;
@@ -55,6 +58,7 @@ public class RobotContainer {
     public static final Arm ARM = new Arm();
     public static final Climber CLIMBER = new Climber();
     public static final Elevator ELEVATOR = new Elevator();
+    public static final EndEffector END_EFFECTOR = new EndEffector();
     public static final Intake INTAKE = new Intake();
     public static final Transporter TRANSPORTER = new Transporter();
 
@@ -83,6 +87,7 @@ public class RobotContainer {
         ARM.setDefaultCommand(ArmCommands.getRestCommand());
         CLIMBER.setDefaultCommand(ClimberCommands.getSetTargetStateCommand(ClimberConstants.ClimberState.REST));
         ELEVATOR.setDefaultCommand(ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.REST));
+        END_EFFECTOR.setDefaultCommand(EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.REST));
         INTAKE.setDefaultCommand(IntakeCommands.getSetTargetStateCommand(IntakeConstants.IntakeState.REST));
         TRANSPORTER.setDefaultCommand(TransporterCommands.getSetTargetStateCommand(TransporterConstants.TransporterState.REST));
     }
