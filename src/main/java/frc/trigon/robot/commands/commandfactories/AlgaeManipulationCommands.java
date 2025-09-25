@@ -164,9 +164,8 @@ public class AlgaeManipulationCommands {
     private static Command getCollectAlgaeFromLollipopSequenceCommand() {
         return new ParallelCommandGroup(
                 GeneralCommands.getFlippableOverridableArmCommand(ArmConstants.ArmState.COLLECT_ALGAE_LOLLIPOP, false, false),
-                CoralCollectionCommands.getCoralCollectionCommand().until(RobotContainer.TRANSPORTER::hasCoral)
-                        .andThen(IntakeCommands.getSetTargetStateCommand(IntakeConstants.IntakeState.OPEN_REST)).onlyWhile(() -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE).repeatedly().asProxy(),
                 ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.COLLECT_ALGAE_LOLLIPOP)
+//                getIntakeCoralFromLollipopCommand().onlyWhile(() -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE).repeatedly()
         );
     }
 
@@ -174,6 +173,15 @@ public class AlgaeManipulationCommands {
         return new ParallelCommandGroup(
                 ArmCommands.getSetTargetStateCommand(ArmConstants.ArmState.COLLECT_ALGAE_FLOOR),
                 ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.COLLECT_ALGAE_FLOOR)
+        );
+    }
+
+    private static Command getIntakeCoralFromLollipopCommand() {
+        return new SequentialCommandGroup(
+                CoralCollectionCommands.getCoralCollectionCommand()
+                        .until(RobotContainer.TRANSPORTER::hasCoral)
+                        .unless(RobotContainer.TRANSPORTER::hasCoral),
+                IntakeCommands.getSetTargetStateCommand(IntakeConstants.IntakeState.OPEN_REST)
         );
     }
 

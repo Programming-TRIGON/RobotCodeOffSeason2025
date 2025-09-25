@@ -101,7 +101,7 @@ public class Arm extends MotorSubsystem {
     }
 
     public boolean atState(ArmConstants.ArmState targetState) {
-        return this.targetState == targetState && atAngle(targetState.targetAngle);
+        return this.targetState == targetState && atAngle(isStateReversed ? subtractFrom360Degrees(targetState.targetAngle) : targetState.targetAngle);
     }
 
     public boolean atTargetAngle() {
