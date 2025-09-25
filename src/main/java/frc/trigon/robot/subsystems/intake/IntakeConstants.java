@@ -22,7 +22,6 @@ import lib.hardware.phoenix6.talonfx.TalonFXMotor;
 import lib.hardware.phoenix6.talonfx.TalonFXSignal;
 import lib.hardware.simulation.SimpleMotorSimulation;
 import lib.hardware.simulation.SingleJointedArmSimulation;
-import lib.utilities.Conversions;
 import lib.utilities.mechanisms.SingleJointedArmMechanism2d;
 import lib.utilities.mechanisms.SpeedMechanism2d;
 
@@ -219,6 +218,7 @@ public class IntakeConstants {
 
     public enum IntakeState {
         REST(0, MINIMUM_ANGLE),
+        OPEN_REST(0, MAXIMUM_ANGLE),
         COLLECT(5, MAXIMUM_ANGLE),
         EJECT(-5, MAXIMUM_ANGLE);
 

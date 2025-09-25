@@ -65,7 +65,7 @@ public class OperatorConstants {
             LOLLIPOP_ALGAE_TOGGLE_TRIGGER = DRIVER_CONTROLLER.a();
 
     public static final Trigger
-            SET_TARGET_SCORING_REEF_LEVEL_L1_TRIGGER = OPERATOR_CONTROLLER.numpad0().or(DRIVER_CONTROLLER.a()),
+            SET_TARGET_SCORING_REEF_LEVEL_L1_TRIGGER = OPERATOR_CONTROLLER.numpad0().or(DRIVER_CONTROLLER.a().and(() -> !AlgaeManipulationCommands.isHoldingAlgae())),
             SET_TARGET_SCORING_REEF_LEVEL_L2_TRIGGER = OPERATOR_CONTROLLER.numpad1().or(DRIVER_CONTROLLER.b()),
             SET_TARGET_SCORING_REEF_LEVEL_L3_TRIGGER = OPERATOR_CONTROLLER.numpad2().or(DRIVER_CONTROLLER.x()),
             SET_TARGET_SCORING_REEF_LEVEL_L4_TRIGGER = OPERATOR_CONTROLLER.numpad3().or(DRIVER_CONTROLLER.y()),
@@ -93,7 +93,7 @@ public class OperatorConstants {
                     .onFalse(new InstantCommand(() -> IS_LEFT_SCORE_BUTTON_PRESSED = false));
 
         if (isAlgaeCommand)
-            return scoreTrigger.and(() -> AlgaeManipulationCommands.isHoldingAlgae());
+            return scoreTrigger.and(AlgaeManipulationCommands::isHoldingAlgae);
         return scoreTrigger.and(() -> !AlgaeManipulationCommands.isHoldingAlgae());
     }
 }

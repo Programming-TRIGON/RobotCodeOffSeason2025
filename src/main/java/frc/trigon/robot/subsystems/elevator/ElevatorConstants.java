@@ -183,7 +183,7 @@ public class ElevatorConstants {
         SCORE_L4(1.2, 1.3, 1),
         COLLECT_ALGAE_L2(0.603, 0.603, 1),
         COLLECT_ALGAE_L3(0.953, 0.953, 1),
-        COLLECT_ALGAE_GROUND(0, 0, 1),
+        COLLECT_ALGAE_FLOOR(0, 0, 1),
         COLLECT_ALGAE_LOLLIPOP(0.3, 0.3, 1),
         REST_WITH_ALGAE(0.603, 0.603, 0.3),
         SCORE_NET(1.382, 1.382, 0.3),

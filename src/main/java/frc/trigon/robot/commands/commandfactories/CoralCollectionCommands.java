@@ -20,7 +20,10 @@ public class CoralCollectionCommands {
         return new SequentialCommandGroup(
                 getIntakeSequenceCommand(),
                 new InstantCommand(
-                        () -> getLoadCoralCommand().schedule()
+                        () -> {
+                            if (!AlgaeManipulationCommands.isHoldingAlgae())
+                                getLoadCoralCommand().schedule();
+                        }
                 )
         );
         // new IntakeAssistCommand(OperatorConstants.DEFAULT_INTAKE_ASSIST_MODE)
@@ -30,7 +33,7 @@ public class CoralCollectionCommands {
         return new ParallelCommandGroup(
                 ArmCommands.getSetTargetStateCommand(ArmConstants.ArmState.LOAD_CORAL),
                 ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.LOAD_CORAL)
-        ).unless(AlgaeManipulationCommands::isHoldingAlgae).until(RobotContainer.ARM::hasGamePiece);
+        ).until(RobotContainer.ARM::hasGamePiece);
     }
 
     public static Command getUnloadCoralCommand() {

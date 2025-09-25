@@ -17,6 +17,8 @@ import frc.trigon.robot.subsystems.arm.ArmCommands;
 import frc.trigon.robot.subsystems.arm.ArmConstants;
 import frc.trigon.robot.subsystems.elevator.ElevatorCommands;
 import frc.trigon.robot.subsystems.elevator.ElevatorConstants;
+import frc.trigon.robot.subsystems.intake.IntakeCommands;
+import frc.trigon.robot.subsystems.intake.IntakeConstants;
 import frc.trigon.robot.subsystems.swerve.SwerveCommands;
 import lib.hardware.RobotHardwareStats;
 import lib.hardware.misc.leds.LEDCommands;
@@ -47,10 +49,13 @@ public class AlgaeManipulationCommands {
     public static Command getFloorAlgaeCollectionCommand() {
         return new SequentialCommandGroup(
                 GeneralCommands.getResetFlipArmOverrideCommand(),
-                new InstantCommand(() -> IS_HOLDING_ALGAE = true),
+                new InstantCommand(() -> {
+                    IS_HOLDING_ALGAE = true;
+                    SHOULD_COLLECT_FROM_LOLLIPOP = false;
+                }),
                 CoralCollectionCommands.getUnloadCoralCommand().onlyIf(RobotContainer.ARM::hasGamePiece),
                 getInitiateFloorAlgaeCollectionCommand().until(RobotContainer.ARM::hasGamePiece),
-                new InstantCommand(() -> getScoreAlgaeCommand().schedule()).alongWith(getAlgaeCollectionConfirmationCommand())
+                getScoreAlgaeCommand().alongWith(getAlgaeCollectionConfirmationCommand())
         ).finallyDo(() -> IS_HOLDING_ALGAE = false);
     }
 
@@ -155,14 +160,16 @@ public class AlgaeManipulationCommands {
     private static Command getCollectAlgaeFromLollipopSequenceCommand() {
         return new ParallelCommandGroup(
                 GeneralCommands.getFlippableOverridableArmCommand(ArmConstants.ArmState.COLLECT_ALGAE_LOLLIPOP, false, false),
+                CoralCollectionCommands.getCoralCollectionCommand().until(RobotContainer.TRANSPORTER::hasCoral)
+                        .andThen(IntakeCommands.getSetTargetStateCommand(IntakeConstants.IntakeState.OPEN_REST)).onlyWhile(() -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE).repeatedly().asProxy(),
                 ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.COLLECT_ALGAE_LOLLIPOP)
         );
     }
 
     private static Command getCollectAlgaeFromFloorSequenceCommand() {
         return new ParallelCommandGroup(
-                GeneralCommands.getFlippableOverridableArmCommand(ArmConstants.ArmState.COLLECT_ALGAE_FLOOR, false, false),
-                ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.COLLECT_ALGAE_GROUND)
+                ArmCommands.getSetTargetStateCommand(ArmConstants.ArmState.COLLECT_ALGAE_FLOOR),
+                ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.COLLECT_ALGAE_FLOOR)
         );
     }
 
