@@ -1,4 +1,4 @@
-package frc.trigon.robot.subsystems.endEffector;
+package frc.trigon.robot.subsystems.endeffector;
 
 import com.ctre.phoenix6.controls.VoltageOut;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -41,10 +41,10 @@ public class EndEffector extends MotorSubsystem {
 
     public Translation3d calculateLinearEndEffectorVelocity() {
         double velocityMetersPerSecond = endEffectorMotor.getSignal(TalonFXSignal.VELOCITY) * 2 * Math.PI * EndEffectorConstants.WHEEL_RADIUS_METERS;
-        return RobotContainer.ARM.calculateLinearArmVelocity().plus(
+        return RobotContainer.ARM_ELEVATOR.calculateLinearArmVelocity().plus(
                 new Translation3d(
-                        RobotContainer.ARM.getAngle().getCos() * velocityMetersPerSecond,
-                        RobotContainer.ARM.getAngle().getSin() * velocityMetersPerSecond,
+                        RobotContainer.ARM_ELEVATOR.getCurrentArmAngle().getCos() * velocityMetersPerSecond,
+                        RobotContainer.ARM_ELEVATOR.getCurrentArmAngle().getSin() * velocityMetersPerSecond,
                         0
                 )
         );

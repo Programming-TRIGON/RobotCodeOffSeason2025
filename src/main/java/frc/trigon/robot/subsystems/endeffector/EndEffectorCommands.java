@@ -1,4 +1,4 @@
-package frc.trigon.robot.subsystems.endEffector;
+package frc.trigon.robot.subsystems.endeffector;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
