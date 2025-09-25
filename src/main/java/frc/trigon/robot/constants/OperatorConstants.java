@@ -93,7 +93,7 @@ public class OperatorConstants {
                     .onFalse(new InstantCommand(() -> IS_LEFT_SCORE_BUTTON_PRESSED = false));
 
         if (isAlgaeCommand)
-            return scoreTrigger.and(() -> AlgaeManipulationCommands.isHoldingAlgae());
+            return scoreTrigger.and(AlgaeManipulationCommands::isHoldingAlgae);
         return scoreTrigger.and(() -> !AlgaeManipulationCommands.isHoldingAlgae());
     }
 }
