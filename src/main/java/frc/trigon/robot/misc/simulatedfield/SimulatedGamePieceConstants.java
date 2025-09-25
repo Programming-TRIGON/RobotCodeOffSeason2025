@@ -34,15 +34,15 @@ public class SimulatedGamePieceConstants {
             createNewCoral(new Pose3d(FIELD_LENGTH_METERS - 1.22, FIELD_WIDTH_METERS / 2, 0.15, CORAL_TO_VERTICAL_POSITION_ROTATION)),
             createNewCoral(new Pose3d(FIELD_LENGTH_METERS - 1.22, FIELD_WIDTH_METERS / 2 - 1.83, 0.15, CORAL_TO_VERTICAL_POSITION_ROTATION)),
             createNewCoral(new Pose3d(FIELD_LENGTH_METERS - 1.22, FIELD_WIDTH_METERS / 2 + 1.83, 0.15, CORAL_TO_VERTICAL_POSITION_ROTATION))
-    )),
-            ALGAE_ON_FIELD = new ArrayList<>(List.of(
+    ));
+    public static final ArrayList<SimulatedGamePiece> ALGAE_ON_FIELD = new ArrayList<>(List.of(
                     createNewAlgae(new Pose3d(1.22, FIELD_WIDTH_METERS / 2, 0.5, new Rotation3d())),
                     createNewAlgae(new Pose3d(1.22, FIELD_WIDTH_METERS / 2 - 1.83, 0.5, new Rotation3d())),
                     createNewAlgae(new Pose3d(1.22, FIELD_WIDTH_METERS / 2 + 1.83, 0.5, new Rotation3d())),
                     createNewAlgae(new Pose3d(FIELD_LENGTH_METERS - 1.22, FIELD_WIDTH_METERS / 2, 0.5, new Rotation3d())),
                     createNewAlgae(new Pose3d(FIELD_LENGTH_METERS - 1.22, FIELD_WIDTH_METERS / 2 - 1.83, 0.5, new Rotation3d())),
                     createNewAlgae(new Pose3d(FIELD_LENGTH_METERS - 1.22, FIELD_WIDTH_METERS / 2 + 1.83, 0.5, new Rotation3d()))
-            )).addAll(createAlgaeOnReef());
+            ));
 
     private static final Translation3d
             REEF_CENTER_TO_L1_VECTOR = new Translation3d(0.652, 0.1643, 0.46),
@@ -78,6 +78,10 @@ public class SimulatedGamePieceConstants {
             RIGHT_CORAL_SPAWN_POSE = new FlippablePose3d(new Pose3d(1.5, 1.5, 0, new Rotation3d()), true),
             LEFT_CORAL_SPAWN_POSE = new FlippablePose3d(new Pose3d(1.5, 6.5, 0, new Rotation3d()), true);
 
+    static {
+        ALGAE_ON_FIELD.addAll(createAlgaeOnReef());
+    }
+
     private static SimulatedGamePiece createNewCoral(Pose3d startingPose) {
         return new SimulatedGamePiece(startingPose, GamePieceType.CORAL);
     }
@@ -99,8 +103,11 @@ public class SimulatedGamePieceConstants {
 
     private static ArrayList<SimulatedGamePiece> createAlgaeOnReef() {
         final ArrayList<SimulatedGamePiece> algaeStartingPoses = new ArrayList<>();
-        for (int clockFace = 2; clockFace <= 12; clockFace += 2)
-            algaeStartingPoses.add(new SimulatedGamePiece(calculateAlgaeStartingPose(clockFace), GamePieceType.ALGAE));
+        for (int clockFace = 2; clockFace <= 12; clockFace += 2) {
+            final Pose3d pose = calculateAlgaeStartingPose(clockFace);
+            algaeStartingPoses.add(new SimulatedGamePiece(pose, GamePieceType.ALGAE));
+            algaeStartingPoses.add(new SimulatedGamePiece(FlippablePose3d.flipPose(pose), GamePieceType.ALGAE));
+        }
         return algaeStartingPoses;
     }
 
