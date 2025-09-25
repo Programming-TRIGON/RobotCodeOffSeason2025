@@ -237,7 +237,7 @@ public class ArmConstants {
     public enum ArmState {
         REST(Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0), 0),
         REST_WITH_CORAL(Rotation2d.fromDegrees(180), Rotation2d.fromDegrees(180), 0),
-        REST_FOR_CLIMB(Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0), 0),
+        REST_FOR_CLIMB(Rotation2d.fromDegrees(120), Rotation2d.fromDegrees(120), 0),
         LOAD_CORAL(Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0), -4),
         HOLD_ALGAE(Rotation2d.fromDegrees(90), Rotation2d.fromDegrees(90), -4),
         EJECT(Rotation2d.fromDegrees(60), Rotation2d.fromDegrees(60), 4),

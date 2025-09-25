@@ -174,15 +174,16 @@ public class ElevatorConstants {
 
     public enum ElevatorState {
         REST(0.603, 0.603, 0.7),
+        REST_WITH_ALGAE(0.603, 0.603, 0.3),
+        REST_FOR_CLIMB(0, 0, 0.5),
         LOAD_CORAL(0.5519, 0.5519, 0.7),
         SCORE_L1(0.1, 0.1, 1),
         SCORE_L2(0.3, 0.4, 1),
         SCORE_L3(0.7, 0.8, 1),
         SCORE_L4(1.2, 1.3, 1),
-        COLLECT_ALGAE_FROM_L2(0.603, 0.603, 1),
-        COLLECT_ALGAE_FROM_L3(0.953, 0.953, 1),
-        COLLECT_ALGAE_FROM_GROUND(0, 0, 0.7),
-        REST_WITH_ALGAE(0.603, 0.603, 0.3),
+        COLLECT_ALGAE_FROM_L2(0.603, 0.603, 0.7),
+        COLLECT_ALGAE_FROM_L3(0.953, 0.953, 0.7),
+        COLLECT_ALGAE_FROM_GROUND(0, 0, 1),
         SCORE_NET(1.382, 1.382, 0.3);
 
         public final double targetPositionMeters;
