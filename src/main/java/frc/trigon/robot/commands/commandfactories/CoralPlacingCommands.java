@@ -34,13 +34,14 @@ public class CoralPlacingCommands {
     }
 
     static boolean shouldReverseScore() {
-        final Rotation2d robotRotation = RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().getRotation();
-        final Translation2d robotTranslation = RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().getTranslation();
+        final Pose2d robotPose = RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose();
+        final Rotation2d robotRotation = robotPose.getRotation();
+        final Translation2d robotTranslation = robotPose.getTranslation();
         final Translation2d reefCenterTranslation = FieldConstants.FLIPPABLE_REEF_CENTER_TRANSLATION.get();
         final Translation2d difference = reefCenterTranslation.minus(robotTranslation);
         final Rotation2d robotRotationRelativeToReef = difference.getAngle();
         final Rotation2d robotRotationFacingReef = robotRotation.minus(robotRotationRelativeToReef);
-        return robotRotationFacingReef.getDegrees() > Rotation2d.kCW_90deg.getDegrees() && robotRotationFacingReef.getDegrees() < Rotation2d.kCCW_90deg.getDegrees();
+        return Math.abs(robotRotationFacingReef.getDegrees()) > Rotation2d.kCW_90deg.getDegrees();
     }
 
     private static Command getAutonomouslyScoreCommand(boolean shouldScoreRight) {
@@ -194,10 +195,8 @@ public class CoralPlacingCommands {
 
         private ElevatorConstants.ElevatorState determineElevatorAlgaeCollectionState() {
             return switch (level) {
-                case 1 -> ElevatorConstants.ElevatorState.COLLECT_ALGAE_GROUND;
-                case 2 -> ElevatorConstants.ElevatorState.COLLECT_ALGAE_L2;
-                case 3 -> ElevatorConstants.ElevatorState.COLLECT_ALGAE_L3;
-                case 4 -> ElevatorConstants.ElevatorState.COLLECT_ALGAE_LOLLIPOP;
+                case 1, 2 -> ElevatorConstants.ElevatorState.COLLECT_ALGAE_L2;
+                case 3, 4 -> ElevatorConstants.ElevatorState.COLLECT_ALGAE_L3;
                 default -> throw new IllegalStateException("Unexpected value: " + ordinal());
             };
         }
@@ -214,10 +213,8 @@ public class CoralPlacingCommands {
 
         private ArmConstants.ArmState determineArmAlgaeCollectionState() {
             return switch (level) {
-                case 1 -> ArmConstants.ArmState.COLLECT_ALGAE_FLOOR;
-                case 2 -> ArmConstants.ArmState.COLLECT_ALGAE_L2;
-                case 3 -> ArmConstants.ArmState.COLLECT_ALGAE_L3;
-                case 4 -> ArmConstants.ArmState.COLLECT_ALGAE_LOLLIPOP;
+                case 1, 2 -> ArmConstants.ArmState.COLLECT_ALGAE_L2;
+                case 3, 4 -> ArmConstants.ArmState.COLLECT_ALGAE_L3;
                 default -> throw new IllegalStateException("Unexpected value: " + ordinal());
             };
         }

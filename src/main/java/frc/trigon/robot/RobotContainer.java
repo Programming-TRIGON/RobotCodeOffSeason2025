@@ -97,16 +97,20 @@ public class RobotContainer {
 
     private void bindControllerCommands() {
         OperatorConstants.RESET_HEADING_TRIGGER.onTrue(CommandConstants.RESET_HEADING_COMMAND);
-        OperatorConstants.DRIVE_FROM_DPAD_TRIGGER.whileTrue(CommandConstants.SELF_RELATIVE_DRIVE_FROM_DPAD_COMMAND);
+//        OperatorConstants.DRIVE_FROM_DPAD_TRIGGER.whileTrue(CommandConstants.SELF_RELATIVE_DRIVE_FROM_DPAD_COMMAND);
         OperatorConstants.TOGGLE_BRAKE_TRIGGER.onTrue(GeneralCommands.getToggleBrakeCommand());
 
-        OperatorConstants.SPAWN_CORAL_TRIGGER.onTrue(new InstantCommand(() -> SimulationFieldHandler.updateCoralSpawning(new Pose3d(ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose()))));
-        OperatorConstants.CORAL_COLLECTION_TRIGGER.whileTrue(CoralCollectionCommands.getCoralCollectionCommand());
+        OperatorConstants.FLOOR_ALGAE_COLLECTION_TRIGGER.toggleOnTrue(AlgaeManipulationCommands.getFloorAlgaeCollectionCommand());
+        OperatorConstants.REEF_ALGAE_COLLECTION_TRIGGER.toggleOnTrue(AlgaeManipulationCommands.getReefAlgaeCollectionCommand());
 
-        OperatorConstants.ALGAE_COLLECTION_TRIGGER.whileTrue(AlgaeManipulationCommands.getAlgaeCollectionCommandCommand());
-        OperatorConstants.EJECT_CORAL_TRIGGER.whileTrue(CoralEjectionCommands.getCoralEjectionCommand());
+        OperatorConstants.CORAL_COLLECTION_TRIGGER.whileTrue(CoralCollectionCommands.getCoralCollectionCommand());
         OperatorConstants.SCORE_CORAL_LEFT_TRIGGER.whileTrue(CoralPlacingCommands.getScoreInReefCommand(false));
         OperatorConstants.SCORE_CORAL_RIGHT_TRIGGER.whileTrue(CoralPlacingCommands.getScoreInReefCommand(true));
+        OperatorConstants.EJECT_CORAL_TRIGGER.whileTrue(CoralEjectionCommands.getCoralEjectionCommand());
+
+        OperatorConstants.SPAWN_CORAL_IN_SIMULATION_TRIGGER.onTrue(new InstantCommand(() -> SimulationFieldHandler.updateCoralSpawning(new Pose3d(ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose()))));
+        OperatorConstants.FLIP_ARM_TRIGGER.onTrue(new InstantCommand(() -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE = !OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE));
+        OperatorConstants.LOLLIPOP_ALGAE_TOGGLE_TRIGGER.onTrue(new InstantCommand(() -> AlgaeManipulationCommands.toggleLollipopCollection()));
     }
 
     private void configureSysIDBindings(MotorSubsystem subsystem) {
