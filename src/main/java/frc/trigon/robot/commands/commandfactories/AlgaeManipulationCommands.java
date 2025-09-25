@@ -187,8 +187,8 @@ public class AlgaeManipulationCommands {
 
     private static Command getInitiateReefAlgaeCollectionCommand() {
         return new ParallelCommandGroup(
-                GeneralCommands.getFlippableOverridableArmCommand(OperatorConstants.REEF_CHOOSER.getArmAlgaeCollectionState(), false, CoralPlacingCommands.shouldReverseScore()),
-                ElevatorCommands.getSetTargetStateCommand(OperatorConstants.REEF_CHOOSER.getElevatorAlgaeCollectionState())
+                GeneralCommands.getFlippableOverridableArmCommand(OperatorConstants.REEF_CHOOSER::getArmAlgaeCollectionState, false, CoralPlacingCommands.shouldReverseScore()),
+                ElevatorCommands.getSetTargetStateCommand(OperatorConstants.REEF_CHOOSER::getElevatorAlgaeCollectionState)
         ).raceWith(
                 new WaitUntilChangeCommand<>(OperatorConstants.REEF_CHOOSER::getArmAlgaeCollectionState),
                 new WaitUntilChangeCommand<>(OperatorConstants.REEF_CHOOSER::getElevatorAlgaeCollectionState)
