@@ -2,7 +2,6 @@ package frc.trigon.robot.commands.commandfactories;
 
 import edu.wpi.first.wpilibj2.command.*;
 import frc.trigon.robot.commands.CommandConstants;
-import frc.trigon.robot.commands.commandclasses.WaitUntilChangeCommand;
 import frc.trigon.robot.constants.OperatorConstants;
 import frc.trigon.robot.subsystems.MotorSubsystem;
 import frc.trigon.robot.subsystems.arm.ArmCommands;
@@ -10,6 +9,7 @@ import frc.trigon.robot.subsystems.arm.ArmConstants;
 import frc.trigon.robot.subsystems.swerve.SwerveCommands;
 
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 /**
  * A class that contains the general commands of the robot, such as commands that alter a command or commands that affect all subsystems.
@@ -70,9 +70,21 @@ public class GeneralCommands {
         return new InstantCommand(() -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE = false);
     }
 
-    public static Command getFlippableOverridableArmCommand(ArmConstants.ArmState targetState) {
-        return ArmCommands.getSetTargetStateCommand(targetState, OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE).raceWith(
-                new WaitUntilChangeCommand<>(() -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE)
-        ).repeatedly();
+    public static Command getFlippableOverridableArmCommand(ArmConstants.ArmState targetState, boolean isPrepareState, boolean shouldStartFlipped) {
+        return isPrepareState ?
+                ArmCommands.getPrepareForStateCommand(targetState, () -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE ^ shouldStartFlipped) :
+                ArmCommands.getSetTargetStateCommand(targetState, () -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE ^ shouldStartFlipped);
+    }
+
+    public static Command getFlippableOverridableArmCommand(Supplier<ArmConstants.ArmState> targetState, boolean isPrepareState, boolean shouldStartFlipped) {
+        return isPrepareState ?
+                ArmCommands.getPrepareForStateCommand(targetState, () -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE ^ shouldStartFlipped) :
+                ArmCommands.getSetTargetStateCommand(targetState, () -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE ^ shouldStartFlipped);
+    }
+
+    public static Command getFlippableOverridableArmCommand(Supplier<ArmConstants.ArmState> targetState, boolean isPrepareState, BooleanSupplier shouldStartFlipped) {
+        return isPrepareState ?
+                ArmCommands.getPrepareForStateCommand(targetState, () -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE ^ shouldStartFlipped.getAsBoolean()) :
+                ArmCommands.getSetTargetStateCommand(targetState, () -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE ^ shouldStartFlipped.getAsBoolean());
     }
 }

@@ -125,8 +125,8 @@ public class AlgaeManipulationCommands {
 
     private static Command getArmScoringSequenceCommand(ArmConstants.ArmState scoreState, boolean shouldReverseScore) {
         return new SequentialCommandGroup(
-                ArmCommands.getPrepareForStateCommand(scoreState, shouldReverseScore).until(OperatorConstants.CONTINUE_TRIGGER),
-                ArmCommands.getSetTargetStateCommand(scoreState, shouldReverseScore)
+                GeneralCommands.getFlippableOverridableArmCommand(scoreState, true, shouldReverseScore).until(OperatorConstants.CONTINUE_TRIGGER),
+                GeneralCommands.getFlippableOverridableArmCommand(scoreState, false, shouldReverseScore)
         );
     }
 
@@ -154,21 +154,21 @@ public class AlgaeManipulationCommands {
 
     private static Command getCollectAlgaeFromLollipopSequenceCommand() {
         return new ParallelCommandGroup(
-                GeneralCommands.getFlippableOverridableArmCommand(ArmConstants.ArmState.COLLECT_ALGAE_LOLLIPOP),
+                GeneralCommands.getFlippableOverridableArmCommand(ArmConstants.ArmState.COLLECT_ALGAE_LOLLIPOP, false, false),
                 ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.COLLECT_ALGAE_LOLLIPOP)
         );
     }
 
     private static Command getCollectAlgaeFromFloorSequenceCommand() {
         return new ParallelCommandGroup(
-                GeneralCommands.getFlippableOverridableArmCommand(ArmConstants.ArmState.COLLECT_ALGAE_FLOOR),
+                GeneralCommands.getFlippableOverridableArmCommand(ArmConstants.ArmState.COLLECT_ALGAE_FLOOR, false, false),
                 ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.COLLECT_ALGAE_GROUND)
         );
     }
 
     private static Command getInitiateReefAlgaeCollectionCommand() {
         return new ParallelCommandGroup(
-                ArmCommands.getSetTargetStateCommand(OperatorConstants.REEF_CHOOSER.getArmAlgaeCollectionState(), CoralPlacingCommands.shouldReverseScore()),
+                GeneralCommands.getFlippableOverridableArmCommand(OperatorConstants.REEF_CHOOSER.getArmAlgaeCollectionState(), false, CoralPlacingCommands.shouldReverseScore()),
                 ElevatorCommands.getSetTargetStateCommand(OperatorConstants.REEF_CHOOSER.getElevatorAlgaeCollectionState())
         ).raceWith(
                 new WaitUntilChangeCommand<>(OperatorConstants.REEF_CHOOSER::getArmAlgaeCollectionState),

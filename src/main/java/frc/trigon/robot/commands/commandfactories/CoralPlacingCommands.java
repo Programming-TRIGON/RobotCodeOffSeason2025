@@ -13,7 +13,6 @@ import frc.trigon.robot.constants.AutonomousConstants;
 import frc.trigon.robot.constants.FieldConstants;
 import frc.trigon.robot.constants.OperatorConstants;
 import frc.trigon.robot.misc.ReefChooser;
-import frc.trigon.robot.subsystems.arm.ArmCommands;
 import frc.trigon.robot.subsystems.arm.ArmConstants;
 import frc.trigon.robot.subsystems.elevator.ElevatorCommands;
 import frc.trigon.robot.subsystems.elevator.ElevatorConstants;
@@ -26,10 +25,13 @@ public class CoralPlacingCommands {
     static final ReefChooser REEF_CHOOSER = OperatorConstants.REEF_CHOOSER;
 
     public static Command getScoreInReefCommand(boolean shouldScoreRight) {
-        return new ConditionalCommand(
-                getAutonomouslyScoreCommand(shouldScoreRight),
-                getScoreCommand(shouldScoreRight),
-                () -> SHOULD_SCORE_AUTONOMOUSLY
+        return new SequentialCommandGroup(
+                GeneralCommands.getResetFlipArmOverrideCommand(),
+                new ConditionalCommand(
+                        getAutonomouslyScoreCommand(shouldScoreRight),
+                        getScoreCommand(),
+                        () -> SHOULD_SCORE_AUTONOMOUSLY
+                )
         );
     }
 
@@ -46,29 +48,35 @@ public class CoralPlacingCommands {
 
     private static Command getAutonomouslyScoreCommand(boolean shouldScoreRight) {
         return new SequentialCommandGroup(
-                getAutonomouslyPrepareScoreCommand(shouldScoreRight).until(() -> isArmAndElevatorAtPrepareState(shouldScoreRight)),
+                getAutonomouslyPrepareScoreCommand(shouldScoreRight).until(() -> isReadyToPlace(shouldScoreRight) || OperatorConstants.CONTINUE_TRIGGER.getAsBoolean()),
                 new ParallelCommandGroup(
                         ElevatorCommands.getSetTargetStateCommand(REEF_CHOOSER::getElevatorCoralState),
-                        ArmCommands.getSetTargetStateCommand(REEF_CHOOSER::getArmCoralState, CoralPlacingCommands::shouldReverseScore)
+                        GeneralCommands.getFlippableOverridableArmCommand(REEF_CHOOSER::getArmCoralState, false, CoralPlacingCommands::shouldReverseScore)
                 )
         );
     }
 
-    private static Command getScoreCommand(boolean shouldScoreRight) {
+    private static Command getScoreCommand() {
         return new SequentialCommandGroup(
-                getAutonomouslyPrepareScoreCommand(shouldScoreRight).until(OperatorConstants.CONTINUE_TRIGGER),
+                getPrepareScoreCommand().until(OperatorConstants.CONTINUE_TRIGGER),
                 new ParallelCommandGroup(
                         ElevatorCommands.getSetTargetStateCommand(REEF_CHOOSER::getElevatorCoralState),
-                        ArmCommands.getSetTargetStateCommand(REEF_CHOOSER::getArmCoralState, CoralPlacingCommands::shouldReverseScore)
+                        GeneralCommands.getFlippableOverridableArmCommand(REEF_CHOOSER::getArmCoralState, false, CoralPlacingCommands::shouldReverseScore)
                 )
         );
     }
 
     private static Command getAutonomouslyPrepareScoreCommand(boolean shouldScoreRight) {
         return new ParallelCommandGroup(
-                ElevatorCommands.getPrepareStateCommand(REEF_CHOOSER::getElevatorCoralState),
-                ArmCommands.getPrepareForStateCommand(REEF_CHOOSER::getArmCoralState, CoralPlacingCommands::shouldReverseScore),
+                getPrepareScoreCommand(),
                 getAutonomousDriveToReefThenManualDriveCommand(shouldScoreRight).asProxy()
+        );
+    }
+
+    private static Command getPrepareScoreCommand() {
+        return new ParallelCommandGroup(
+                ElevatorCommands.getPrepareStateCommand(REEF_CHOOSER::getElevatorCoralState),
+                GeneralCommands.getFlippableOverridableArmCommand(REEF_CHOOSER::getArmCoralState, true, CoralPlacingCommands::shouldReverseScore)
         );
     }
 
@@ -117,10 +125,11 @@ public class CoralPlacingCommands {
         return new FlippablePose2d(closestScoringPose.transformBy(scoringPoseToBranch), false);
     }
 
-    private static boolean isArmAndElevatorAtPrepareState(boolean shouldScoreRight) {
+    private static boolean isReadyToPlace(boolean shouldScoreRight) {
         return RobotContainer.ELEVATOR.atPreparedTargetState()
                 && RobotContainer.ARM.atPrepareAngle()
-                && RobotContainer.SWERVE.atPose(calculateClosestScoringPose(shouldScoreRight));
+                && RobotContainer.SWERVE.atPose(calculateClosestScoringPose(shouldScoreRight))
+                && !OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE;
     }
 
     /**

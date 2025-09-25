@@ -10,6 +10,7 @@ import lib.commands.GearRatioCalculationCommand;
 import lib.commands.NetworkTablesCommand;
 
 import java.util.Set;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 public class ArmCommands {
@@ -35,14 +36,25 @@ public class ArmCommands {
         );
     }
 
-    public static Command getSetTargetStateCommand(Supplier<ArmConstants.ArmState> targetState, Supplier<Boolean> isStateReversed) {
+    public static Command getSetTargetStateCommand(Supplier<ArmConstants.ArmState> targetState, BooleanSupplier isStateReversed) {
         return new FunctionalCommand(
                 () -> RobotContainer.ARM.setEndEffectorState(targetState.get()),
-                () -> RobotContainer.ARM.setArmState(targetState.get(), isStateReversed.get()),
+                () -> RobotContainer.ARM.setArmState(targetState.get(), isStateReversed.getAsBoolean()),
                 interrupted -> RobotContainer.ARM.stop(),
                 () -> false,
                 RobotContainer.ARM
-        );    }
+        );
+    }
+
+    public static Command getSetTargetStateCommand(ArmConstants.ArmState targetState, BooleanSupplier isStateReversed) {
+        return new FunctionalCommand(
+                () -> RobotContainer.ARM.setEndEffectorState(targetState),
+                () -> RobotContainer.ARM.setArmState(targetState, isStateReversed.getAsBoolean()),
+                interrupted -> RobotContainer.ARM.stop(),
+                () -> false,
+                RobotContainer.ARM
+        );
+    }
 
     public static Command getSetTargetStateCommand(ArmConstants.ArmState targetState) {
         return getSetTargetStateCommand(targetState, false);
@@ -58,9 +70,17 @@ public class ArmCommands {
         );
     }
 
-    public static Command getPrepareForStateCommand(Supplier<ArmConstants.ArmState> targetState, Supplier<Boolean> isStateReversed) {
+    public static Command getPrepareForStateCommand(Supplier<ArmConstants.ArmState> targetState, BooleanSupplier isStateReversed) {
         return new ExecuteEndCommand(
-                () -> RobotContainer.ARM.setPrepareState(targetState.get(), isStateReversed.get()),
+                () -> RobotContainer.ARM.setPrepareState(targetState.get(), isStateReversed.getAsBoolean()),
+                RobotContainer.ARM::stop,
+                RobotContainer.ARM
+        );
+    }
+
+    public static Command getPrepareForStateCommand(ArmConstants.ArmState targetState, BooleanSupplier isStateReversed) {
+        return new ExecuteEndCommand(
+                () -> RobotContainer.ARM.setPrepareState(targetState, isStateReversed.getAsBoolean()),
                 RobotContainer.ARM::stop,
                 RobotContainer.ARM
         );
