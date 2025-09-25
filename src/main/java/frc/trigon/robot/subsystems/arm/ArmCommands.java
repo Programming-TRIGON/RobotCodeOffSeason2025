@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import frc.trigon.robot.RobotContainer;
+import frc.trigon.robot.commands.commandfactories.GeneralCommands;
 import lib.commands.ExecuteEndCommand;
 import lib.commands.GearRatioCalculationCommand;
 import lib.commands.NetworkTablesCommand;
@@ -99,7 +100,7 @@ public class ArmCommands {
     }
 
     public static Command getRestCommand() {
-        return new ConditionalCommand(
+        return GeneralCommands.getContinuousConditionalCommand(
                 getSetTargetStateCommand(ArmConstants.ArmState.REST_WITH_CORAL),
                 getSetTargetStateCommand(ArmConstants.ArmState.REST),
                 RobotContainer.ARM::hasGamePiece

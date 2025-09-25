@@ -113,7 +113,7 @@ public class SimulatedGamePieceConstants {
     }
 
     private static Pose3d calculateAlgaeStartingPose(int clockFace) {
-        final int level = clockFace % 4 == 0 ? 3 : 2;
+        final int level = clockFace % 4 == 0 ? 2 : 3;
         final Translation3d reefCenterToLevelVector = level == 2 ? REEF_CENTER_TO_L2_ALGAE_VECTOR : REEF_CENTER_TO_L3_ALGAE_VECTOR;
         final Rotation3d reefToClockFaceRotation = getReefClockFaceRotation(clockFace);
         return new Pose3d(new Pose2d(FieldConstants.BLUE_REEF_CENTER_TRANSLATION, new Rotation2d())).transformBy(new Transform3d(reefCenterToLevelVector.rotateBy(reefToClockFaceRotation), reefToClockFaceRotation)).transformBy(RIGHT_BRANCH_TO_BETWEEN_BRANCHES);

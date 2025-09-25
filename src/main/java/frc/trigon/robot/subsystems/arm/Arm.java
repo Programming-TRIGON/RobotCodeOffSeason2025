@@ -143,8 +143,12 @@ public class Arm extends MotorSubsystem {
         );
     }
 
-    public boolean isEjecting() {
+    public boolean isEjectingCoral() {
         return endEffectorMotor.getSignal(TalonFXSignal.MOTOR_VOLTAGE) > 2;
+    }
+
+    public boolean isEjectingAlgae() {
+        return endEffectorMotor.getSignal(TalonFXSignal.MOTOR_VOLTAGE) >= 0;
     }
 
     public Translation3d calculateLinearArmVelocity() {

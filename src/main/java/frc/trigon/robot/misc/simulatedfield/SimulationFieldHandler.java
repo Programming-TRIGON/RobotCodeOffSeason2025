@@ -138,7 +138,7 @@ public class SimulationFieldHandler {
         if (HELD_CORAL_INDEX != null)
             updateCoralEjection();
 
-        if (HELD_ALGAE_INDEX != null && RobotContainer.ARM.isEjecting()) {
+        if (HELD_ALGAE_INDEX != null && RobotContainer.ARM.isEjectingAlgae()) {
             final SimulatedGamePiece heldAlgae = ALGAE_ON_FIELD.get(HELD_ALGAE_INDEX);
             heldAlgae.release(RobotContainer.ARM.calculateLinearArmAndEndEffectorVelocity(), RobotContainer.SWERVE.getFieldRelativeVelocity3d());
             HELD_ALGAE_INDEX = null;
@@ -152,7 +152,7 @@ public class SimulationFieldHandler {
             heldCoral.release(RobotContainer.INTAKE.calculateLinearIntakeVelocity(), RobotContainer.SWERVE.getFieldRelativeVelocity3d(), IntakeConstants.CORAL_COLLECTION_POSE.getTranslation());
             HELD_CORAL_INDEX = null;
         }
-        if (isCoralInEndEffector() && RobotContainer.ARM.isEjecting()) {
+        if (isCoralInEndEffector() && RobotContainer.ARM.isEjectingCoral()) {
             heldCoral.release(RobotContainer.ARM.calculateLinearArmAndEndEffectorVelocity(), RobotContainer.SWERVE.getFieldRelativeVelocity3d(), RobotContainer.ARM.calculateGamePieceCollectionPose().getTranslation());
             HELD_CORAL_INDEX = null;
         }
