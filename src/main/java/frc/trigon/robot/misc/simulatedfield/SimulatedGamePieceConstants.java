@@ -69,9 +69,9 @@ public class SimulatedGamePieceConstants {
             RIGHT_BRANCH_TO_BETWEEN_BRANCHES = new Transform3d(new Translation3d(0, -0.165, 0), new Rotation3d());
     public static final ArrayList<FlippablePose3d> CORAL_SCORING_LOCATIONS = calculatedCoralScoringLocations();
     public static final Pose3d
-            PROCESSOR_LOCATION = new Pose3d(11.60, 8.23, 0.18, new Rotation3d()),
-            NET_MINIMUM_X_LOCATION = new Pose3d(0, 0, 0, new Rotation3d()),
-            NET_MAXIMUM_X_LOCATION = new Pose3d(0, 0, 0, new Rotation3d());
+            PROCESSOR_LOCATION = new Pose3d( FIELD_LENGTH_METERS - 11.60, 8.23, 0.18, new Rotation3d(0, 0, Rotation2d.kCW_90deg.getRadians())),
+            NET_MINIMUM_X_LOCATION = new Pose3d(10.724, 4.730, 2.131, new Rotation3d()),
+            NET_MAXIMUM_X_LOCATION = new Pose3d(10.724, 8.429, 2.131, new Rotation3d());
     public static final FlippableTranslation2d
             LEFT_FEEDER_POSITION = new FlippableTranslation2d(0.923, 7.370, true),
             RIGHT_FEEDER_POSITION = new FlippableTranslation2d(0.923, 0.668, true);

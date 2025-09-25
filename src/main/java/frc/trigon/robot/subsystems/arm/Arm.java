@@ -50,6 +50,7 @@ public class Arm extends MotorSubsystem {
     public void stop() {
         armMasterMotor.stopMotor();
         endEffectorMotor.stopMotor();
+        ArmConstants.END_EFFECTOR_MECHANISM.setTargetVelocity(0);
     }
 
     @Override
@@ -195,6 +196,11 @@ public class Arm extends MotorSubsystem {
     void setPrepareState(ArmConstants.ArmState targetState, boolean isStateReversed) {
         this.isStateReversed = isStateReversed;
         this.targetState = targetState;
+
+        if (targetState == ArmConstants.ArmState.HOLD_ALGAE
+                || targetState == ArmConstants.ArmState.SCORE_NET
+                || targetState == ArmConstants.ArmState.SCORE_PROCESSOR)
+            setEndEffectorTargetVoltage(ArmConstants.ArmState.HOLD_ALGAE.targetEndEffectorVoltage);
 
         if (isStateReversed) {
             setTargetAngle(subtractFrom360Degrees(targetState.prepareAngle));
