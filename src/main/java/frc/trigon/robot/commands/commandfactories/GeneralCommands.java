@@ -70,21 +70,21 @@ public class GeneralCommands {
         return new InstantCommand(() -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE = false);
     }
 
-    public static Command getFlippableOverridableArmCommand(ArmConstants.ArmState targetState, boolean isPrepareState, boolean shouldStartFlipped) {
+    public static Command getFlippableOverridableArmCommand(ArmConstants.ArmState targetState, boolean isPrepareState, BooleanSupplier shouldStartFlipped) {
         return isPrepareState ?
-                ArmCommands.getPrepareForStateCommand(targetState, () -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE ^ shouldStartFlipped) :
-                ArmCommands.getSetTargetStateCommand(targetState, () -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE ^ shouldStartFlipped);
-    }
-
-    public static Command getFlippableOverridableArmCommand(Supplier<ArmConstants.ArmState> targetState, boolean isPrepareState, boolean shouldStartFlipped) {
-        return isPrepareState ?
-                ArmCommands.getPrepareForStateCommand(targetState, () -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE ^ shouldStartFlipped) :
-                ArmCommands.getSetTargetStateCommand(targetState, () -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE ^ shouldStartFlipped);
+                ArmCommands.getPrepareForStateCommand(targetState, () -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE ^ shouldStartFlipped.getAsBoolean()) :
+                ArmCommands.getSetTargetStateCommand(targetState, () -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE ^ shouldStartFlipped.getAsBoolean());
     }
 
     public static Command getFlippableOverridableArmCommand(Supplier<ArmConstants.ArmState> targetState, boolean isPrepareState, BooleanSupplier shouldStartFlipped) {
         return isPrepareState ?
                 ArmCommands.getPrepareForStateCommand(targetState, () -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE ^ shouldStartFlipped.getAsBoolean()) :
                 ArmCommands.getSetTargetStateCommand(targetState, () -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE ^ shouldStartFlipped.getAsBoolean());
+    }
+
+    public static Command getFlippableOverridableArmCommand(ArmConstants.ArmState targetState, boolean isPrepareState) {
+        return isPrepareState ?
+                ArmCommands.getPrepareForStateCommand(targetState, () -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE) :
+                ArmCommands.getSetTargetStateCommand(targetState, () -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE);
     }
 }

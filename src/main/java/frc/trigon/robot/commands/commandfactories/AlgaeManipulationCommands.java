@@ -28,6 +28,7 @@ import lib.utilities.flippable.FlippableTranslation2d;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.BooleanSupplier;
 
 public class AlgaeManipulationCommands {
     private static boolean
@@ -114,7 +115,7 @@ public class AlgaeManipulationCommands {
     private static Command getScoreInNetCommand() {
         return new ParallelRaceGroup(
                 ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.SCORE_NET),
-                getArmScoringSequenceCommand(ArmConstants.ArmState.SCORE_NET, shouldReverseNetScore()),
+                getArmNetSequenceCommand(AlgaeManipulationCommands::shouldReverseNetScore),
                 SwerveCommands.getClosedLoopFieldRelativeDriveCommand(
                         () -> CommandConstants.calculateDriveStickAxisValue(OperatorConstants.DRIVER_CONTROLLER.getLeftY()),
                         () -> CommandConstants.calculateDriveStickAxisValue(OperatorConstants.DRIVER_CONTROLLER.getLeftX()),
@@ -126,7 +127,7 @@ public class AlgaeManipulationCommands {
     private static Command getScoreInProcessorCommand() {
         return new ParallelRaceGroup(
                 ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.SCORE_PROCESSOR),
-                getArmScoringSequenceCommand(ArmConstants.ArmState.SCORE_PROCESSOR, false),
+                getArmProcessorSequenceCommand(),
                 SwerveCommands.getDriveToPoseCommand(
                                 () -> FieldConstants.FLIPPABLE_PROCESSOR_SCORE_POSE,
                                 AutonomousConstants.DRIVE_TO_REEF_CONSTRAINTS
@@ -135,10 +136,17 @@ public class AlgaeManipulationCommands {
         );
     }
 
-    private static Command getArmScoringSequenceCommand(ArmConstants.ArmState scoreState, boolean shouldReverseScore) {
+    private static Command getArmNetSequenceCommand(BooleanSupplier shouldReverseScore) {
         return new SequentialCommandGroup(
-                GeneralCommands.getFlippableOverridableArmCommand(scoreState, true, shouldReverseScore).until(OperatorConstants.CONTINUE_TRIGGER),
-                GeneralCommands.getFlippableOverridableArmCommand(scoreState, false, shouldReverseScore)
+                GeneralCommands.getFlippableOverridableArmCommand(ArmConstants.ArmState.SCORE_NET, true, shouldReverseScore).until(OperatorConstants.CONTINUE_TRIGGER),
+                GeneralCommands.getFlippableOverridableArmCommand(ArmConstants.ArmState.SCORE_NET, false, shouldReverseScore)
+        );
+    }
+
+    private static Command getArmProcessorSequenceCommand() {
+        return new SequentialCommandGroup(
+                GeneralCommands.getFlippableOverridableArmCommand(ArmConstants.ArmState.SCORE_PROCESSOR, true).until(OperatorConstants.CONTINUE_TRIGGER),
+                GeneralCommands.getFlippableOverridableArmCommand(ArmConstants.ArmState.SCORE_PROCESSOR, false)
         );
     }
 
@@ -150,8 +158,9 @@ public class AlgaeManipulationCommands {
         return 0;
     }
 
-    private static boolean shouldReverseNetScore() {//TODO: Implement
-        return false;
+    private static boolean shouldReverseNetScore() {
+        final Rotation2d swerveAngle = RobotContainer.SWERVE.getDriveRelativeAngle();
+        return swerveAngle.getDegrees() > Rotation2d.kCW_90deg.getDegrees() && swerveAngle.getDegrees() < Rotation2d.kCCW_90deg.getDegrees();
     }
 
     private static Command getInitiateFloorAlgaeCollectionCommand() {
@@ -166,7 +175,7 @@ public class AlgaeManipulationCommands {
 
     private static Command getCollectAlgaeFromLollipopSequenceCommand() {
         return new ParallelCommandGroup(
-                GeneralCommands.getFlippableOverridableArmCommand(ArmConstants.ArmState.COLLECT_ALGAE_LOLLIPOP, false, false),
+                GeneralCommands.getFlippableOverridableArmCommand(ArmConstants.ArmState.COLLECT_ALGAE_LOLLIPOP, false),
                 ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.COLLECT_ALGAE_LOLLIPOP),
                 getIntakeCoralFromLollipopCommand().onlyWhile(() -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE).repeatedly().asProxy()
         );
@@ -190,7 +199,7 @@ public class AlgaeManipulationCommands {
 
     private static Command getInitiateReefAlgaeCollectionCommand() {
         return new ParallelCommandGroup(
-                GeneralCommands.getFlippableOverridableArmCommand(OperatorConstants.REEF_CHOOSER::getArmAlgaeCollectionState, false, CoralPlacingCommands.shouldReverseScore()),
+                GeneralCommands.getFlippableOverridableArmCommand(OperatorConstants.REEF_CHOOSER::getArmAlgaeCollectionState, false, CoralPlacingCommands::shouldReverseScore),
                 ElevatorCommands.getSetTargetStateCommand(OperatorConstants.REEF_CHOOSER::getElevatorAlgaeCollectionState)
         ).raceWith(
                 new WaitUntilChangeCommand<>(OperatorConstants.REEF_CHOOSER::getArmAlgaeCollectionState),
