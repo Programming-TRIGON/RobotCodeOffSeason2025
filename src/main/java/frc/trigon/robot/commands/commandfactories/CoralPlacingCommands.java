@@ -41,7 +41,7 @@ public class CoralPlacingCommands {
         final Translation2d difference = reefCenterTranslation.minus(robotTranslation);
         final Rotation2d robotRotationRelativeToReef = difference.getAngle();
         final Rotation2d robotRotationFacingReef = robotRotation.minus(robotRotationRelativeToReef);
-        return Math.abs(robotRotationFacingReef.getDegrees()) > Rotation2d.kCW_90deg.getDegrees();
+        return robotRotationFacingReef.getDegrees() > Rotation2d.kCW_90deg.getDegrees() && robotRotationFacingReef.getDegrees() < Rotation2d.kCCW_90deg.getDegrees();
     }
 
     private static Command getAutonomouslyScoreCommand(boolean shouldScoreRight) {
