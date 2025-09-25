@@ -49,7 +49,7 @@ public class AlgaeManipulationCommands {
                 GeneralCommands.getResetFlipArmOverrideCommand(),
                 new InstantCommand(() -> IS_HOLDING_ALGAE = true),
                 CoralCollectionCommands.getUnloadCoralCommand().onlyIf(RobotContainer.ARM::hasGamePiece),
-                getInitiateReefAlgaeCollectionCommand().until(RobotContainer.ARM::hasGamePiece),
+                getInitiateFloorAlgaeCollectionCommand().until(RobotContainer.ARM::hasGamePiece),
                 new InstantCommand(() -> getScoreAlgaeCommand().schedule()).alongWith(getAlgaeCollectionConfirmationCommand())
         ).finallyDo(() -> IS_HOLDING_ALGAE = false);
     }
