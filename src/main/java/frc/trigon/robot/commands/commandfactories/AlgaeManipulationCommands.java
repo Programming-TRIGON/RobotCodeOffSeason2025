@@ -85,7 +85,7 @@ public class AlgaeManipulationCommands {
                 ),
                 SwerveCommands.getClosedLoopSelfRelativeDriveCommand(
                         () -> fieldRelativePowersToSelfRelativeXPower(OperatorConstants.DRIVER_CONTROLLER.getLeftY(), OperatorConstants.DRIVER_CONTROLLER.getLeftX()),
-                        () -> SMALL_POSITION_ALIGN_PID_CONTROLLER.calculate(RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().getY(), calculateClosestAlgaeCollectionPose().get().getY()),
+                        () -> SMALL_POSITION_ALIGN_PID_CONTROLLER.calculate(calculateReefRelativeYOffset(), 0),
                         () -> calculateClosestAlgaeCollectionPose().getRotation()
                 )
         ).raceWith(
@@ -125,7 +125,7 @@ public class AlgaeManipulationCommands {
                 ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.SCORE_PROCESSOR),
                 getArmProcessorSequenceCommand(),
                 getDriveToProcessorCommand()
-        );
+        ).finallyDo(GeneralCommands.getFieldRelativeDriveCommand()::schedule);
     }
 
     private static Command getArmNetSequenceCommand(BooleanSupplier shouldReverseScore) {
@@ -160,8 +160,7 @@ public class AlgaeManipulationCommands {
         return SwerveCommands.getDriveToPoseCommand(
                         () -> FieldConstants.FLIPPABLE_PROCESSOR_SCORE_POSE,
                         AutonomousConstants.DRIVE_TO_REEF_CONSTRAINTS
-                )
-                .asProxy()
+                ).asProxy()
                 .until(() -> RobotContainer.SWERVE.atPose(FieldConstants.FLIPPABLE_PROCESSOR_SCORE_POSE))
                 .onlyWhile(() -> CoralPlacingCommands.SHOULD_SCORE_AUTONOMOUSLY);
     }
@@ -193,7 +192,10 @@ public class AlgaeManipulationCommands {
         return new ParallelCommandGroup(
                 GeneralCommands.getFlippableOverridableArmCommand(ArmConstants.ArmState.COLLECT_ALGAE_LOLLIPOP, false),
                 ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.COLLECT_ALGAE_LOLLIPOP),
-                getIntakeCoralFromLollipopCommand().onlyWhile(() -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE).repeatedly().asProxy()
+                getIntakeCoralFromLollipopCommand()
+                        .onlyIf(() -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE)
+                        .until(() -> !OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE)
+                        .repeatedly()
         );
     }
 
@@ -205,12 +207,11 @@ public class AlgaeManipulationCommands {
     }
 
     private static Command getIntakeCoralFromLollipopCommand() {
-        return new SequentialCommandGroup(
-                CoralCollectionCommands.getCoralCollectionCommand()
-                        .unless(RobotContainer.TRANSPORTER::hasCoral)
-                        .until(RobotContainer.TRANSPORTER::hasCoral),
-                IntakeCommands.getSetTargetStateCommand(IntakeConstants.IntakeState.OPEN_REST)
-        );
+        return GeneralCommands.getContinuousConditionalCommand(
+                IntakeCommands.getSetTargetStateCommand(IntakeConstants.IntakeState.OPEN_REST),
+                CoralCollectionCommands.getCoralCollectionCommand(),
+                RobotContainer.TRANSPORTER::hasCoral
+        ).asProxy();
     }
 
     private static Command getInitiateReefAlgaeCollectionCommand() {
@@ -268,5 +269,11 @@ public class AlgaeManipulationCommands {
         final double yValue = CommandConstants.calculateDriveStickAxisValue(yPower);
 
         return (xValue * robotHeading.getCos()) + (yValue * robotHeading.getSin());
+    }
+
+    private static double calculateReefRelativeYOffset() {
+        final Pose2d target = calculateClosestAlgaeCollectionPose().get();
+        final Pose2d robot = RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose();
+        return robot.relativeTo(target).getY();
     }
 }
