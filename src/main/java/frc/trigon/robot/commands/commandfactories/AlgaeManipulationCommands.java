@@ -149,7 +149,7 @@ public class AlgaeManipulationCommands {
                         AutonomousConstants.DRIVE_TO_REEF_CONSTRAINTS
                 ).until(() -> RobotContainer.SWERVE.atPose(calculateClosestNetScoringPose())),
                 SwerveCommands.getClosedLoopFieldRelativeDriveCommand(
-                        () -> AutonomousConstants.GAME_PIECE_AUTO_DRIVE_Y_PID_CONTROLLER.calculate(RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().getY(), calculateClosestNetScoringPose().get().getY()),
+                        () -> -AutonomousConstants.GAME_PIECE_AUTO_DRIVE_Y_PID_CONTROLLER.calculate(RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().getX(), calculateClosestNetScoringPose().get().getX()),
                         () -> CommandConstants.calculateDriveStickAxisValue(OperatorConstants.DRIVER_CONTROLLER.getLeftX()),
                         () -> new FlippableRotation2d(shouldReverseNetScore() ? Rotation2d.kZero : Rotation2d.k180deg, true)
                 )
@@ -157,17 +157,13 @@ public class AlgaeManipulationCommands {
     }
 
     private static Command getDriveToProcessorCommand() {
-        return new SequentialCommandGroup(
-                SwerveCommands.getDriveToPoseCommand(
+        return SwerveCommands.getDriveToPoseCommand(
                         () -> FieldConstants.FLIPPABLE_PROCESSOR_SCORE_POSE,
                         AutonomousConstants.DRIVE_TO_REEF_CONSTRAINTS
-                ).until(() -> RobotContainer.SWERVE.atPose(FieldConstants.FLIPPABLE_PROCESSOR_SCORE_POSE)),
-                SwerveCommands.getClosedLoopFieldRelativeDriveCommand(
-                        () -> CommandConstants.calculateDriveStickAxisValue(OperatorConstants.DRIVER_CONTROLLER.getLeftY()),
-                        () -> CommandConstants.calculateDriveStickAxisValue(OperatorConstants.DRIVER_CONTROLLER.getLeftX()),
-                        FieldConstants.FLIPPABLE_PROCESSOR_SCORE_POSE::getRotation
                 )
-        ).asProxy().onlyWhile(() -> CoralPlacingCommands.SHOULD_SCORE_AUTONOMOUSLY);
+                .asProxy()
+                .until(() -> RobotContainer.SWERVE.atPose(FieldConstants.FLIPPABLE_PROCESSOR_SCORE_POSE))
+                .onlyWhile(() -> CoralPlacingCommands.SHOULD_SCORE_AUTONOMOUSLY);
     }
 
     private static int getAlgaeScoreMethodSelector() {
@@ -240,7 +236,7 @@ public class AlgaeManipulationCommands {
             return new FlippablePose2d(new Pose2d(
                     FieldConstants.FLIPPABLE_NET_SCORE_POSE.get().getX(),
                     robotTranslation.getY(),
-                    new Rotation2d()
+                    shouldReverseNetScore() ? Rotation2d.k180deg : Rotation2d.kZero
             ), false);
         return FieldConstants.FLIPPABLE_NET_SCORE_POSE;
     }
