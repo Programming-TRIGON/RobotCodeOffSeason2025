@@ -112,20 +112,12 @@ public class ArmElevator extends MotorSubsystem {
     }
 
     public boolean atState(ArmElevatorConstants.ArmElevatorState targetState, boolean isStateReversed) {
-        if (isStateReversed)
-            return this.targetState == targetState && armAtAngle(subtractFrom360Degrees(targetState.targetAngle));
-        return atState(targetState);
-    }
-
-    public boolean atState(ArmElevatorConstants.ArmElevatorState targetState) {
-        return this.targetState == targetState && atTargetAngle() && elevatorAtPosition(targetState.targetPositionMeters);
-    }
-
-    public boolean atTargetAngle() {
-        if (isStateReversed) {
-            return armAtAngle(subtractFrom360Degrees(targetState.targetAngle));
-        }
-        return armAtAngle(targetState.targetAngle);
+        if (targetState == null)
+            return false;
+        final Rotation2d targetAngle = isStateReversed
+                ? subtractFrom360Degrees(targetState.targetAngle)
+                : targetState.targetAngle;
+        return armAtAngle(targetAngle) && elevatorAtPosition(targetState.targetPositionMeters);
     }
 
     public boolean armAtAngle(Rotation2d targetAngle) {
@@ -135,7 +127,7 @@ public class ArmElevator extends MotorSubsystem {
 
     public boolean elevatorAtPosition(double positionMeters) {
         final double currentToTargetStateDifferenceMeters = Math.abs(positionMeters - getCurrentElevatorPositionMeters());
-        return currentToTargetStateDifferenceMeters < ArmElevatorConstants.HEIGHT_TOLERANCE_METERS;
+        return currentToTargetStateDifferenceMeters < ArmElevatorConstants.ELEVATOR_POSITION_TOLERANCE_METERS;
     }
 
     public Rotation2d getCurrentArmAngle() {
@@ -161,6 +153,8 @@ public class ArmElevator extends MotorSubsystem {
     }
 
     void prepareToState(ArmElevatorConstants.ArmElevatorState targetState, boolean isStateReversed) {
+        if (targetState.prepareState == null)
+            return;
         setTargetState(targetState.prepareState, isStateReversed);
     }
 
@@ -185,6 +179,7 @@ public class ArmElevator extends MotorSubsystem {
     }
 
     void setTargetElevatorState(ArmElevatorConstants.ArmElevatorState targetState) {
+        scaleElevatorPositionRequestSpeed(targetState.speedScalar);
         setTargetElevatorPositionMeters(targetState.targetPositionMeters, targetState.ignoreConstraints);
     }
 
@@ -210,8 +205,8 @@ public class ArmElevator extends MotorSubsystem {
     }
 
     private double calculateMinimumSafeElevatorHeightRotations() {
-        final double armCos = RobotContainer.ARM_ELEVATOR.getCurrentArmAngle().getRadians();
-        final double elevatorHeightFromArm = Math.cos(armCos) * ArmElevatorConstants.ARM_LENGTH_METERS;
+        final double armCos = RobotContainer.ARM_ELEVATOR.getCurrentArmAngle().getCos();
+        final double elevatorHeightFromArm = armCos * ArmElevatorConstants.ARM_LENGTH_METERS;
         final double minimumElevatorSafeZone = ArmElevatorConstants.MINIMUM_ELEVATOR_SAFE_ZONE_METERS;
         final double minimumSafeHeightMeters = (RobotContainer.ARM_ELEVATOR.isArmAboveSafeAngle()
                 ? 0 : elevatorHeightFromArm)

@@ -151,7 +151,6 @@ public class ArmElevatorConstants {
             new Translation3d(0, 0.1, -0.5855),
             new Rotation3d(0, edu.wpi.first.math.util.Units.degreesToRadians(0), 0)
     );
-    static final double HEIGHT_TOLERANCE_METERS = 0.01;
     static final double SECOND_ELEVATOR_COMPONENT_EXTENDED_LENGTH_METERS = 0.603;
     static final double DRUM_DIAMETER_METERS = DRUM_RADIUS_METERS * 2;
     private static final double REVERSE_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS = 0.1;
@@ -172,18 +171,14 @@ public class ArmElevatorConstants {
      */
     public static final double MINIMUM_ELEVATOR_SAFE_ZONE_METERS = 0.05;
 
-    /**
-     * The highest point in the Elevators zone where the safety logic applies.
-     */
-    public static final double MAXIMUM_ELEVATOR_SAFE_ZONE_METERS = MINIMUM_ELEVATOR_SAFE_ZONE_METERS + ARM_LENGTH_METERS;
     private static final DoubleSupplier REVERSE_LIMIT_SENSOR_SIMULATION_SUPPLIER = () -> 0;
     static final double ELEVATOR_POSITION_TOLERANCE_METERS = 0.02;
 
     static {
         configureArmMasterMotor();
         configureArmFollowerMotor();
-        configureMasterMotor();
-        configureFollowerMotor();
+        configureElevatorMasterMotor();
+        configureElevatorFollowerMotor();
         configureAngleEncoder();
         configureReverseLimitSensor();
     }
@@ -216,6 +211,9 @@ public class ArmElevatorConstants {
         config.MotionMagic.MotionMagicAcceleration = ARM_DEFAULT_MAXIMUM_ACCELERATION;
         config.MotionMagic.MotionMagicJerk = config.MotionMagic.MotionMagicAcceleration * 10;
 
+        config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+        config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = Conversions.degreesToRotations(270);
+
         config.CurrentLimits.StatorCurrentLimitEnable = true;
         config.CurrentLimits.StatorCurrentLimit = ARM_MOTOR_CURRENT_LIMIT;
 
@@ -247,7 +245,7 @@ public class ArmElevatorConstants {
         ARM_FOLLOWER_MOTOR.setControl(followerRequest);
     }
 
-    private static void configureMasterMotor() {
+    private static void configureElevatorMasterMotor() {
         final TalonFXConfiguration config = new TalonFXConfiguration();
 
         config.Audio.BeepOnBoot = false;
@@ -291,7 +289,7 @@ public class ArmElevatorConstants {
         ELEVATOR_MASTER_MOTOR.registerSignal(TalonFXSignal.STATOR_CURRENT, 100);
     }
 
-    private static void configureFollowerMotor() {
+    private static void configureElevatorFollowerMotor() {
         final TalonFXConfiguration config = new TalonFXConfiguration();
 
         config.Audio.BeepOnBoot = false;
@@ -345,7 +343,9 @@ public class ArmElevatorConstants {
         SCORE_NET(Rotation2d.fromDegrees(160), 1.382, null, false, 0.3),
         SCORE_PROCESSOR(Rotation2d.fromDegrees(90), 0.603, null, false, 0.7),
         COLLECT_ALGAE_L2(Rotation2d.fromDegrees(90), 0.603, null, false, 1),
-        COLLECT_ALGAE_L3(Rotation2d.fromDegrees(90), 0.953, null,false, 1);
+        COLLECT_ALGAE_L3(Rotation2d.fromDegrees(90), 0.953, null, false, 1),
+        PREPARE_COLLECT_ALGAE_FLOOR(Rotation2d.fromDegrees(60), 0.2, null, false, 1),
+        COLLECT_ALGAE_FLOOR(Rotation2d.fromDegrees(50), 0.2, PREPARE_COLLECT_ALGAE_FLOOR, true, 1);
 
         public final Rotation2d targetAngle;
         public final double targetPositionMeters;

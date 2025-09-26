@@ -65,13 +65,13 @@ public class ArmElevatorCommands {
                 () -> RobotContainer.ARM_ELEVATOR.prepareToState(targetState.get(), isStateReversed.get()),
                 RobotContainer.ARM_ELEVATOR::stop,
                 RobotContainer.ARM_ELEVATOR
-        );
+        ).onlyIf(() -> targetState.get().prepareState != null);
     }
 
     public static Command getDefaultCommand() {
         return new ConditionalCommand(
-                getSetTargetStateCommand(() -> ArmElevatorConstants.ArmElevatorState.REST_WITH_CORAL),
-                getSetTargetStateCommand(() -> ArmElevatorConstants.ArmElevatorState.REST),
+                getSetTargetStateCommand(ArmElevatorConstants.ArmElevatorState.REST_WITH_CORAL),
+                getSetTargetStateCommand(ArmElevatorConstants.ArmElevatorState.REST),
                 RobotContainer.END_EFFECTOR::hasGamePiece
         );
     }
