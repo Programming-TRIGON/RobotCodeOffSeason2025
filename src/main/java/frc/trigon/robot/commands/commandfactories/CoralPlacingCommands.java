@@ -29,7 +29,7 @@ public class CoralPlacingCommands {
         return new ConditionalCommand(
                 getAutonomouslyScoreCommand(shouldScoreRight),
                 getScoreCommand(shouldScoreRight),
-                () -> SHOULD_SCORE_AUTONOMOUSLY
+                () -> SHOULD_SCORE_AUTONOMOUSLY && REEF_CHOOSER.getScoringLevel() != ScoringLevel.L1
         );
     }
 

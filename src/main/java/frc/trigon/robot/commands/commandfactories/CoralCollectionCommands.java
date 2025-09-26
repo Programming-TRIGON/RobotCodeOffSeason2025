@@ -29,7 +29,7 @@ public class CoralCollectionCommands {
         // new IntakeAssistCommand(OperatorConstants.DEFAULT_INTAKE_ASSIST_MODE)
     }
 
-    private static Command getLoadCoralCommand() {
+    public static Command getLoadCoralCommand() {
         return new ParallelCommandGroup(
                 ArmElevatorCommands.getSetTargetStateCommand(ArmElevatorConstants.ArmElevatorState.LOAD_CORAL),
                 EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.LOAD_CORAL)
