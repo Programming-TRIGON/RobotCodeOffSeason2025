@@ -148,9 +148,9 @@ public class ArmElevator extends MotorSubsystem {
         double velocityRotationsPerSecond = armMasterMotor.getSignal(TalonFXSignal.VELOCITY);
         double velocityMagnitude = velocityRotationsPerSecond * 2 * Math.PI * ArmElevatorConstants.ARM_LENGTH_METERS;
         return new Translation3d(
-                getCurrentArmAngle().getCos() * velocityMagnitude,
+                -getCurrentArmAngle().getSin() * velocityMagnitude,
                 0,
-                getCurrentArmAngle().getSin() * velocityMagnitude
+                getCurrentArmAngle().getCos() * velocityMagnitude
         );
     }
 

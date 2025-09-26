@@ -193,7 +193,7 @@ public class ArmElevatorConstants {
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
         config.Feedback.RotorToSensorRatio = ARM_GEAR_RATIO;
-        config.Feedback.FeedbackRemoteSensorID = ARM_MASTER_MOTOR.getID();
+        config.Feedback.FeedbackRemoteSensorID = ANGLE_ENCODER.getID();
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
 
         config.Slot0.kP = RobotHardwareStats.isSimulation() ? 34 : 0;
@@ -303,7 +303,7 @@ public class ArmElevatorConstants {
 
         ELEVATOR_FOLLOWER_MOTOR.applyConfiguration(config);
 
-        final Follower followerRequest = new Follower(ELEVATOR_FOLLOWER_MOTOR.getID(), SHOULD_ELEVATOR_FOLLOWER_OPPOSE_MASTER);
+        final Follower followerRequest = new Follower(ELEVATOR_MASTER_MOTOR.getID(), SHOULD_ELEVATOR_FOLLOWER_OPPOSE_MASTER);
         ELEVATOR_FOLLOWER_MOTOR.setControl(followerRequest);
     }
 
