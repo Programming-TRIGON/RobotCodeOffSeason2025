@@ -149,7 +149,7 @@ public class AlgaeManipulationCommands {
                         AutonomousConstants.DRIVE_TO_REEF_CONSTRAINTS
                 ).until(() -> RobotContainer.SWERVE.atPose(calculateClosestNetScoringPose())),
                 SwerveCommands.getClosedLoopFieldRelativeDriveCommand(
-                        () -> 0,
+                        () -> AutonomousConstants.GAME_PIECE_AUTO_DRIVE_Y_PID_CONTROLLER.calculate(RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().getY(), calculateClosestNetScoringPose().get().getY()),
                         () -> CommandConstants.calculateDriveStickAxisValue(OperatorConstants.DRIVER_CONTROLLER.getLeftX()),
                         () -> new FlippableRotation2d(shouldReverseNetScore() ? Rotation2d.kZero : Rotation2d.k180deg, true)
                 )
@@ -163,7 +163,7 @@ public class AlgaeManipulationCommands {
                         AutonomousConstants.DRIVE_TO_REEF_CONSTRAINTS
                 ).until(() -> RobotContainer.SWERVE.atPose(FieldConstants.FLIPPABLE_PROCESSOR_SCORE_POSE)),
                 SwerveCommands.getClosedLoopFieldRelativeDriveCommand(
-                        () -> 0,
+                        () -> CommandConstants.calculateDriveStickAxisValue(OperatorConstants.DRIVER_CONTROLLER.getLeftY()),
                         () -> CommandConstants.calculateDriveStickAxisValue(OperatorConstants.DRIVER_CONTROLLER.getLeftX()),
                         FieldConstants.FLIPPABLE_PROCESSOR_SCORE_POSE::getRotation
                 )
