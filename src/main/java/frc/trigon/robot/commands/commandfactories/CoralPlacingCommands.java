@@ -26,10 +26,13 @@ public class CoralPlacingCommands {
     private static final ReefChooser REEF_CHOOSER = OperatorConstants.REEF_CHOOSER;
 
     public static Command getScoreInReefCommand(boolean shouldScoreRight) {
-        return new ConditionalCommand(
-                getAutonomouslyScoreCommand(shouldScoreRight),
-                getScoreCommand(shouldScoreRight),
-                () -> SHOULD_SCORE_AUTONOMOUSLY && REEF_CHOOSER.getScoringLevel() != ScoringLevel.L1
+        return new SequentialCommandGroup(
+                CoralCollectionCommands.getLoadCoralCommand(),
+                new ConditionalCommand(
+                        getAutonomouslyScoreCommand(shouldScoreRight),
+                        getScoreCommand(shouldScoreRight),
+                        () -> SHOULD_SCORE_AUTONOMOUSLY && REEF_CHOOSER.getScoringLevel() != ScoringLevel.L1
+                )
         );
     }
 

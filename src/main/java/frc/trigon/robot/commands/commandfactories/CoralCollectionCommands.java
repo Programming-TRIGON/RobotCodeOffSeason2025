@@ -33,7 +33,7 @@ public class CoralCollectionCommands {
         return new ParallelCommandGroup(
                 ArmElevatorCommands.getSetTargetStateCommand(ArmElevatorConstants.ArmElevatorState.LOAD_CORAL),
                 EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.LOAD_CORAL)
-        ).until(RobotContainer.END_EFFECTOR::hasGamePiece).asProxy();
+        ).until(RobotContainer.END_EFFECTOR::hasGamePiece).onlyWhile(() -> !RobotContainer.END_EFFECTOR.hasGamePiece());
     }
 
     private static Command getIntakeSequenceCommand() {
