@@ -15,6 +15,7 @@ import frc.trigon.robot.subsystems.arm.ArmConstants;
 import lib.hardware.phoenix6.talonfx.TalonFXMotor;
 import lib.hardware.phoenix6.talonfx.TalonFXSignal;
 import lib.utilities.Conversions;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends MotorSubsystem {
@@ -81,6 +82,7 @@ public class Elevator extends MotorSubsystem {
         return targetState == this.targetState && atTargetState();
     }
 
+    @AutoLogOutput(key = "Elevator/atTargetState")
     public boolean atTargetState() {
         final double currentToTargetStateDifferenceMeters = Math.abs(targetState.targetPositionMeters - getPositionMeters());
         return currentToTargetStateDifferenceMeters < ElevatorConstants.HEIGHT_TOLERANCE_METERS;
@@ -124,8 +126,8 @@ public class Elevator extends MotorSubsystem {
     }
 
     private double calculateMinimumSafeElevatorHeightRotations() {
-        final double armCos = RobotContainer.ARM.getAngle().getRadians();
-        final double elevatorHeightFromArm = Math.cos(armCos) * ArmConstants.ARM_LENGTH_METERS;
+        final double armAngleRadians = RobotContainer.ARM.getAngle().getRadians();
+        final double elevatorHeightFromArm = Math.cos(armAngleRadians) * ArmConstants.ARM_LENGTH_METERS;
         final double minimumElevatorSafeZone = ElevatorConstants.MINIMUM_ELEVATOR_SAFE_ZONE_METERS;
         final double minimumSafeHeightMeters = (RobotContainer.ARM.isArmAboveSafeAngle()
                 ? 0 : elevatorHeightFromArm)

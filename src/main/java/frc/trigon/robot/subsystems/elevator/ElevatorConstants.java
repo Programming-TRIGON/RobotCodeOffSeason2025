@@ -187,7 +187,7 @@ public class ElevatorConstants {
         COLLECT_ALGAE_LOLLIPOP(0.3, 0.3, 1),
         REST_WITH_ALGAE(0.603, 0.603, 0.3),
         SCORE_NET(1.382, 1.382, 0.3),
-        SCORE_PROCESSOR(1.182, 1.182, 0.3);
+        SCORE_PROCESSOR(0.1, 1.182, 0.3);
 
         public final double targetPositionMeters;
         public final double prepareStatePositionMeters;

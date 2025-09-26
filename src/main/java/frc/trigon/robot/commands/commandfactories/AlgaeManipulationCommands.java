@@ -101,8 +101,7 @@ public class AlgaeManipulationCommands {
                         2, getScoreInProcessorCommand()
                 ),
                 AlgaeManipulationCommands::getAlgaeScoreMethodSelector
-        )
-                .raceWith(new WaitUntilChangeCommand<>(AlgaeManipulationCommands::isScoreAlgaeButtonPressed)).repeatedly();
+        ).raceWith(new WaitUntilChangeCommand<>(AlgaeManipulationCommands::isScoreAlgaeButtonPressed)).repeatedly();
     }
 
     private static Command getHoldAlgaeCommand() {
@@ -125,7 +124,7 @@ public class AlgaeManipulationCommands {
     }
 
     private static Command getScoreInProcessorCommand() {
-        return new ParallelRaceGroup(
+        return new ParallelCommandGroup(
                 ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.SCORE_PROCESSOR),
                 getArmProcessorSequenceCommand(),
                 SwerveCommands.getDriveToPoseCommand(

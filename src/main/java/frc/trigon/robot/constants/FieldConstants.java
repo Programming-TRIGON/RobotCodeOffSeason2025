@@ -47,7 +47,7 @@ public class FieldConstants {
 
     public static final Rotation2d LEFT_FEEDER_ANGLE = Rotation2d.fromDegrees(54);
     public static final FlippableTranslation2d FLIPPABLE_REEF_CENTER_TRANSLATION = new FlippableTranslation2d(BLUE_REEF_CENTER_TRANSLATION, true);
-    public static final FlippablePose2d FLIPPABLE_PROCESSOR_SCORE_POSE = new FlippablePose2d(SimulatedGamePieceConstants.PROCESSOR_LOCATION.toPose2d(), true);//TODO: Find values
+    public static final FlippablePose2d FLIPPABLE_PROCESSOR_SCORE_POSE = new FlippablePose2d(SimulatedGamePieceConstants.PROCESSOR_LOCATION.get().toPose2d(), true);//TODO: Find values
 
     private static AprilTagFieldLayout createAprilTagFieldLayout() {
         try {
