@@ -35,7 +35,7 @@ public class AlgaeManipulationCommands {
     private static boolean
             IS_HOLDING_ALGAE = false,
             SHOULD_COLLECT_FROM_LOLLIPOP = false;
-    private static final PIDController ALIGN_TO_REEF_Y_CONTROLLER =
+    private static final PIDController SMALL_POSITION_ALIGN_PID_CONTROLLER =
             RobotHardwareStats.isSimulation() ?
                     new PIDController(3, 0, 0) :
                     new PIDController(3, 0, 0);
@@ -85,7 +85,7 @@ public class AlgaeManipulationCommands {
                 ),
                 SwerveCommands.getClosedLoopSelfRelativeDriveCommand(
                         () -> fieldRelativePowersToSelfRelativeXPower(OperatorConstants.DRIVER_CONTROLLER.getLeftY(), OperatorConstants.DRIVER_CONTROLLER.getLeftX()),
-                        () -> ALIGN_TO_REEF_Y_CONTROLLER.calculate(calculateReefRelativeYOffset()),
+                        () -> SMALL_POSITION_ALIGN_PID_CONTROLLER.calculate(calculateReefRelativeYOffset()),
                         () -> calculateClosestAlgaeCollectionPose().getRotation()
                 )
         ).raceWith(
@@ -149,7 +149,7 @@ public class AlgaeManipulationCommands {
                         AutonomousConstants.DRIVE_TO_REEF_CONSTRAINTS
                 ).until(() -> RobotContainer.SWERVE.atPose(calculateClosestNetScoringPose())),
                 SwerveCommands.getClosedLoopFieldRelativeDriveCommand(
-                        () -> -AutonomousConstants.GAME_PIECE_AUTO_DRIVE_Y_PID_CONTROLLER.calculate(RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().getX(), calculateClosestNetScoringPose().get().getX()),
+                        () -> -SMALL_POSITION_ALIGN_PID_CONTROLLER.calculate(RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().getX(), calculateClosestNetScoringPose().get().getX()),
                         () -> CommandConstants.calculateDriveStickAxisValue(OperatorConstants.DRIVER_CONTROLLER.getLeftX()),
                         () -> new FlippableRotation2d(shouldReverseNetScore() ? Rotation2d.kZero : Rotation2d.k180deg, true)
                 )
