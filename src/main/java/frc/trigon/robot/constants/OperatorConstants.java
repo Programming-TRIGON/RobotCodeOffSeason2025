@@ -3,7 +3,6 @@ package frc.trigon.robot.constants;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.trigon.robot.RobotContainer;
 import frc.trigon.robot.commands.commandclasses.IntakeAssistCommand;
 import frc.trigon.robot.commands.commandfactories.AlgaeManipulationCommands;
 import frc.trigon.robot.misc.ReefChooser;
@@ -52,7 +51,7 @@ public class OperatorConstants {
     public static final Trigger
             FLOOR_ALGAE_COLLECTION_TRIGGER = DRIVER_CONTROLLER.leftBumper(),//TODO: Add operator control
             REEF_ALGAE_COLLECTION_TRIGGER = DRIVER_CONTROLLER.rightBumper().or(OPERATOR_CONTROLLER.a()),
-            STOP_REEF_ALGAE_ALIGN_TRIGGER = DRIVER_CONTROLLER.x().and(RobotContainer.ARM::hasGamePiece),
+            STOP_REEF_ALGAE_ALIGN_TRIGGER = DRIVER_CONTROLLER.povLeft(),
             SCORE_ALGAE_IN_NET_TRIGGER = OPERATOR_CONTROLLER.n().or(createScoreTrigger(true, true)),
             SCORE_ALGAE_IN_PROCESSOR_TRIGGER = OPERATOR_CONTROLLER.j().or(createScoreTrigger(false, true)),
             CORAL_COLLECTION_TRIGGER = DRIVER_CONTROLLER.leftTrigger().or(OPERATOR_CONTROLLER.c()),
