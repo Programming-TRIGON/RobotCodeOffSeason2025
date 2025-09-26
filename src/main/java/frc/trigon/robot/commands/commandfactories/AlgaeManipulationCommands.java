@@ -85,7 +85,7 @@ public class AlgaeManipulationCommands {
                 ),
                 SwerveCommands.getClosedLoopSelfRelativeDriveCommand(
                         () -> fieldRelativePowersToSelfRelativeXPower(OperatorConstants.DRIVER_CONTROLLER.getLeftY(), OperatorConstants.DRIVER_CONTROLLER.getLeftX()),
-                        () -> SMALL_POSITION_ALIGN_PID_CONTROLLER.calculate(calculateReefRelativeYOffset()),
+                        () -> SMALL_POSITION_ALIGN_PID_CONTROLLER.calculate(RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().getY(), calculateClosestAlgaeCollectionPose().get().getY()),
                         () -> calculateClosestAlgaeCollectionPose().getRotation()
                 )
         ).raceWith(
