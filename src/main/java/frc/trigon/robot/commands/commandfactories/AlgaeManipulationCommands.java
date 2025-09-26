@@ -269,10 +269,4 @@ public class AlgaeManipulationCommands {
 
         return (xValue * robotHeading.getCos()) + (yValue * robotHeading.getSin());
     }
-
-    private static double calculateReefRelativeYOffset() {
-        final Pose2d target = calculateClosestAlgaeCollectionPose().get();
-        final Pose2d robot = RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose();
-        return robot.relativeTo(target).getY();
-    }
 }
