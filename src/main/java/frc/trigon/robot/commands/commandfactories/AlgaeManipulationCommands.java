@@ -89,7 +89,7 @@ public class AlgaeManipulationCommands {
                         () -> calculateClosestAlgaeCollectionPose().getRotation()
                 )
         ).raceWith(
-                new WaitCommand(1).andThen(new WaitUntilCommand(RobotContainer.ARM::hasGamePiece)),
+                new WaitUntilCommand(RobotContainer.ARM::hasGamePiece),
                 new WaitUntilCommand(OperatorConstants.STOP_REEF_ALGAE_ALIGN_TRIGGER)
         ).onlyIf(() -> CoralPlacingCommands.SHOULD_SCORE_AUTONOMOUSLY).asProxy();
     }
