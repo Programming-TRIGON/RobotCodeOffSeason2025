@@ -84,6 +84,7 @@ public class ElevatorConstants {
             MINIMUM_ELEVATOR_HEIGHT_METERS,
             Color.kYellow
     );
+
     static final double HEIGHT_TOLERANCE_METERS = 0.01;
     static final double SECOND_ELEVATOR_COMPONENT_EXTENDED_LENGTH_METERS = 0.603;
     static final double DRUM_DIAMETER_METERS = DRUM_RADIUS_METERS * 2;
@@ -97,12 +98,12 @@ public class ElevatorConstants {
      * The lowest point in the Elevators zone where the safety logic applies.
      */
     public static final double MINIMUM_ELEVATOR_SAFE_ZONE_METERS = 0.05;
-
     /**
      * The highest point in the Elevators zone where the safety logic applies.
      */
     public static final double MAXIMUM_ELEVATOR_SAFE_ZONE_METERS = MINIMUM_ELEVATOR_SAFE_ZONE_METERS + ArmConstants.ARM_LENGTH_METERS;
     private static final DoubleSupplier REVERSE_LIMIT_SENSOR_SIMULATION_SUPPLIER = () -> 0;
+    static final double TOLERANCE_METERS = 0.05;
     static final double ELEVATOR_POSITION_TOLERANCE_METERS = 0.02;
 
     static {
@@ -175,15 +176,18 @@ public class ElevatorConstants {
     public enum ElevatorState {
         REST(0.603, 0.603, 0.7),
         LOAD_CORAL(0.5519, 0.5519, 0.7),
+        UNLOAD_CORAL(0.5, 0.65, 0.7),
         SCORE_L1(0.1, 0.1, 1),
         SCORE_L2(0.3, 0.4, 1),
         SCORE_L3(0.7, 0.8, 1),
         SCORE_L4(1.2, 1.3, 1),
-        COLLECT_ALGAE_FROM_L2(0.603, 0.603, 1),
-        COLLECT_ALGAE_FROM_L3(0.953, 0.953, 1),
-        COLLECT_ALGAE_FROM_GROUND(0, 0, 0.7),
+        COLLECT_ALGAE_L2(0.603, 0.603, 1),
+        COLLECT_ALGAE_L3(0.953, 0.953, 1),
+        COLLECT_ALGAE_FLOOR(0, 0, 1),
+        COLLECT_ALGAE_LOLLIPOP(0.3, 0.3, 1),
         REST_WITH_ALGAE(0.603, 0.603, 0.3),
-        SCORE_NET(1.382, 1.382, 0.3);
+        SCORE_NET(1.382, 1.382, 0.3),
+        SCORE_PROCESSOR(0.1, 1.182, 0.3);
 
         public final double targetPositionMeters;
         public final double prepareStatePositionMeters;

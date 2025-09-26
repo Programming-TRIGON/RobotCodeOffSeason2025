@@ -25,16 +25,15 @@ import java.io.IOException;
  * A class that contains the constants and configurations for everything related to the 15-second autonomous period at the start of the match.
  */
 public class AutonomousConstants {
+    public static final String DEFAULT_AUTO_NAME = "DefaultAutoName";
     public static final RobotConfig ROBOT_CONFIG = getRobotConfig();
-    public static final PathConstraints DRIVE_TO_REEF_CONSTRAINTS = new PathConstraints(2.5, 4, Units.degreesToRadians(450), Units.degreesToRadians(900));
     public static final double FEEDFORWARD_SCALAR = 0.5;//TODO: Calibrate
+    public static final PathConstraints DRIVE_TO_REEF_CONSTRAINTS = new PathConstraints(2.5, 4, Units.degreesToRadians(450), Units.degreesToRadians(900));
     public static final double MINIMUM_DISTANCE_FROM_REEF_TO_OPEN_ELEVATOR = 2.2;
     public static final double
             REEF_RELATIVE_X_TOLERANCE_METERS = 0.085,
             REEF_RELATIVE_Y_TOLERANCE_METERS = 0.03;
-
-    public static final String DEFAULT_AUTO_NAME = "DefaultAutoName";
-
+    
     private static final double
             AUTO_FIND_CORAL_POSE_X = 3.3,
             AUTO_FIND_CORAL_POSE_LEFT_Y = 5.5;
