@@ -13,10 +13,10 @@ import frc.trigon.robot.constants.AutonomousConstants;
 import frc.trigon.robot.constants.FieldConstants;
 import frc.trigon.robot.constants.OperatorConstants;
 import frc.trigon.robot.misc.ReefChooser;
-import frc.trigon.robot.subsystems.arm.ArmCommands;
-import frc.trigon.robot.subsystems.arm.ArmConstants;
-import frc.trigon.robot.subsystems.elevator.ElevatorCommands;
-import frc.trigon.robot.subsystems.elevator.ElevatorConstants;
+import frc.trigon.robot.subsystems.arm.ArmElevatorCommands;
+import frc.trigon.robot.subsystems.arm.ArmElevatorConstants;
+import frc.trigon.robot.subsystems.endeffector.EndEffectorCommands;
+import frc.trigon.robot.subsystems.endeffector.EndEffectorConstants;
 import frc.trigon.robot.subsystems.swerve.SwerveCommands;
 import lib.utilities.flippable.FlippablePose2d;
 import lib.utilities.flippable.FlippableTranslation2d;
@@ -26,19 +26,22 @@ public class CoralPlacingCommands {
     private static final ReefChooser REEF_CHOOSER = OperatorConstants.REEF_CHOOSER;
 
     public static Command getScoreInReefCommand(boolean shouldScoreRight) {
-        return new ConditionalCommand(
-                getAutonomouslyScoreCommand(shouldScoreRight),
-                getScoreCommand(shouldScoreRight),
-                () -> SHOULD_SCORE_AUTONOMOUSLY
+        return new SequentialCommandGroup(
+                CoralCollectionCommands.getLoadCoralCommand(),
+                new ConditionalCommand(
+                        getAutonomouslyScoreCommand(shouldScoreRight),
+                        getScoreCommand(shouldScoreRight),
+                        () -> SHOULD_SCORE_AUTONOMOUSLY && REEF_CHOOSER.getScoringLevel() != ScoringLevel.L1
+                )
         );
     }
 
     private static Command getAutonomouslyScoreCommand(boolean shouldScoreRight) {
         return new SequentialCommandGroup(
-                getAutonomouslyPrepareScoreCommand(shouldScoreRight).until(() -> isArmAndElevatorAtPrepareState(shouldScoreRight)),
+                getAutonomouslyPrepareScoreCommand(shouldScoreRight).until(() -> isReadyToScore(shouldScoreRight)),
                 new ParallelCommandGroup(
-                        ElevatorCommands.getSetTargetStateCommand(REEF_CHOOSER::getElevatorState),
-                        ArmCommands.getSetTargetStateCommand(REEF_CHOOSER::getArmState, CoralPlacingCommands::shouldReverseScore)
+                        ArmElevatorCommands.getSetTargetStateCommand(REEF_CHOOSER::getArmElevatorState, CoralPlacingCommands::shouldReverseScore),
+                        EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.SCORE_CORAL)
                 )
         );
     }
@@ -47,16 +50,15 @@ public class CoralPlacingCommands {
         return new SequentialCommandGroup(
                 getAutonomouslyPrepareScoreCommand(shouldScoreRight).until(OperatorConstants.CONTINUE_TRIGGER),
                 new ParallelCommandGroup(
-                        ElevatorCommands.getSetTargetStateCommand(REEF_CHOOSER::getElevatorState),
-                        ArmCommands.getSetTargetStateCommand(REEF_CHOOSER::getArmState, CoralPlacingCommands::shouldReverseScore)
+                        ArmElevatorCommands.getSetTargetStateCommand(REEF_CHOOSER::getArmElevatorState, CoralPlacingCommands::shouldReverseScore),
+                        EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.SCORE_CORAL)
                 )
         );
     }
 
     private static Command getAutonomouslyPrepareScoreCommand(boolean shouldScoreRight) {
         return new ParallelCommandGroup(
-                ElevatorCommands.getPrepareStateCommand(REEF_CHOOSER::getElevatorState),
-                ArmCommands.getPrepareForStateCommand(REEF_CHOOSER::getArmState, CoralPlacingCommands::shouldReverseScore),
+                ArmElevatorCommands.getPrepareForStateCommand(REEF_CHOOSER::getArmElevatorState, CoralPlacingCommands::shouldReverseScore),
                 getAutonomousDriveToReefThenManualDriveCommand(shouldScoreRight).asProxy()
         );
     }
@@ -106,9 +108,8 @@ public class CoralPlacingCommands {
         return new FlippablePose2d(closestScoringPose.transformBy(scoringPoseToBranch), false);
     }
 
-    private static boolean isArmAndElevatorAtPrepareState(boolean shouldScoreRight) {
-        return RobotContainer.ELEVATOR.atPreparedTargetState()
-                && RobotContainer.ARM.atPrepareAngle()
+    private static boolean isReadyToScore(boolean shouldScoreRight) {
+        return RobotContainer.ARM_ELEVATOR.atState(REEF_CHOOSER.getArmElevatorState().prepareState, shouldReverseScore())
                 && RobotContainer.SWERVE.atPose(calculateClosestScoringPose(shouldScoreRight));
     }
 
@@ -134,8 +135,7 @@ public class CoralPlacingCommands {
         L3(L2.xTransformMeters, L2.positiveYTransformMeters, Rotation2d.fromDegrees(0)),
         L4(L2.xTransformMeters, L2.positiveYTransformMeters, Rotation2d.fromDegrees(0));
 
-        public final ElevatorConstants.ElevatorState elevatorState;
-        public final ArmConstants.ArmState armState;
+        public final ArmElevatorConstants.ArmElevatorState armElevatorState;
         public final int level = calculateLevel();
         final double xTransformMeters, positiveYTransformMeters;
         final Rotation2d rotationTransform;
@@ -153,8 +153,7 @@ public class CoralPlacingCommands {
             this.xTransformMeters = xTransformMeters;
             this.positiveYTransformMeters = positiveYTransformMeters;
             this.rotationTransform = rotationTransform;
-            this.elevatorState = determineElevatorState();
-            this.armState = determineArmState();
+            this.armElevatorState = determineArmElevatorState();
         }
 
         /**
@@ -176,22 +175,12 @@ public class CoralPlacingCommands {
             return new FlippablePose2d(reefCenterPose.plus(transform), true);
         }
 
-        private ElevatorConstants.ElevatorState determineElevatorState() {
+        private ArmElevatorConstants.ArmElevatorState determineArmElevatorState() {
             return switch (level) {
-                case 1 -> ElevatorConstants.ElevatorState.SCORE_L1;
-                case 2 -> ElevatorConstants.ElevatorState.SCORE_L2;
-                case 3 -> ElevatorConstants.ElevatorState.SCORE_L3;
-                case 4 -> ElevatorConstants.ElevatorState.SCORE_L4;
-                default -> throw new IllegalStateException("Unexpected value: " + ordinal());
-            };
-        }
-
-        private ArmConstants.ArmState determineArmState() {
-            return switch (level) {
-                case 1 -> ArmConstants.ArmState.SCORE_L1;
-                case 2 -> ArmConstants.ArmState.SCORE_L2;
-                case 3 -> ArmConstants.ArmState.SCORE_L3;
-                case 4 -> ArmConstants.ArmState.SCORE_L4;
+                case 1 -> ArmElevatorConstants.ArmElevatorState.SCORE_L1;
+                case 2 -> ArmElevatorConstants.ArmElevatorState.SCORE_L2;
+                case 3 -> ArmElevatorConstants.ArmElevatorState.SCORE_L3;
+                case 4 -> ArmElevatorConstants.ArmElevatorState.SCORE_L4;
                 default -> throw new IllegalStateException("Unexpected value: " + ordinal());
             };
         }

@@ -25,14 +25,14 @@ import frc.trigon.robot.misc.simulatedfield.SimulatedGamePieceConstants;
 import frc.trigon.robot.misc.simulatedfield.SimulationFieldHandler;
 import frc.trigon.robot.poseestimation.poseestimator.PoseEstimator;
 import frc.trigon.robot.subsystems.MotorSubsystem;
-import frc.trigon.robot.subsystems.arm.Arm;
-import frc.trigon.robot.subsystems.arm.ArmCommands;
+import frc.trigon.robot.subsystems.arm.ArmElevator;
+import frc.trigon.robot.subsystems.arm.ArmElevatorCommands;
 import frc.trigon.robot.subsystems.climber.Climber;
 import frc.trigon.robot.subsystems.climber.ClimberCommands;
 import frc.trigon.robot.subsystems.climber.ClimberConstants;
-import frc.trigon.robot.subsystems.elevator.Elevator;
-import frc.trigon.robot.subsystems.elevator.ElevatorCommands;
-import frc.trigon.robot.subsystems.elevator.ElevatorConstants;
+import frc.trigon.robot.subsystems.endeffector.EndEffector;
+import frc.trigon.robot.subsystems.endeffector.EndEffectorCommands;
+import frc.trigon.robot.subsystems.endeffector.EndEffectorConstants;
 import frc.trigon.robot.subsystems.intake.Intake;
 import frc.trigon.robot.subsystems.intake.IntakeCommands;
 import frc.trigon.robot.subsystems.intake.IntakeConstants;
@@ -52,9 +52,9 @@ public class RobotContainer {
             CameraConstants.OBJECT_DETECTION_CAMERA
     );
     public static final Swerve SWERVE = new Swerve();
-    public static final Arm ARM = new Arm();
+    public static final ArmElevator ARM_ELEVATOR = new ArmElevator();
     public static final Climber CLIMBER = new Climber();
-    public static final Elevator ELEVATOR = new Elevator();
+    public static final EndEffector END_EFFECTOR = new EndEffector();
     public static final Intake INTAKE = new Intake();
     public static final Transporter TRANSPORTER = new Transporter();
 
@@ -80,9 +80,9 @@ public class RobotContainer {
 
     private void bindDefaultCommands() {
         SWERVE.setDefaultCommand(GeneralCommands.getFieldRelativeDriveCommand());
-        ARM.setDefaultCommand(ArmCommands.getRestCommand());
+        ARM_ELEVATOR.setDefaultCommand(ArmElevatorCommands.getDefaultCommand());
         CLIMBER.setDefaultCommand(ClimberCommands.getSetTargetStateCommand(ClimberConstants.ClimberState.REST));
-        ELEVATOR.setDefaultCommand(ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.REST));
+        END_EFFECTOR.setDefaultCommand(EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.REST));
         INTAKE.setDefaultCommand(IntakeCommands.getSetTargetStateCommand(IntakeConstants.IntakeState.REST));
         TRANSPORTER.setDefaultCommand(TransporterCommands.getSetTargetStateCommand(TransporterConstants.TransporterState.REST));
     }
