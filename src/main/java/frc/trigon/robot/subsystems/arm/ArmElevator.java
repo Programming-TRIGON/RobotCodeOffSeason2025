@@ -111,13 +111,19 @@ public class ArmElevator extends MotorSubsystem {
         return getCurrentArmAngle().getDegrees() >= ArmElevatorConstants.MAXIMUM_ARM_SAFE_ANGLE.getDegrees();
     }
 
+    public boolean atTargetState() {
+        return atState(targetState, isStateReversed);
+    }
+
+    public boolean atState(ArmElevatorConstants.ArmElevatorState targetState) {
+        return atState(targetState, false);
+    }
+
     public boolean atState(ArmElevatorConstants.ArmElevatorState targetState, boolean isStateReversed) {
         if (targetState == null)
             return false;
-        final Rotation2d targetAngle = isStateReversed
-                ? subtractFrom360Degrees(targetState.targetAngle)
-                : targetState.targetAngle;
-        return armAtAngle(targetAngle) && elevatorAtPosition(targetState.targetPositionMeters);
+        return armAtAngle(isStateReversed ? subtractFrom360Degrees(targetState.targetAngle) : targetState.targetAngle)
+                && elevatorAtPosition(targetState.targetPositionMeters);
     }
 
     public boolean armAtAngle(Rotation2d targetAngle) {
@@ -153,8 +159,10 @@ public class ArmElevator extends MotorSubsystem {
     }
 
     void prepareToState(ArmElevatorConstants.ArmElevatorState targetState, boolean isStateReversed) {
-        if (targetState.prepareState == null)
+        if (targetState.prepareState == null) {
+            setTargetState(targetState, isStateReversed);
             return;
+        }
         setTargetState(targetState.prepareState, isStateReversed);
     }
 

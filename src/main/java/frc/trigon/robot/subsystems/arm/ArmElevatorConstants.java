@@ -196,9 +196,9 @@ public class ArmElevatorConstants {
         config.Feedback.FeedbackRemoteSensorID = ARM_MASTER_MOTOR.getID();
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
 
-        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 38 : 0;
+        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 34 : 0;
         config.Slot0.kI = RobotHardwareStats.isSimulation() ? 0 : 0;
-        config.Slot0.kD = RobotHardwareStats.isSimulation() ? 1 : 0;
+        config.Slot0.kD = RobotHardwareStats.isSimulation() ? 3 : 0;
         config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0.026331 : 0;
         config.Slot0.kV = RobotHardwareStats.isSimulation() ? 4.8752 : 0;
         config.Slot0.kA = RobotHardwareStats.isSimulation() ? 0.17848 : 0;
