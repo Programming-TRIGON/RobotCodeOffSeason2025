@@ -13,10 +13,10 @@ import frc.trigon.robot.constants.AutonomousConstants;
 import frc.trigon.robot.constants.FieldConstants;
 import frc.trigon.robot.constants.LEDConstants;
 import frc.trigon.robot.constants.OperatorConstants;
-import frc.trigon.robot.subsystems.arm.ArmCommands;
-import frc.trigon.robot.subsystems.arm.ArmConstants;
-import frc.trigon.robot.subsystems.elevator.ElevatorCommands;
-import frc.trigon.robot.subsystems.elevator.ElevatorConstants;
+import frc.trigon.robot.subsystems.arm.ArmElevatorCommands;
+import frc.trigon.robot.subsystems.arm.ArmElevatorConstants;
+import frc.trigon.robot.subsystems.endeffector.EndEffectorCommands;
+import frc.trigon.robot.subsystems.endeffector.EndEffectorConstants;
 import frc.trigon.robot.subsystems.intake.IntakeCommands;
 import frc.trigon.robot.subsystems.intake.IntakeConstants;
 import frc.trigon.robot.subsystems.swerve.SwerveCommands;
@@ -55,11 +55,11 @@ public class AlgaeManipulationCommands {
                     IS_HOLDING_ALGAE = true;
                     SHOULD_COLLECT_FROM_LOLLIPOP = false;
                 }),
-                CoralCollectionCommands.getUnloadCoralCommand().onlyIf(RobotContainer.ARM::hasGamePiece),
-                getInitiateFloorAlgaeCollectionCommand().until(RobotContainer.ARM::hasGamePiece),
+                CoralCollectionCommands.getUnloadCoralCommand().onlyIf(RobotContainer.END_EFFECTOR::hasGamePiece),
+                getInitiateFloorAlgaeCollectionCommand().until(RobotContainer.END_EFFECTOR::hasGamePiece),
                 GeneralCommands.getResetFlipArmOverrideCommand(),
                 getScoreAlgaeCommand().alongWith(getAlgaeCollectionConfirmationCommand())
-                        .until(() -> !RobotContainer.ARM.hasGamePiece() && !isScoreAlgaeButtonPressed())
+                        .until(() -> !RobotContainer.END_EFFECTOR.hasGamePiece() && !isScoreAlgaeButtonPressed())
         ).finallyDo(() -> IS_HOLDING_ALGAE = false);
     }
 
@@ -67,11 +67,11 @@ public class AlgaeManipulationCommands {
         return new SequentialCommandGroup(
                 GeneralCommands.getResetFlipArmOverrideCommand(),
                 new InstantCommand(() -> IS_HOLDING_ALGAE = true),
-                CoralCollectionCommands.getUnloadCoralCommand().onlyIf(RobotContainer.ARM::hasGamePiece),
-                getInitiateReefAlgaeCollectionCommand().until(RobotContainer.ARM::hasGamePiece),
+                CoralCollectionCommands.getUnloadCoralCommand().onlyIf(RobotContainer.END_EFFECTOR::hasGamePiece),
+                getInitiateReefAlgaeCollectionCommand().until(RobotContainer.END_EFFECTOR::hasGamePiece),
                 GeneralCommands.getResetFlipArmOverrideCommand(),
                 getScoreAlgaeCommand().alongWith(getAlgaeCollectionConfirmationCommand())
-                        .until(() -> !RobotContainer.ARM.hasGamePiece() && !isScoreAlgaeButtonPressed())
+                        .until(() -> !RobotContainer.END_EFFECTOR.hasGamePiece() && !isScoreAlgaeButtonPressed())
         )
                 .alongWith(getAlignToReefCommand())
                 .finallyDo(() -> IS_HOLDING_ALGAE = false);
@@ -89,7 +89,7 @@ public class AlgaeManipulationCommands {
                         () -> calculateClosestAlgaeCollectionPose().getRotation()
                 )
         ).raceWith(
-                new WaitUntilCommand(RobotContainer.ARM::hasGamePiece),
+                new WaitUntilCommand(RobotContainer.END_EFFECTOR::hasGamePiece),
                 new WaitUntilCommand(OperatorConstants.STOP_REEF_ALGAE_ALIGN_TRIGGER)
         ).onlyIf(() -> CoralPlacingCommands.SHOULD_SCORE_AUTONOMOUSLY).asProxy();
     }
@@ -107,14 +107,13 @@ public class AlgaeManipulationCommands {
 
     private static Command getHoldAlgaeCommand() {
         return new ParallelCommandGroup(
-                ArmCommands.getSetTargetStateCommand(ArmConstants.ArmState.HOLD_ALGAE),
-                ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.REST_WITH_ALGAE)
+                ArmElevatorCommands.getSetTargetStateCommand(ArmElevatorConstants.ArmElevatorState.REST_WITH_ALGAE),
+                EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.HOLD_ALGAE)
         );
     }
 
     private static Command getScoreInNetCommand() {
         return new ParallelRaceGroup(
-                ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.SCORE_NET),
                 getArmNetSequenceCommand(AlgaeManipulationCommands::shouldReverseNetScore),
                 getDriveToNetCommand()
         );
@@ -122,7 +121,6 @@ public class AlgaeManipulationCommands {
 
     private static Command getScoreInProcessorCommand() {
         return new ParallelCommandGroup(
-                ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.SCORE_PROCESSOR),
                 getArmProcessorSequenceCommand(),
                 getDriveToProcessorCommand()
         ).finallyDo(GeneralCommands.getFieldRelativeDriveCommand()::schedule);
@@ -130,15 +128,15 @@ public class AlgaeManipulationCommands {
 
     private static Command getArmNetSequenceCommand(BooleanSupplier shouldReverseScore) {
         return new SequentialCommandGroup(
-                GeneralCommands.getFlippableOverridableArmCommand(ArmConstants.ArmState.SCORE_NET, true, shouldReverseScore).until(OperatorConstants.CONTINUE_TRIGGER),
-                GeneralCommands.getFlippableOverridableArmCommand(ArmConstants.ArmState.SCORE_NET, false, shouldReverseScore)
+                GeneralCommands.getFlippableOverridableArmCommand(ArmElevatorConstants.ArmElevatorState.SCORE_NET, true, shouldReverseScore).until(OperatorConstants.CONTINUE_TRIGGER),
+                EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.SCORE_ALGAE)
         );
     }
 
     private static Command getArmProcessorSequenceCommand() {
         return new SequentialCommandGroup(
-                GeneralCommands.getFlippableOverridableArmCommand(ArmConstants.ArmState.SCORE_PROCESSOR, true).until(OperatorConstants.CONTINUE_TRIGGER),
-                GeneralCommands.getFlippableOverridableArmCommand(ArmConstants.ArmState.SCORE_PROCESSOR, false)
+                GeneralCommands.getFlippableOverridableArmCommand(ArmElevatorConstants.ArmElevatorState.SCORE_PROCESSOR, true).until(OperatorConstants.CONTINUE_TRIGGER),
+                EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.SCORE_ALGAE)
         );
     }
 
@@ -190,8 +188,10 @@ public class AlgaeManipulationCommands {
 
     private static Command getCollectAlgaeFromLollipopSequenceCommand() {
         return new ParallelCommandGroup(
-                GeneralCommands.getFlippableOverridableArmCommand(ArmConstants.ArmState.COLLECT_ALGAE_LOLLIPOP, false),
-                ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.COLLECT_ALGAE_LOLLIPOP),
+                new SequentialCommandGroup(
+                        GeneralCommands.getFlippableOverridableArmCommand(ArmElevatorConstants.ArmElevatorState.COLLECT_ALGAE_LOLLIPOP, false),
+                        EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.COLLECT_ALGAE)
+                ),
                 getIntakeCoralFromLollipopCommand()
                         .onlyIf(() -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE)
                         .until(() -> !OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE)
@@ -201,8 +201,8 @@ public class AlgaeManipulationCommands {
 
     private static Command getCollectAlgaeFromFloorSequenceCommand() {
         return new ParallelCommandGroup(
-                ArmCommands.getSetTargetStateCommand(ArmConstants.ArmState.COLLECT_ALGAE_FLOOR),
-                ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.COLLECT_ALGAE_FLOOR)
+                ArmElevatorCommands.getSetTargetStateCommand(ArmElevatorConstants.ArmElevatorState.COLLECT_ALGAE_FLOOR),
+                EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.COLLECT_ALGAE)
         );
     }
 
@@ -216,11 +216,11 @@ public class AlgaeManipulationCommands {
 
     private static Command getInitiateReefAlgaeCollectionCommand() {
         return new ParallelCommandGroup(
-                GeneralCommands.getFlippableOverridableArmCommand(OperatorConstants.REEF_CHOOSER::getArmAlgaeCollectionState, false, CoralPlacingCommands::shouldReverseScore),
-                ElevatorCommands.getSetTargetStateCommand(OperatorConstants.REEF_CHOOSER::getElevatorAlgaeCollectionState)
+                GeneralCommands.getFlippableOverridableArmCommand(OperatorConstants.REEF_CHOOSER::getArmElevatorAlgaeCollectionState, false, CoralPlacingCommands::shouldReverseScore),
+                EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.COLLECT_ALGAE)
         ).raceWith(
-                new WaitUntilChangeCommand<>(OperatorConstants.REEF_CHOOSER::getArmAlgaeCollectionState),
-                new WaitUntilChangeCommand<>(OperatorConstants.REEF_CHOOSER::getElevatorAlgaeCollectionState)
+                new WaitUntilChangeCommand<>(OperatorConstants.REEF_CHOOSER::getArmElevatorAlgaeCollectionState),
+                new WaitUntilChangeCommand<>(OperatorConstants.REEF_CHOOSER::getArmElevatorAlgaeCollectionState)
         ).repeatedly();
     }
 

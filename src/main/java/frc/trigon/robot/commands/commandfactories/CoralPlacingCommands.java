@@ -13,7 +13,6 @@ import frc.trigon.robot.constants.AutonomousConstants;
 import frc.trigon.robot.constants.FieldConstants;
 import frc.trigon.robot.constants.OperatorConstants;
 import frc.trigon.robot.misc.ReefChooser;
-import frc.trigon.robot.subsystems.arm.ArmConstants;
 import frc.trigon.robot.subsystems.arm.ArmElevatorCommands;
 import frc.trigon.robot.subsystems.arm.ArmElevatorConstants;
 import frc.trigon.robot.subsystems.endeffector.EndEffectorCommands;
@@ -50,16 +49,6 @@ public class CoralPlacingCommands {
     private static Command getScoreCommand(boolean shouldScoreRight) {
         return new SequentialCommandGroup(
                 getAutonomouslyPrepareScoreCommand(shouldScoreRight).until(OperatorConstants.CONTINUE_TRIGGER),
-                new ParallelCommandGroup(
-                        ArmElevatorCommands.getSetTargetStateCommand(REEF_CHOOSER::getArmElevatorState, CoralPlacingCommands::shouldReverseScore),
-                        EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.SCORE_CORAL)
-                )
-        );
-    }
-
-    private static Command getAutonomouslyScoreCommand(boolean shouldScoreRight) {
-        return new SequentialCommandGroup(
-                getAutonomouslyPrepareScoreCommand(shouldScoreRight).until(() -> isReadyToPlace(shouldScoreRight) || OperatorConstants.CONTINUE_TRIGGER.getAsBoolean()),
                 new ParallelCommandGroup(
                         ArmElevatorCommands.getSetTargetStateCommand(REEF_CHOOSER::getArmElevatorState, CoralPlacingCommands::shouldReverseScore),
                         EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.SCORE_CORAL)
@@ -146,7 +135,9 @@ public class CoralPlacingCommands {
         L3(L2.xTransformMeters, L2.positiveYTransformMeters, Rotation2d.fromDegrees(0)),
         L4(L2.xTransformMeters, L2.positiveYTransformMeters, Rotation2d.fromDegrees(0));
 
-        public final ArmElevatorConstants.ArmElevatorState armElevatorState;
+        public final ArmElevatorConstants.ArmElevatorState
+                armElevatorState,
+                armElevatorAlgaeCollectionState;
         public final int level = calculateLevel();
         final double xTransformMeters, positiveYTransformMeters;
         final Rotation2d rotationTransform;
@@ -165,6 +156,7 @@ public class CoralPlacingCommands {
             this.positiveYTransformMeters = positiveYTransformMeters;
             this.rotationTransform = rotationTransform;
             this.armElevatorState = determineArmElevatorState();
+            this.armElevatorAlgaeCollectionState = determineArmElevatorAlgaeCollectionState();
         }
 
         /**
@@ -196,10 +188,10 @@ public class CoralPlacingCommands {
             };
         }
 
-        private ArmConstants.ArmState determineArmAlgaeCollectionState() {
+        private ArmElevatorConstants.ArmElevatorState determineArmElevatorAlgaeCollectionState() {
             return switch (level) {
-                case 1, 2 -> ArmConstants.ArmState.COLLECT_ALGAE_L2;
-                case 3, 4 -> ArmConstants.ArmState.COLLECT_ALGAE_L3;
+                case 1, 2 -> ArmElevatorConstants.ArmElevatorState.COLLECT_ALGAE_L2;
+                case 3, 4 -> ArmElevatorConstants.ArmElevatorState.COLLECT_ALGAE_L3;
                 default -> throw new IllegalStateException("Unexpected value: " + ordinal());
             };
         }

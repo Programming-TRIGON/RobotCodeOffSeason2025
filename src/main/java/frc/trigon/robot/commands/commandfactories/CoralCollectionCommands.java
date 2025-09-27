@@ -39,6 +39,13 @@ public class CoralCollectionCommands {
         ).until(RobotContainer.END_EFFECTOR::hasGamePiece).onlyWhile(() -> !RobotContainer.END_EFFECTOR.hasGamePiece());
     }
 
+    public static Command getUnloadCoralCommand() {
+        return new ParallelCommandGroup(
+                ArmElevatorCommands.getSetTargetStateCommand(ArmElevatorConstants.ArmElevatorState.UNLOAD_CORAL),
+                EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.UNLOAD_CORAL)
+        ).until(() -> !RobotContainer.END_EFFECTOR.hasGamePiece() && RobotContainer.INTAKE.hasCoral());
+    }
+
     private static Command getIntakeSequenceCommand() {
         return new SequentialCommandGroup(
                 getInitiateCollectionCommand().until(RobotContainer.INTAKE::hasCoral),

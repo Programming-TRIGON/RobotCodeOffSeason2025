@@ -48,6 +48,10 @@ public class ReefChooser {
         return scoringLevel.armElevatorState;
     }
 
+    public ArmElevatorConstants.ArmElevatorState getArmElevatorAlgaeCollectionState() {
+        return scoringLevel.armElevatorAlgaeCollectionState;
+    }
+
     private void configureBindings() {
         configureScoringLevelBindings();
         configureReefHIDBindings();
