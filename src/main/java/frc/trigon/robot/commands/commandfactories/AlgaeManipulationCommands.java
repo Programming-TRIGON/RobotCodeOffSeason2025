@@ -219,7 +219,6 @@ public class AlgaeManipulationCommands {
                 GeneralCommands.getFlippableOverridableArmCommand(OperatorConstants.REEF_CHOOSER::getArmElevatorAlgaeCollectionState, false, CoralPlacingCommands::shouldReverseScore),
                 EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.COLLECT_ALGAE)
         ).raceWith(
-                new WaitUntilChangeCommand<>(OperatorConstants.REEF_CHOOSER::getArmElevatorAlgaeCollectionState),
                 new WaitUntilChangeCommand<>(OperatorConstants.REEF_CHOOSER::getArmElevatorAlgaeCollectionState)
         ).repeatedly();
     }
@@ -247,7 +246,7 @@ public class AlgaeManipulationCommands {
         final Translation2d reefCenterPosition = new FlippableTranslation2d(FieldConstants.BLUE_REEF_CENTER_TRANSLATION, true).get();
         final Rotation2d[] reefClockAngles = FieldConstants.REEF_CLOCK_ANGLES;
         final Transform2d reefCenterToBranchScoringPose = new Transform2d(FieldConstants.REEF_CENTER_TO_TARGET_ALGAE_COLLECTION_POSITION_X_TRANSFORM_METERS, 0, new Rotation2d());
-        final List<Pose2d> scoringPoses = new java.util.ArrayList<>(List.of());
+        final List<Pose2d> scoringPoses = new java.util.ArrayList<>();
 
         for (Rotation2d reefClockAngle : reefClockAngles) {
             final Pose2d reefCenterAtTargetRotation = new Pose2d(reefCenterPosition, reefClockAngle);

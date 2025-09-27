@@ -1,5 +1,6 @@
 package frc.trigon.robot.commands.commandfactories;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.trigon.robot.commands.CommandConstants;
 import frc.trigon.robot.constants.OperatorConstants;
@@ -55,6 +56,7 @@ public class GeneralCommands {
     }
 
     /**
+     * ---- UNTESTED ----
      * A command that only runs when a condition is met for a certain amount of time.
      *
      * @param command             the command to run
@@ -63,7 +65,11 @@ public class GeneralCommands {
      * @return the command
      */
     public static Command runWhen(Command command, BooleanSupplier condition, double debounceTimeSeconds) {
-        return runWhen(new WaitCommand(debounceTimeSeconds).andThen(command.onlyIf(condition)), condition);
+        final Debouncer debouncer = new Debouncer(0, Debouncer.DebounceType.kRising);
+        return new SequentialCommandGroup(
+                new InstantCommand(() -> debouncer.setDebounceTime(debounceTimeSeconds)),
+                runWhen(command, () -> debouncer.calculate(condition.getAsBoolean()))
+        );
     }
 
     public static Command getResetFlipArmOverrideCommand() {

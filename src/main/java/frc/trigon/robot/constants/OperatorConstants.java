@@ -1,7 +1,6 @@
 package frc.trigon.robot.constants;
 
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.trigon.robot.commands.commandclasses.IntakeAssistCommand;
 import frc.trigon.robot.commands.commandfactories.AlgaeManipulationCommands;
@@ -81,15 +80,9 @@ public class OperatorConstants {
         final Trigger scoreTrigger;
 
         if (isRight)
-            scoreTrigger = DRIVER_CONTROLLER.rightStick()
-                    .and(() -> !IS_LEFT_SCORE_BUTTON_PRESSED)
-                    .onTrue(new InstantCommand(() -> IS_RIGHT_SCORE_BUTTON_PRESSED = true))
-                    .onFalse(new InstantCommand(() -> IS_RIGHT_SCORE_BUTTON_PRESSED = false));
+            scoreTrigger = DRIVER_CONTROLLER.rightStick().and(DRIVER_CONTROLLER.leftStick().negate());
         else
-            scoreTrigger = DRIVER_CONTROLLER.leftStick()
-                    .and(() -> !IS_RIGHT_SCORE_BUTTON_PRESSED)
-                    .onTrue(new InstantCommand(() -> IS_LEFT_SCORE_BUTTON_PRESSED = true))
-                    .onFalse(new InstantCommand(() -> IS_LEFT_SCORE_BUTTON_PRESSED = false));
+            scoreTrigger = DRIVER_CONTROLLER.leftStick().and(DRIVER_CONTROLLER.rightStick().negate());
 
         if (isAlgaeCommand)
             return scoreTrigger.and(AlgaeManipulationCommands::isHoldingAlgae);

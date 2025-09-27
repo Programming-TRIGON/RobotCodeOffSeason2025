@@ -1,5 +1,6 @@
 package frc.trigon.robot.misc.simulatedfield;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import frc.trigon.robot.RobotContainer;
@@ -89,10 +90,10 @@ public class SimulationFieldHandler {
             HELD_ALGAE_INDEX = getIndexOfCollectedGamePiece(algaeCollectionPose, ALGAE_ON_FIELD, SimulatedGamePieceConstants.ALGAE_INTAKE_TOLERANCE_METERS);
     }
 
-    public static void updateCoralSpawning(Pose3d robotPose) {
+    public static void updateCoralSpawning(Pose2d robotPose) {
         final double
-                distanceFromLeftFeeder = robotPose.toPose2d().getTranslation().getDistance(SimulatedGamePieceConstants.LEFT_FEEDER_POSITION.get()),
-                distanceFromRightFeeder = robotPose.toPose2d().getTranslation().getDistance(SimulatedGamePieceConstants.RIGHT_FEEDER_POSITION.get());
+                distanceFromLeftFeeder = robotPose.getTranslation().getDistance(SimulatedGamePieceConstants.LEFT_FEEDER_POSITION.get()),
+                distanceFromRightFeeder = robotPose.getTranslation().getDistance(SimulatedGamePieceConstants.RIGHT_FEEDER_POSITION.get());
         final FlippablePose3d coralSpawnPose = distanceFromLeftFeeder < distanceFromRightFeeder
                 ? SimulatedGamePieceConstants.LEFT_CORAL_SPAWN_POSE
                 : SimulatedGamePieceConstants.RIGHT_CORAL_SPAWN_POSE;
