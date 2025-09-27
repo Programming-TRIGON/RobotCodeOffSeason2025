@@ -5,8 +5,10 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.trigon.robot.RobotContainer;
 import frc.trigon.robot.misc.simulatedfield.SimulationFieldHandler;
-import frc.trigon.robot.subsystems.arm.ArmCommands;
-import frc.trigon.robot.subsystems.arm.ArmConstants;
+import frc.trigon.robot.subsystems.arm.ArmElevatorCommands;
+import frc.trigon.robot.subsystems.arm.ArmElevatorConstants;
+import frc.trigon.robot.subsystems.endeffector.EndEffectorCommands;
+import frc.trigon.robot.subsystems.endeffector.EndEffectorConstants;
 import frc.trigon.robot.subsystems.intake.IntakeCommands;
 import frc.trigon.robot.subsystems.intake.IntakeConstants;
 import frc.trigon.robot.subsystems.transporter.TransporterCommands;
@@ -16,7 +18,7 @@ public class CoralEjectionCommands {
     public static Command getCoralEjectionCommand() {
         return GeneralCommands.getContinuousConditionalCommand(
                 getEjectCoralFromIntakeCommand(),
-                getEjectCoralFromArmCommand(),
+                getEjectCoralFromEndEffectorCommand(),
                 () -> RobotContainer.TRANSPORTER.hasCoral() || RobotContainer.INTAKE.hasCoral()
         ).onlyIf(SimulationFieldHandler::isHoldingCoral);
     }
@@ -28,10 +30,10 @@ public class CoralEjectionCommands {
         );
     }
 
-    private static Command getEjectCoralFromArmCommand() {
+    private static Command getEjectCoralFromEndEffectorCommand() {
         return new SequentialCommandGroup(
-                ArmCommands.getPrepareForStateCommand(ArmConstants.ArmState.EJECT).until(RobotContainer.ARM::atPrepareAngle),
-                ArmCommands.getSetTargetStateCommand(ArmConstants.ArmState.EJECT)
+                ArmElevatorCommands.getSetTargetStateCommand(ArmElevatorConstants.ArmElevatorState.EJECT).until(RobotContainer.ARM_ELEVATOR::atTargetState),
+                EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.EJECT)
         );
     }
 }

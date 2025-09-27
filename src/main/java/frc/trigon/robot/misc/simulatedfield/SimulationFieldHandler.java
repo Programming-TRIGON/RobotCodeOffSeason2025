@@ -3,7 +3,7 @@ package frc.trigon.robot.misc.simulatedfield;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import frc.trigon.robot.RobotContainer;
-import frc.trigon.robot.subsystems.arm.ArmConstants;
+import frc.trigon.robot.subsystems.arm.ArmElevatorConstants;
 import frc.trigon.robot.subsystems.intake.IntakeConstants;
 import frc.trigon.robot.subsystems.transporter.TransporterConstants;
 import lib.utilities.flippable.FlippablePose3d;
@@ -78,7 +78,7 @@ public class SimulationFieldHandler {
         final Pose3d robotPose = new Pose3d(RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose());
         final Pose3d
                 coralCollectionPose = robotPose.plus(toTransform(IntakeConstants.CORAL_COLLECTION_POSE)),
-                algaeCollectionPose = robotPose.plus(toTransform(RobotContainer.ARM.calculateGamePieceCollectionPose()));
+                algaeCollectionPose = robotPose.plus(toTransform(RobotContainer.ARM_ELEVATOR.calculateGamePieceCollectionPose()));
 
         if (isCollectingCoral() && HELD_CORAL_INDEX == null) {
             HELD_CORAL_INDEX = getIndexOfCollectedGamePiece(coralCollectionPose, CORAL_ON_FIELD, SimulatedGamePieceConstants.CORAL_INTAKE_TOLERANCE_METERS);
@@ -124,23 +124,24 @@ public class SimulationFieldHandler {
     }
 
     private static boolean isCollectingAlgae() {
-        return RobotContainer.ARM.atState(ArmConstants.ArmState.COLLECT_ALGAE_L2)
-                || RobotContainer.ARM.atState(ArmConstants.ArmState.COLLECT_ALGAE_L3)
-                || RobotContainer.ARM.atState(ArmConstants.ArmState.COLLECT_ALGAE_FLOOR)
-                || RobotContainer.ARM.atState(ArmConstants.ArmState.COLLECT_ALGAE_LOLLIPOP);
+        return RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.COLLECT_ALGAE_L2)
+                || RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.COLLECT_ALGAE_L3)
+                || RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.COLLECT_ALGAE_FLOOR)
+                || RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.COLLECT_ALGAE_LOLLIPOP);
     }
 
     private static boolean isCoralLoading() {
-        return RobotContainer.ARM.atState(ArmConstants.ArmState.LOAD_CORAL);
+        return RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.LOAD_CORAL);
     }
 
     private static void updateEjection() {
         if (HELD_CORAL_INDEX != null)
             updateCoralEjection();
 
-        if (HELD_ALGAE_INDEX != null && RobotContainer.ARM.isEjectingAlgae()) {
+
+        if (HELD_ALGAE_INDEX != null && RobotContainer.END_EFFECTOR.isEjecting()) {
             final SimulatedGamePiece heldAlgae = ALGAE_ON_FIELD.get(HELD_ALGAE_INDEX);
-            heldAlgae.release(RobotContainer.ARM.calculateLinearArmAndEndEffectorVelocity(), RobotContainer.SWERVE.getFieldRelativeVelocity3d());
+            heldAlgae.release(RobotContainer.END_EFFECTOR.calculateLinearEndEffectorVelocity(), RobotContainer.SWERVE.getFieldRelativeVelocity3d());
             HELD_ALGAE_INDEX = null;
         }
     }
@@ -152,8 +153,8 @@ public class SimulationFieldHandler {
             heldCoral.release(RobotContainer.INTAKE.calculateLinearIntakeVelocity(), RobotContainer.SWERVE.getFieldRelativeVelocity3d(), IntakeConstants.CORAL_COLLECTION_POSE.getTranslation());
             HELD_CORAL_INDEX = null;
         }
-        if (isCoralInEndEffector() && RobotContainer.ARM.isEjectingCoral()) {
-            heldCoral.release(RobotContainer.ARM.calculateLinearArmAndEndEffectorVelocity(), RobotContainer.SWERVE.getFieldRelativeVelocity3d(), RobotContainer.ARM.calculateGamePieceCollectionPose().getTranslation());
+        if (isCoralInEndEffector() && RobotContainer.END_EFFECTOR.isEjecting()) {
+            heldCoral.release(RobotContainer.END_EFFECTOR.calculateLinearEndEffectorVelocity(), RobotContainer.SWERVE.getFieldRelativeVelocity3d(), RobotContainer.ARM_ELEVATOR.calculateGamePieceCollectionPose().getTranslation());
             HELD_CORAL_INDEX = null;
         }
     }
@@ -163,8 +164,8 @@ public class SimulationFieldHandler {
      */
     private static void updateHeldGamePiecePoses() {
         final Pose3d
-                robotRelativeHeldCoralPosition = IS_CORAL_IN_END_EFFECTOR ? RobotContainer.ARM.calculateGamePieceCollectionPose() : TransporterConstants.COLLECTED_CORAL_POSE,
-                robotRelativeHeldAlgaePosition = RobotContainer.ARM.calculateGamePieceCollectionPose();
+                robotRelativeHeldCoralPosition = IS_CORAL_IN_END_EFFECTOR ? RobotContainer.ARM_ELEVATOR.calculateGamePieceCollectionPose() : TransporterConstants.COLLECTED_CORAL_POSE,
+                robotRelativeHeldAlgaePosition = RobotContainer.ARM_ELEVATOR.calculateGamePieceCollectionPose();
         updateHeldGamePiecePose(robotRelativeHeldCoralPosition, CORAL_ON_FIELD, HELD_CORAL_INDEX);
         updateHeldGamePiecePose(robotRelativeHeldAlgaePosition, ALGAE_ON_FIELD, HELD_ALGAE_INDEX);
     }
