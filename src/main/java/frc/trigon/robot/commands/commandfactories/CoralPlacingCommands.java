@@ -155,25 +155,7 @@ public class CoralPlacingCommands {
             this.rotationTransform = rotationTransform;
             this.armElevatorState = determineArmElevatorState();
         }
-
-        /**
-         * Calculates the target placing position using the clock position and the target reef side.
-         * The reef side transform will be flipped depending on operator input.
-         * To make it more intuitive for the operator to input the reef side,
-         * left will always correspond to the physical left side in the driver station,
-         * as opposed to "reef relative" left.
-         *
-         * @param reefClockPosition the desired clock position of the reef
-         * @param reefSide          the desired side of the reef, left or right (as seen from the driver station)
-         * @return the target placing position
-         */
-        public FlippablePose2d calculateTargetPlacingPosition(FieldConstants.ReefClockPosition reefClockPosition, FieldConstants.ReefSide reefSide) {
-            final Pose2d reefCenterPose = new Pose2d(FieldConstants.BLUE_REEF_CENTER_TRANSLATION, reefClockPosition.clockAngle);
-            final double yTransform = reefSide.shouldFlipYTransform(reefClockPosition) ? -positiveYTransformMeters : positiveYTransformMeters;
-            final Transform2d transform = new Transform2d(xTransformMeters, yTransform, rotationTransform);
-
-            return new FlippablePose2d(reefCenterPose.plus(transform), true);
-        }
+        
 
         private ArmElevatorConstants.ArmElevatorState determineArmElevatorState() {
             return switch (level) {
