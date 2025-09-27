@@ -344,6 +344,7 @@ public class ArmElevatorConstants {
         SCORE_PROCESSOR(Rotation2d.fromDegrees(90), 0.603, null, false, 0.7),
         COLLECT_ALGAE_L2(Rotation2d.fromDegrees(90), 0.603, null, false, 1),
         COLLECT_ALGAE_L3(Rotation2d.fromDegrees(90), 0.953, null, false, 1),
+        COLLECT_ALGAE_LOLLIPOP(Rotation2d.fromDegrees(70), 0.3, null, false, 1),
         PREPARE_COLLECT_ALGAE_FLOOR(Rotation2d.fromDegrees(60), 0.2, null, false, 1),
         COLLECT_ALGAE_FLOOR(Rotation2d.fromDegrees(50), 0.2, PREPARE_COLLECT_ALGAE_FLOOR, true, 1);
 
