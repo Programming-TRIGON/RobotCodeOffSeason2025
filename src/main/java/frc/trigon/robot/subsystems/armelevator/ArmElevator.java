@@ -1,4 +1,4 @@
-package frc.trigon.robot.subsystems.arm;
+package frc.trigon.robot.subsystems.armelevator;
 
 import com.ctre.phoenix6.controls.DynamicMotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;

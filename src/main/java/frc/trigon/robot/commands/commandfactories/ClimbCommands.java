@@ -6,12 +6,10 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.trigon.robot.RobotContainer;
 import frc.trigon.robot.constants.OperatorConstants;
-import frc.trigon.robot.subsystems.arm.ArmCommands;
-import frc.trigon.robot.subsystems.arm.ArmConstants;
+import frc.trigon.robot.subsystems.armelevator.ArmElevatorCommands;
+import frc.trigon.robot.subsystems.armelevator.ArmElevatorConstants;
 import frc.trigon.robot.subsystems.climber.ClimberCommands;
 import frc.trigon.robot.subsystems.climber.ClimberConstants;
-import frc.trigon.robot.subsystems.elevator.ElevatorCommands;
-import frc.trigon.robot.subsystems.elevator.ElevatorConstants;
 import frc.trigon.robot.subsystems.intake.IntakeCommands;
 import frc.trigon.robot.subsystems.intake.IntakeConstants;
 import frc.trigon.robot.subsystems.swerve.SwerveCommands;
@@ -49,8 +47,7 @@ public class ClimbCommands {
 
     private static Command getSetSubsystemsToRestForClimbCommand() {
         return new ParallelCommandGroup(
-                ArmCommands.getSetTargetStateCommand(ArmConstants.ArmState.REST_FOR_CLIMB),
-                ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.REST_FOR_CLIMB),
+                ArmElevatorCommands.getSetTargetStateCommand(ArmElevatorConstants.ArmElevatorState.REST_FOR_CLIMB),
                 IntakeCommands.getSetTargetStateCommand(IntakeConstants.IntakeState.REST_FOR_CLIMB)
         );
     }
