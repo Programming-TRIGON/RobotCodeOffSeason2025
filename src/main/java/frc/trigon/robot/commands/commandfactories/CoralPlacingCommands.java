@@ -63,7 +63,7 @@ public class CoralPlacingCommands {
                 new SequentialCommandGroup(
                         getAutonomousDriveToNoHitReefPose(shouldScoreRight).asProxy().onlyWhile(() -> !isPrepareArmAngleAboveCurrentArmAngle()),
                         getAutonomousDriveToReef(shouldScoreRight).asProxy()
-                )
+                ).unless(() -> REEF_CHOOSER.getScoringLevel() == ScoringLevel.L1)
         );
     }
 
@@ -166,6 +166,8 @@ public class CoralPlacingCommands {
     }
 
     private static boolean shouldReverseScore() {
+        if (REEF_CHOOSER.getScoringLevel() == ScoringLevel.L1)
+            return false;
         final Rotation2d robotRotation = RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().getRotation();
         final Translation2d robotTranslation = RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().getTranslation();
         final Translation2d reefCenterTranslation = FieldConstants.FLIPPABLE_REEF_CENTER_TRANSLATION.get();
