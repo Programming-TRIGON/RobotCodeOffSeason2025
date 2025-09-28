@@ -336,7 +336,7 @@ public class ArmElevatorConstants {
         REST_FOR_CLIMB(Rotation2d.fromDegrees(0), 0.603, null, false, 0.7),
         LOAD_CORAL(Rotation2d.fromDegrees(0), 0.5519, REST, true, 0.7),
         EJECT(Rotation2d.fromDegrees(60), 0.603, null, false, 0.7),
-        SCORE_L1(Rotation2d.fromDegrees(45), 0.603, null, false, 1),
+        SCORE_L1(Rotation2d.fromDegrees(70), 0.4, null, false, 1),
         SCORE_L2(Rotation2d.fromDegrees(90), 0.3, PREPARE_SCORE_L2, false, 1),
         SCORE_L3(Rotation2d.fromDegrees(90), 0.7, PREPARE_SCORE_L3, false, 1),
         SCORE_L4(Rotation2d.fromDegrees(100), 1.2, PREPARE_SCORE_L4, false, 1),
