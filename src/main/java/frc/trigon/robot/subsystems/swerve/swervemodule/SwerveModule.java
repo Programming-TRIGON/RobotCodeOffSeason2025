@@ -48,15 +48,14 @@ public class SwerveModule {
         configureHardware(offsetRotations);
     }
 
-    public void setTargetState(SwerveModuleState targetState, double targetForceNm) {
+    public void setTargetState(SwerveModuleState targetState) {
         if (willOptimize(targetState)) {
             targetState.optimize(getCurrentAngle());
-            targetForceNm *= -1;
         }
 
         this.targetState = targetState;
         setTargetAngle(targetState.angle);
-        setTargetVelocity(targetState.speedMetersPerSecond, targetForceNm);
+        setTargetVelocity(targetState.speedMetersPerSecond);
     }
 
     public void setBrake(boolean brake) {
@@ -94,8 +93,8 @@ public class SwerveModule {
         this.shouldDriveMotorUseClosedLoop = shouldDriveMotorUseClosedLoop;
     }
 
-    public void setDriveMotorTargetVelocity(double targetVelocity) {
-        driveMotor.setControl(driveVelocityRequest.withVelocity(targetVelocity));
+    public void setDriveMotorTargetVoltage(double targetVoltage) {
+        driveMotor.setControl(driveVoltageRequest.withOutput(targetVoltage));
     }
 
     public void setTargetAngle(Rotation2d angle) {
@@ -143,21 +142,19 @@ public class SwerveModule {
      * The target velocity is set using either closed loop or open loop depending on {@link this#shouldDriveMotorUseClosedLoop}.
      *
      * @param targetVelocityMetersPerSecond the target velocity, in meters per second
-     * @param targetForceNm                 the target force of the module in newton meters
      */
-    private void setTargetVelocity(double targetVelocityMetersPerSecond, double targetForceNm) {
+    private void setTargetVelocity(double targetVelocityMetersPerSecond) {
         if (shouldDriveMotorUseClosedLoop) {
-            setTargetClosedLoopVelocity(targetVelocityMetersPerSecond, targetForceNm);
+            setTargetClosedLoopVelocity(targetVelocityMetersPerSecond);
             return;
         }
 
         setTargetOpenLoopVelocity(targetVelocityMetersPerSecond);
     }
 
-    private void setTargetClosedLoopVelocity(double targetVelocityMetersPerSecond, double targetForceNm) {
+    private void setTargetClosedLoopVelocity(double targetVelocityMetersPerSecond) {
         final double targetVelocityRotationsPerSecond = metersToDriveWheelRotations(targetVelocityMetersPerSecond);
-        final double targetAccelerationRotationsPerSecondSquared = metersToDriveWheelRotations(targetForceNm);
-        driveMotor.setControl(driveVelocityRequest.withVelocity(targetVelocityRotationsPerSecond).withAcceleration(targetAccelerationRotationsPerSecondSquared));
+        driveMotor.setControl(driveVelocityRequest.withVelocity(targetVelocityRotationsPerSecond));
     }
 
     private void setTargetOpenLoopVelocity(double targetVelocityMetersPerSecond) {
