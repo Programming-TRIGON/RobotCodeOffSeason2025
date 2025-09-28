@@ -131,6 +131,10 @@ public class ArmElevator extends MotorSubsystem {
         return currentToTargetAngleDifferenceDegrees < ArmElevatorConstants.ANGLE_TOLERANCE.getDegrees();
     }
 
+    public boolean armAboveAngle(Rotation2d targetAngle) {
+        return targetAngle.getDegrees() > getCurrentArmAngle().getDegrees();
+    }
+
     public boolean elevatorAtPosition(double positionMeters) {
         final double currentToTargetStateDifferenceMeters = Math.abs(positionMeters - getCurrentElevatorPositionMeters());
         return currentToTargetStateDifferenceMeters < ArmElevatorConstants.ELEVATOR_POSITION_TOLERANCE_METERS;
