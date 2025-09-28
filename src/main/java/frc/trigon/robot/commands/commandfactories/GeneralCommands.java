@@ -56,7 +56,7 @@ public class GeneralCommands {
     }
 
     /**
-     * ---- UNTESTED ----
+     * <B><font color="red">---- UNTESTED ----</font></B> <br>
      * A command that only runs when a condition is met for a certain amount of time.
      *
      * @param command             the command to run
