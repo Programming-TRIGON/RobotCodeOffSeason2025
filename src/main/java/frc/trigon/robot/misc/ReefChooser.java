@@ -12,13 +12,10 @@ import frc.trigon.robot.subsystems.arm.ArmElevatorConstants;
 import java.util.function.Supplier;
 
 public class ReefChooser {
-    private final CommandGenericHID hid;
     private CoralPlacingCommands.ScoringLevel scoringLevel = CoralPlacingCommands.ScoringLevel.L4;
     private FieldConstants.ReefSide reefSide = FieldConstants.ReefSide.LEFT;
 
     public ReefChooser(int port) {
-        hid = new CommandGenericHID(port);
-
         new WaitCommand(3).andThen(this::configureBindings).ignoringDisable(true).schedule();
     }
 
@@ -33,7 +30,6 @@ public class ReefChooser {
 
     private void configureBindings() {
         configureScoringLevelBindings();
-        configureReefHIDBindings();
         configureFallbackBindings();
     }
 
@@ -48,21 +44,6 @@ public class ReefChooser {
         return new InstantCommand(
                 () -> this.scoringLevel = scoringLevel.get()
         ).ignoringDisable(true);
-    }
-
-    private void configureReefHIDBindings() {
-        for (int i = 0; i < 12; i++)
-            hid.button(i + 1).onTrue(getSetFaceFromIndexCommand(i));
-    }
-
-    private Command getSetFaceFromIndexCommand(int index) {
-        return new InstantCommand(
-                () -> setFaceSideFromIndex(index)
-        ).ignoringDisable(true);
-    }
-
-    private void setFaceSideFromIndex(int index) {
-        reefSide = FieldConstants.ReefSide.values()[index % 2];
     }
 
     private void configureFallbackBindings() {

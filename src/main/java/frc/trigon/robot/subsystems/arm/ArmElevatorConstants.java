@@ -327,6 +327,7 @@ public class ArmElevatorConstants {
     }
 
     public enum ArmElevatorState {
+        PREPARE_SCORE_L1(Rotation2d.fromDegrees(110), 0.3, null, false, 1),
         PREPARE_SCORE_L2(Rotation2d.fromDegrees(100), 0.3, null, false, 1),
         PREPARE_SCORE_L3(Rotation2d.fromDegrees(100), 0.7, null, false, 1),
         PREPARE_SCORE_L4(Rotation2d.fromDegrees(120), 1.2, null, false, 1),

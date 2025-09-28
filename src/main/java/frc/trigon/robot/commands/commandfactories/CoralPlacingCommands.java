@@ -24,6 +24,7 @@ import lib.utilities.flippable.FlippableTranslation2d;
 public class CoralPlacingCommands {
     public static boolean SHOULD_SCORE_AUTONOMOUSLY = true;
     private static final ReefChooser REEF_CHOOSER = OperatorConstants.REEF_CHOOSER;
+    private static final double SAFE_DISTANCE_FROM_SCORING_POSE_METERS = 0.2;
 
     public static Command getScoreInReefCommand(boolean shouldScoreRight) {
         return new SequentialCommandGroup(
@@ -57,25 +58,33 @@ public class CoralPlacingCommands {
     }
 
     private static Command getAutonomouslyPrepareScoreCommand(boolean shouldScoreRight) {
-        return GeneralCommands.getContinuousConditionalCommand(
-                new ParallelCommandGroup(
-                        ArmElevatorCommands.getPrepareForStateCommand(REEF_CHOOSER::getArmElevatorState, CoralPlacingCommands::shouldReverseScore),
-                        getAutonomousDriveToReefThenManualDriveCommand(shouldScoreRight).unless(() -> REEF_CHOOSER.getScoringLevel() == ScoringLevel.L1).asProxy()
-                ),
-                SwerveCommands.getDriveToPoseCommand(
-                        () -> calculateClosestNoHitReefPose(shouldScoreRight),
-                        AutonomousConstants.DRIVE_TO_REEF_CONSTRAINTS).unless(CoralPlacingCommands::shouldReverseScore).until(() -> RobotContainer.SWERVE.atPose(calculateClosestNoHitReefPose(shouldScoreRight))),
-                () -> (isPrepareArmAngleAboveCurrentArmAngle() || RobotContainer.SWERVE.atPose(calculateClosestNoHitReefPose(shouldScoreRight)) || shouldReverseScore())
-        ).until(() -> RobotContainer.ARM_ELEVATOR.atState(REEF_CHOOSER.getArmElevatorState().prepareState) && RobotContainer.SWERVE.atPose(calculateClosestNoHitReefPose(shouldScoreRight)));
+        return new ParallelCommandGroup(
+                getOpenArmElevatorIfWontHitReef(shouldScoreRight),
+                new SequentialCommandGroup(
+                        getAutonomousDriveToNoHitReefPose(shouldScoreRight).asProxy().onlyWhile(() -> !isPrepareArmAngleAboveCurrentArmAngle()),
+                        getAutonomousDriveToReef(shouldScoreRight).asProxy()
+                )
+        );
     }
 
-    private static Command getAutonomousDriveToReefThenManualDriveCommand(boolean shouldScoreRight) {
-        return new SequentialCommandGroup(
-                SwerveCommands.getDriveToPoseCommand(
-                        () -> CoralPlacingCommands.calculateClosestScoringPose(shouldScoreRight),
-                        AutonomousConstants.DRIVE_TO_REEF_CONSTRAINTS
-                ),
-                GeneralCommands.getFieldRelativeDriveCommand()
+    private static Command getAutonomousDriveToReef(boolean shouldScoreRight) {
+        return SwerveCommands.getDriveToPoseCommand(
+                () -> CoralPlacingCommands.calculateClosestScoringPose(shouldScoreRight),
+                AutonomousConstants.DRIVE_TO_REEF_CONSTRAINTS
+        );
+    }
+
+    private static Command getAutonomousDriveToNoHitReefPose(boolean shouldScoreRight) {
+        return SwerveCommands.getDriveToPoseCommand(
+                () -> CoralPlacingCommands.calculateClosestNoHitReefPose(shouldScoreRight),
+                AutonomousConstants.DRIVE_TO_REEF_CONSTRAINTS
+        );
+    }
+
+    private static Command getOpenArmElevatorIfWontHitReef(boolean shouldScoreRight) {
+        return new GeneralCommands().runWhen(
+                ArmElevatorCommands.getPrepareForStateCommand(REEF_CHOOSER::getArmElevatorState, CoralPlacingCommands::shouldReverseScore),
+                () -> CoralPlacingCommands.isPrepareArmAngleAboveCurrentArmAngle() || calculateDistanceToTargetScoringPose(shouldScoreRight) > SAFE_DISTANCE_FROM_SCORING_POSE_METERS
         );
     }
 
@@ -144,7 +153,10 @@ public class CoralPlacingCommands {
     }
 
     private static boolean isPrepareArmAngleAboveCurrentArmAngle() {
-        final Rotation2d targetAngle = REEF_CHOOSER.getArmElevatorState().prepareState.targetAngle;
+        ArmElevatorConstants.ArmElevatorState targetState = REEF_CHOOSER.getArmElevatorState();
+        final Rotation2d targetAngle = targetState.prepareState == null
+                ? targetState.targetAngle
+                : targetState.prepareState.targetAngle;
         return RobotContainer.ARM_ELEVATOR.armAboveAngle(targetAngle) || RobotContainer.ARM_ELEVATOR.armAtAngle(targetAngle);
     }
 
