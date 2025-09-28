@@ -60,6 +60,8 @@ public class TransporterConstants {
                     MAXIMUM_DISPLAYABLE_VELOCITY
             );
 
+    static final double PULSE_VOLTAGE_APPLIED_TIME_SECONDS = 0.1;
+    static final double PULSE_WAIT_TIME_SECONDS = 0.05;
     private static final double HAS_CORAL_DEBOUNCE_TIME_SECONDS = 0.2;
     static final BooleanEvent HAS_CORAL_BOOLEAN_EVENT = new BooleanEvent(
             CommandScheduler.getInstance().getActiveButtonLoop(),
