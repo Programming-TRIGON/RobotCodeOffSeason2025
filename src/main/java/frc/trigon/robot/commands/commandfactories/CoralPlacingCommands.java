@@ -81,9 +81,9 @@ public class CoralPlacingCommands {
     }
 
     private static Command getOpenArmElevatorIfWontHitReef(boolean shouldScoreRight) {
-        return new GeneralCommands().runWhen(
+        return GeneralCommands.runWhen(
                 ArmElevatorCommands.getPrepareForStateCommand(REEF_CHOOSER::getArmElevatorState, CoralPlacingCommands::shouldReverseScore),
-                () -> CoralPlacingCommands.isPrepareArmAngleAboveCurrentArmAngle() || calculateDistanceToTargetScoringPose(shouldScoreRight) > SAFE_DISTANCE_FROM_SCORING_POSE_METERS
+                () -> CoralPlacingCommands.isPrepareArmAngleAboveCurrentArmAngle() || calculateDistanceToTargetScoringPose(shouldScoreRight) > FieldConstants.SAFE_DISTANCE_FROM_SCORING_POSE_METERS
         );
     }
 
