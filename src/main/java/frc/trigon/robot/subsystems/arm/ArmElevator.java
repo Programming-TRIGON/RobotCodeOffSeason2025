@@ -132,7 +132,7 @@ public class ArmElevator extends MotorSubsystem {
     }
 
     public boolean armAboveAngle(Rotation2d targetAngle) {
-        return targetAngle.getDegrees() > getCurrentArmAngle().getDegrees();
+        return targetAngle.getDegrees() < getCurrentArmAngle().getDegrees();
     }
 
     public boolean elevatorAtPosition(double positionMeters) {

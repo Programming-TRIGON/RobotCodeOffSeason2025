@@ -64,8 +64,8 @@ public class CoralPlacingCommands {
                 ).onlyIf(CoralPlacingCommands::isTargetArmAngleAboveCurrentArmAngle),
                 SwerveCommands.getDriveToPoseCommand(
                         () -> calculateClosestNoHitReefPose(shouldScoreRight),
-                        AutonomousConstants.DRIVE_TO_REEF_CONSTRAINTS),
-                () -> (isTargetArmAngleAboveCurrentArmAngle() || RobotContainer.SWERVE.atPose(calculateClosestNoHitReefPose(shouldScoreRight))) && !shouldReverseScore()
+                        AutonomousConstants.DRIVE_TO_REEF_CONSTRAINTS).unless(CoralPlacingCommands::shouldReverseScore).until(() -> RobotContainer.SWERVE.atPose(calculateClosestNoHitReefPose(shouldScoreRight))),
+                () -> (isTargetArmAngleAboveCurrentArmAngle() || RobotContainer.SWERVE.atPose(calculateClosestNoHitReefPose(shouldScoreRight)))
         ).unless(() -> RobotContainer.ARM_ELEVATOR.atState(REEF_CHOOSER.getArmElevatorState()) && RobotContainer.SWERVE.atPose(calculateClosestNoHitReefPose(shouldScoreRight)));
     }
 
@@ -144,8 +144,8 @@ public class CoralPlacingCommands {
     }
 
     private static boolean isTargetArmAngleAboveCurrentArmAngle() {
-        final Rotation2d currentAngle = REEF_CHOOSER.getArmElevatorState().targetAngle;
-        return RobotContainer.ARM_ELEVATOR.armAboveAngle(currentAngle) || RobotContainer.ARM_ELEVATOR.armAtAngle(currentAngle);
+        final Rotation2d targetAngle = REEF_CHOOSER.getArmElevatorState().targetAngle;
+        return RobotContainer.ARM_ELEVATOR.armAboveAngle(targetAngle) || RobotContainer.ARM_ELEVATOR.armAtAngle(targetAngle);
     }
 
     private static boolean isReadyToScore(boolean shouldScoreRight) {
