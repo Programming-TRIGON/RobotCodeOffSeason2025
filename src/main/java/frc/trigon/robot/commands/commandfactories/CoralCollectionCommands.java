@@ -6,10 +6,10 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.trigon.robot.RobotContainer;
 import frc.trigon.robot.constants.OperatorConstants;
-import frc.trigon.robot.subsystems.arm.ArmCommands;
-import frc.trigon.robot.subsystems.arm.ArmConstants;
-import frc.trigon.robot.subsystems.elevator.ElevatorCommands;
-import frc.trigon.robot.subsystems.elevator.ElevatorConstants;
+import frc.trigon.robot.subsystems.arm.ArmElevatorCommands;
+import frc.trigon.robot.subsystems.arm.ArmElevatorConstants;
+import frc.trigon.robot.subsystems.endeffector.EndEffectorCommands;
+import frc.trigon.robot.subsystems.endeffector.EndEffectorConstants;
 import frc.trigon.robot.subsystems.intake.IntakeCommands;
 import frc.trigon.robot.subsystems.intake.IntakeConstants;
 import frc.trigon.robot.subsystems.transporter.TransporterCommands;
@@ -27,11 +27,11 @@ public class CoralCollectionCommands {
         // new IntakeAssistCommand(OperatorConstants.DEFAULT_INTAKE_ASSIST_MODE)
     }
 
-    private static Command getLoadCoralCommand() {
+    public static Command getLoadCoralCommand() {
         return new ParallelCommandGroup(
-                ArmCommands.getSetTargetStateCommand(ArmConstants.ArmState.LOAD_CORAL),
-                ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.LOAD_CORAL)
-        ).until(RobotContainer.ARM::hasGamePiece).asProxy();
+                ArmElevatorCommands.getSetTargetStateCommand(ArmElevatorConstants.ArmElevatorState.LOAD_CORAL),
+                EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.LOAD_CORAL)
+        ).until(RobotContainer.END_EFFECTOR::hasGamePiece).onlyWhile(() -> !RobotContainer.END_EFFECTOR.hasGamePiece());
     }
 
     private static Command getIntakeSequenceCommand() {
@@ -44,14 +44,14 @@ public class CoralCollectionCommands {
     private static Command getInitiateCollectionCommand() {
         return new ParallelCommandGroup(
                 IntakeCommands.getSetTargetStateCommand(IntakeConstants.IntakeState.COLLECT),
-                TransporterCommands.getSetTargetStateCommand(TransporterConstants.TransporterState.COLLECT)
+                TransporterCommands.getSetTargetStateWithPulsesCommand(TransporterConstants.TransporterState.COLLECT)
         );
     }
 
     private static Command getAlignCoralCommand() {
         return new SequentialCommandGroup(
-                TransporterCommands.getSetTargetStateCommand(TransporterConstants.TransporterState.ALIGN_CORAL).until(RobotContainer.TRANSPORTER::hasCoral),
-                TransporterCommands.getSetTargetStateCommand(TransporterConstants.TransporterState.HOLD_CORAL)
+                TransporterCommands.getSetTargetStateWithPulsesCommand(TransporterConstants.TransporterState.ALIGN_CORAL).until(RobotContainer.TRANSPORTER::hasCoral),
+                TransporterCommands.getSetTargetStateWithPulsesCommand(TransporterConstants.TransporterState.HOLD_CORAL)
         );
     }
 
