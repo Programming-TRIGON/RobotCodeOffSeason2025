@@ -56,14 +56,14 @@ public class CoralCollectionCommands {
     private static Command getInitiateCollectionCommand() {
         return new ParallelCommandGroup(
                 IntakeCommands.getSetTargetStateCommand(IntakeConstants.IntakeState.COLLECT),
-                TransporterCommands.getSetTargetStateCommand(TransporterConstants.TransporterState.COLLECT)
+                TransporterCommands.getSetTargetStateWithPulsesCommand(TransporterConstants.TransporterState.COLLECT)
         );
     }
 
     private static Command getAlignCoralCommand() {
         return new SequentialCommandGroup(
-                TransporterCommands.getSetTargetStateCommand(TransporterConstants.TransporterState.ALIGN_CORAL).until(RobotContainer.TRANSPORTER::hasCoral),
-                TransporterCommands.getSetTargetStateCommand(TransporterConstants.TransporterState.HOLD_CORAL)
+                TransporterCommands.getSetTargetStateWithPulsesCommand(TransporterConstants.TransporterState.ALIGN_CORAL).until(RobotContainer.TRANSPORTER::hasCoral),
+                TransporterCommands.getSetTargetStateWithPulsesCommand(TransporterConstants.TransporterState.HOLD_CORAL)
         );
     }
 

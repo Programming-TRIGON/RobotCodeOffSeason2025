@@ -327,6 +327,7 @@ public class ArmElevatorConstants {
     }
 
     public enum ArmElevatorState {
+        PREPARE_SCORE_L1(Rotation2d.fromDegrees(110), 0.3, null, false, 1),
         PREPARE_SCORE_L2(Rotation2d.fromDegrees(100), 0.3, null, false, 1),
         PREPARE_SCORE_L3(Rotation2d.fromDegrees(100), 0.7, null, false, 1),
         PREPARE_SCORE_L4(Rotation2d.fromDegrees(120), 1.2, null, false, 1),
@@ -337,7 +338,7 @@ public class ArmElevatorConstants {
         LOAD_CORAL(Rotation2d.fromDegrees(0), 0.5519, REST, true, 0.7),
         UNLOAD_CORAL(Rotation2d.fromDegrees(0), 0.5519, null, false, 0.7),
         EJECT(Rotation2d.fromDegrees(60), 0.603, null, false, 0.7),
-        SCORE_L1(Rotation2d.fromDegrees(45), 0.603, null, false, 1),
+        SCORE_L1(Rotation2d.fromDegrees(70), 0.4, null, false, 1),
         SCORE_L2(Rotation2d.fromDegrees(90), 0.3, PREPARE_SCORE_L2, false, 1),
         SCORE_L3(Rotation2d.fromDegrees(90), 0.7, PREPARE_SCORE_L3, false, 1),
         SCORE_L4(Rotation2d.fromDegrees(100), 1.2, PREPARE_SCORE_L4, false, 1),
