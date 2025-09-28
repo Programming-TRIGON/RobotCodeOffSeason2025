@@ -1,4 +1,4 @@
-package frc.trigon.robot.subsystems.arm;
+package frc.trigon.robot.subsystems.armelevator;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
