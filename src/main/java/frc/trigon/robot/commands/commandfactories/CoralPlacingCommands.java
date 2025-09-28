@@ -65,8 +65,8 @@ public class CoralPlacingCommands {
                 SwerveCommands.getDriveToPoseCommand(
                         () -> calculateClosestNoHitReefPose(shouldScoreRight),
                         AutonomousConstants.DRIVE_TO_REEF_CONSTRAINTS),
-                CoralPlacingCommands::isTargetArmAngleAboveCurrentArmAngle
-        );
+                () -> (isTargetArmAngleAboveCurrentArmAngle() || RobotContainer.SWERVE.atPose(calculateClosestNoHitReefPose(shouldScoreRight))) && !shouldReverseScore()
+        ).unless(() -> RobotContainer.ARM_ELEVATOR.atState(REEF_CHOOSER.getArmElevatorState()) && RobotContainer.SWERVE.atPose(calculateClosestNoHitReefPose(shouldScoreRight)));
     }
 
     private static Command getAutonomousDriveToReefThenManualDriveCommand(boolean shouldScoreRight) {
