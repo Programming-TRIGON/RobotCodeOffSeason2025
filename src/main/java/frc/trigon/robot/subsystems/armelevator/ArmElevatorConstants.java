@@ -50,7 +50,7 @@ public class ArmElevatorConstants {
 
     private static final double
             ARM_GEAR_RATIO = 40,
-            ELEVATOR_GEAR_RATIO = 4;
+            ELEVATOR_GEAR_RATIO = 3;
     private static final double REVERSE_LIMIT_RESET_POSITION_ROTATIONS = 0;
     private static final double
             ARM_MOTOR_CURRENT_LIMIT = 50,
