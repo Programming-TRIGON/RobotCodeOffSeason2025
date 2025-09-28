@@ -53,7 +53,7 @@ public class Swerve extends MotorSubsystem {
     public void sysIDDrive(double targetCurrent) {
         SwerveModuleState[] a = SwerveConstants.KINEMATICS.toSwerveModuleStates(new ChassisSpeeds(0, 0, 2));
         for (int i = 0; i < 4; i++) {
-            swerveModules[i].setDriveMotorTargetCurrent(targetCurrent);
+            swerveModules[i].setDriveMotorTargetVelocity(targetCurrent);
             swerveModules[i].setTargetAngle(a[i].angle);
         }
     }

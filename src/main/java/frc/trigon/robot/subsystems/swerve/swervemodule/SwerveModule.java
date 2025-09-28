@@ -1,8 +1,7 @@
 package frc.trigon.robot.subsystems.swerve.swervemodule;
 
 import com.ctre.phoenix6.controls.PositionVoltage;
-import com.ctre.phoenix6.controls.TorqueCurrentFOC;
-import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -25,9 +24,8 @@ public class SwerveModule {
     private final CANcoderEncoder steerEncoder;
     private final PositionVoltage steerPositionRequest = new PositionVoltage(0).withEnableFOC(SwerveModuleConstants.ENABLE_FOC);
     private final double wheelDiameter;
-    private final VelocityTorqueCurrentFOC driveVelocityRequest = new VelocityTorqueCurrentFOC(0).withUpdateFreqHz(1000);
+    private final VelocityVoltage driveVelocityRequest = new VelocityVoltage(0).withUpdateFreqHz(1000);
     private final VoltageOut driveVoltageRequest = new VoltageOut(0).withEnableFOC(SwerveModuleConstants.ENABLE_FOC);
-    private final TorqueCurrentFOC driveTorqueCurrentFOCRequest = new TorqueCurrentFOC(0);
     private boolean shouldDriveMotorUseClosedLoop = true;
     private SwerveModuleState targetState = new SwerveModuleState();
     private double[]
@@ -96,8 +94,8 @@ public class SwerveModule {
         this.shouldDriveMotorUseClosedLoop = shouldDriveMotorUseClosedLoop;
     }
 
-    public void setDriveMotorTargetCurrent(double targetCurrent) {
-        driveMotor.setControl(driveTorqueCurrentFOCRequest.withOutput(targetCurrent));
+    public void setDriveMotorTargetVelocity(double targetVelocity) {
+        driveMotor.setControl(driveVelocityRequest.withVelocity(targetVelocity));
     }
 
     public void setTargetAngle(Rotation2d angle) {
