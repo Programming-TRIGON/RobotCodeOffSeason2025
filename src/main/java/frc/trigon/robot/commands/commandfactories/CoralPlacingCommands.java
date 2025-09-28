@@ -61,7 +61,7 @@ public class CoralPlacingCommands {
                 new ParallelCommandGroup(
                         ArmElevatorCommands.getPrepareForStateCommand(REEF_CHOOSER::getArmElevatorState, CoralPlacingCommands::shouldReverseScore),
                         getAutonomousDriveToReefThenManualDriveCommand(shouldScoreRight).unless(() -> REEF_CHOOSER.getScoringLevel() == ScoringLevel.L1).asProxy()
-                ).onlyIf(CoralPlacingCommands::isPrepareArmAngleAboveCurrentArmAngle),
+                ),
                 SwerveCommands.getDriveToPoseCommand(
                         () -> calculateClosestNoHitReefPose(shouldScoreRight),
                         AutonomousConstants.DRIVE_TO_REEF_CONSTRAINTS).unless(CoralPlacingCommands::shouldReverseScore).until(() -> RobotContainer.SWERVE.atPose(calculateClosestNoHitReefPose(shouldScoreRight))),
