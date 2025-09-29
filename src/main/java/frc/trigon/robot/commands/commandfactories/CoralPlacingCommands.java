@@ -13,7 +13,6 @@ import frc.trigon.robot.constants.AutonomousConstants;
 import frc.trigon.robot.constants.FieldConstants;
 import frc.trigon.robot.constants.OperatorConstants;
 import frc.trigon.robot.misc.ReefChooser;
-import frc.trigon.robot.subsystems.arm.ArmElevatorCommands;
 import frc.trigon.robot.subsystems.arm.ArmElevatorConstants;
 import frc.trigon.robot.subsystems.endeffector.EndEffectorCommands;
 import frc.trigon.robot.subsystems.endeffector.EndEffectorConstants;
@@ -40,7 +39,7 @@ public class CoralPlacingCommands {
         return new SequentialCommandGroup(
                 getAutonomouslyPrepareScoreCommand(shouldScoreRight).until(() -> isReadyToScore(shouldScoreRight)),
                 new ParallelCommandGroup(
-                        ArmElevatorCommands.getSetTargetStateCommand(REEF_CHOOSER::getArmElevatorState, CoralPlacingCommands::shouldReverseScore),
+                        GeneralCommands.getFlippableOverridableArmCommand(REEF_CHOOSER::getArmElevatorState, false, CoralPlacingCommands::shouldReverseScore),
                         EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.SCORE_CORAL)
                 )
         );
@@ -50,7 +49,7 @@ public class CoralPlacingCommands {
         return new SequentialCommandGroup(
                 getAutonomouslyPrepareScoreCommand(shouldScoreRight).until(OperatorConstants.CONTINUE_TRIGGER),
                 new ParallelCommandGroup(
-                        ArmElevatorCommands.getSetTargetStateCommand(REEF_CHOOSER::getArmElevatorState, CoralPlacingCommands::shouldReverseScore),
+                        GeneralCommands.getFlippableOverridableArmCommand(REEF_CHOOSER::getArmElevatorState, false, CoralPlacingCommands::shouldReverseScore),
                         EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.SCORE_CORAL)
                 )
         );
@@ -58,7 +57,7 @@ public class CoralPlacingCommands {
 
     private static Command getAutonomouslyPrepareScoreCommand(boolean shouldScoreRight) {
         return new ParallelCommandGroup(
-                getOpenArmElevatorIfWontHitReef(shouldScoreRight),
+                getPrepareArmElevatorIfWontHitReef(shouldScoreRight),
                 new SequentialCommandGroup(
                         getAutonomousDriveToNoHitReefPose(shouldScoreRight).asProxy().onlyWhile(() -> !isPrepareArmAngleAboveCurrentArmAngle()),
                         getAutonomousDriveToReef(shouldScoreRight).asProxy()
@@ -80,9 +79,9 @@ public class CoralPlacingCommands {
         );
     }
 
-    private static Command getOpenArmElevatorIfWontHitReef(boolean shouldScoreRight) {
+    private static Command getPrepareArmElevatorIfWontHitReef(boolean shouldScoreRight) {
         return GeneralCommands.runWhen(
-                ArmElevatorCommands.getPrepareForStateCommand(REEF_CHOOSER::getArmElevatorState, CoralPlacingCommands::shouldReverseScore),
+                GeneralCommands.getFlippableOverridableArmCommand(REEF_CHOOSER::getArmElevatorState, true, CoralPlacingCommands::shouldReverseScore),
                 () -> CoralPlacingCommands.isPrepareArmAngleAboveCurrentArmAngle() || calculateDistanceToTargetScoringPose(shouldScoreRight) > FieldConstants.SAFE_DISTANCE_FROM_SCORING_POSE_METERS
         );
     }
