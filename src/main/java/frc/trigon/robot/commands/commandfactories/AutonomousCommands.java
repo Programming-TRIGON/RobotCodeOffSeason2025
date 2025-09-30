@@ -9,10 +9,10 @@ import frc.trigon.robot.RobotContainer;
 import frc.trigon.robot.commands.commandclasses.IntakeAssistCommand;
 import frc.trigon.robot.constants.AutonomousConstants;
 import frc.trigon.robot.constants.FieldConstants;
-import frc.trigon.robot.subsystems.arm.ArmCommands;
-import frc.trigon.robot.subsystems.arm.ArmConstants;
-import frc.trigon.robot.subsystems.elevator.ElevatorCommands;
-import frc.trigon.robot.subsystems.elevator.ElevatorConstants;
+import frc.trigon.robot.subsystems.armelevator.ArmElevatorCommands;
+import frc.trigon.robot.subsystems.armelevator.ArmElevatorConstants;
+import frc.trigon.robot.subsystems.endeffector.EndEffectorCommands;
+import frc.trigon.robot.subsystems.endeffector.EndEffectorConstants;
 import frc.trigon.robot.subsystems.intake.IntakeCommands;
 import frc.trigon.robot.subsystems.intake.IntakeConstants;
 import frc.trigon.robot.subsystems.swerve.SwerveCommands;
@@ -65,13 +65,12 @@ public class AutonomousCommands {
 
     public static Command getCollectCoralCommand(boolean isRight) {
         return new ParallelCommandGroup(
-                ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.REST),
                 IntakeCommands.getSetTargetStateCommand(IntakeConstants.IntakeState.COLLECT),
                 TransporterCommands.getSetTargetStateCommand(TransporterConstants.TransporterState.COLLECT),
                 getDriveToCoralCommand(isRight)
         )
                 .until(RobotContainer.INTAKE::hasCoral)
-                .unless(() -> RobotContainer.INTAKE.hasCoral() || RobotContainer.ARM.hasGamePiece());
+                .unless(() -> RobotContainer.TRANSPORTER.hasCoral() || RobotContainer.END_EFFECTOR.hasGamePiece());
     }
 
     public static Command getDriveToReefCommand() {
@@ -107,13 +106,12 @@ public class AutonomousCommands {
     public static Command getPrepareForScoreCommand() {
         return new ParallelCommandGroup(
                 getOpenElevatorWhenCloseToReefCommand(),
-                ArmCommands.getPrepareForStateCommand(ArmConstants.ArmState.SCORE_L4)
+                ArmElevatorCommands.getPrepareForStateCommand(() -> ArmElevatorConstants.ArmElevatorState.SCORE_L4)
         );
     }
 
     private static boolean canScore() {
-        return RobotContainer.ELEVATOR.atState(ElevatorConstants.ElevatorState.SCORE_L4, true) &&
-                RobotContainer.ARM.atState(ArmConstants.ArmState.SCORE_L4, true) &&
+        return RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.SCORE_L4, true) &&
                 TARGET_SCORING_POSE != null &&
                 Math.abs(RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().relativeTo(TARGET_SCORING_POSE.get()).getX()) < AutonomousConstants.REEF_RELATIVE_X_TOLERANCE_METERS &&
                 Math.abs(RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().relativeTo(TARGET_SCORING_POSE.get()).getY()) < AutonomousConstants.REEF_RELATIVE_Y_TOLERANCE_METERS;
@@ -121,15 +119,15 @@ public class AutonomousCommands {
 
     public static Command getPlaceCoralCommand() {
         return new ParallelCommandGroup(
-                ElevatorCommands.getSetTargetStateCommand(ElevatorConstants.ElevatorState.SCORE_L4),
-                ArmCommands.getSetTargetStateCommand(ArmConstants.ArmState.SCORE_L4),
+                ArmElevatorCommands.getSetTargetStateCommand(ArmElevatorConstants.ArmElevatorState.SCORE_L4),
+                EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.SCORE_CORAL),
                 getAddCurrentScoringBranchToScoredBranchesCommand()
         ).withTimeout(0.25);
     }
 
     private static Command getOpenElevatorWhenCloseToReefCommand() {
         return GeneralCommands.runWhen(
-                ElevatorCommands.getPrepareStateCommand(ElevatorConstants.ElevatorState.SCORE_L4),
+                ArmElevatorCommands.getPrepareForStateCommand(() -> ArmElevatorConstants.ArmElevatorState.SCORE_L4),
                 () -> calculateDistanceToTargetScoringPose() < AutonomousConstants.MINIMUM_DISTANCE_FROM_REEF_TO_OPEN_ELEVATOR
         );
     }
