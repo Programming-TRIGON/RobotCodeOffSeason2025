@@ -98,15 +98,8 @@ public class AutonomousCommands {
 
     public static Command getScoreCommand() {
         return new SequentialCommandGroup(
-                getPrepareForScoreCommand().until(AutonomousCommands::canScore),
+                getOpenElevatorWhenCloseToReefCommand().until(AutonomousCommands::canScore),
                 getPlaceCoralCommand()
-        );
-    }
-
-    public static Command getPrepareForScoreCommand() {
-        return new ParallelCommandGroup(
-                getOpenElevatorWhenCloseToReefCommand(),
-                ArmElevatorCommands.getPrepareForStateCommand(() -> ArmElevatorConstants.ArmElevatorState.SCORE_L4)
         );
     }
 
