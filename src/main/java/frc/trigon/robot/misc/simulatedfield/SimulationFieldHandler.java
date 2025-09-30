@@ -1,5 +1,6 @@
 package frc.trigon.robot.misc.simulatedfield;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import frc.trigon.robot.RobotContainer;
@@ -89,10 +90,10 @@ public class SimulationFieldHandler {
             HELD_ALGAE_INDEX = getIndexOfCollectedGamePiece(algaeCollectionPose, ALGAE_ON_FIELD, SimulatedGamePieceConstants.ALGAE_INTAKE_TOLERANCE_METERS);
     }
 
-    public static void updateCoralSpawning(Pose3d robotPose) {
+    public static void updateCoralSpawning(Pose2d robotPose) {
         final double
-                distanceFromLeftFeeder = robotPose.toPose2d().getTranslation().getDistance(SimulatedGamePieceConstants.LEFT_FEEDER_POSITION.get()),
-                distanceFromRightFeeder = robotPose.toPose2d().getTranslation().getDistance(SimulatedGamePieceConstants.RIGHT_FEEDER_POSITION.get());
+                distanceFromLeftFeeder = robotPose.getTranslation().getDistance(SimulatedGamePieceConstants.LEFT_FEEDER_POSITION.get()),
+                distanceFromRightFeeder = robotPose.getTranslation().getDistance(SimulatedGamePieceConstants.RIGHT_FEEDER_POSITION.get());
         final FlippablePose3d coralSpawnPose = distanceFromLeftFeeder < distanceFromRightFeeder
                 ? SimulatedGamePieceConstants.LEFT_CORAL_SPAWN_POSE
                 : SimulatedGamePieceConstants.RIGHT_CORAL_SPAWN_POSE;
@@ -124,7 +125,14 @@ public class SimulationFieldHandler {
     }
 
     private static boolean isCollectingAlgae() {
-        return RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.COLLECT_ALGAE_L2) || RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.COLLECT_ALGAE_L3);
+        return RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.COLLECT_ALGAE_L2)
+                || RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.COLLECT_ALGAE_L2, true)
+                || RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.COLLECT_ALGAE_L3)
+                || RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.COLLECT_ALGAE_L3, true)
+                || RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.COLLECT_ALGAE_FLOOR)
+                || RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.COLLECT_ALGAE_FLOOR, true)
+                || RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.COLLECT_ALGAE_LOLLIPOP)
+                || RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.COLLECT_ALGAE_LOLLIPOP, true);
     }
 
     private static boolean isCoralLoading() {
@@ -134,6 +142,7 @@ public class SimulationFieldHandler {
     private static void updateEjection() {
         if (HELD_CORAL_INDEX != null)
             updateCoralEjection();
+
 
         if (HELD_ALGAE_INDEX != null && RobotContainer.END_EFFECTOR.isEjecting()) {
             final SimulatedGamePiece heldAlgae = ALGAE_ON_FIELD.get(HELD_ALGAE_INDEX);
