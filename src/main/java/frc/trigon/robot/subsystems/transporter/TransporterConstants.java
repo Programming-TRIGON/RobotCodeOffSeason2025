@@ -3,9 +3,13 @@ package frc.trigon.robot.subsystems.transporter;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.event.BooleanEvent;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.trigon.robot.misc.simulatedfield.SimulationFieldHandler;
 import lib.hardware.misc.simplesensor.SimpleSensor;
 import lib.hardware.phoenix6.talonfx.TalonFXMotor;
 import lib.hardware.phoenix6.talonfx.TalonFXSignal;
@@ -44,7 +48,7 @@ public class TransporterConstants {
                     GEAR_RATIO,
                     MOMENT_OF_INERTIA
             );
-    private static final DoubleSupplier BEAM_BREAK_SIMULATION_SUPPLIER = () -> 0; //TODO: implement
+    private static final DoubleSupplier BEAM_BREAK_SIMULATION_SUPPLIER = () -> SimulationFieldHandler.isHoldingCoral() && !SimulationFieldHandler.isCoralInEndEffector() ? 1 : 0;
 
     private static final double MAXIMUM_DISPLAYABLE_VELOCITY = 12;
     static final SpeedMechanism2d
@@ -57,11 +61,17 @@ public class TransporterConstants {
                     MAXIMUM_DISPLAYABLE_VELOCITY
             );
 
+    static final double PULSE_VOLTAGE_APPLIED_TIME_SECONDS = 0.1;
+    static final double PULSE_WAIT_TIME_SECONDS = 0.05;
     private static final double HAS_CORAL_DEBOUNCE_TIME_SECONDS = 0.2;
     static final BooleanEvent HAS_CORAL_BOOLEAN_EVENT = new BooleanEvent(
             CommandScheduler.getInstance().getActiveButtonLoop(),
             BEAM_BREAK::getBinaryValue
     ).debounce(HAS_CORAL_DEBOUNCE_TIME_SECONDS);
+    public static final Pose3d COLLECTED_CORAL_POSE = new Pose3d(
+            new Translation3d(0, 0, 0.2),
+            new Rotation3d()
+    );
 
     static {
         configureMotor(RIGHT_MOTOR, RIGHT_MOTOR_SIMULATION);

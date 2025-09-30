@@ -13,32 +13,34 @@ import frc.trigon.robot.constants.AutonomousConstants;
 import frc.trigon.robot.constants.FieldConstants;
 import frc.trigon.robot.constants.OperatorConstants;
 import frc.trigon.robot.misc.ReefChooser;
-import frc.trigon.robot.subsystems.arm.ArmCommands;
-import frc.trigon.robot.subsystems.arm.ArmConstants;
-import frc.trigon.robot.subsystems.elevator.ElevatorCommands;
-import frc.trigon.robot.subsystems.elevator.ElevatorConstants;
+import frc.trigon.robot.subsystems.armelevator.ArmElevatorConstants;
+import frc.trigon.robot.subsystems.endeffector.EndEffectorCommands;
+import frc.trigon.robot.subsystems.endeffector.EndEffectorConstants;
 import frc.trigon.robot.subsystems.swerve.SwerveCommands;
 import lib.utilities.flippable.FlippablePose2d;
 import lib.utilities.flippable.FlippableTranslation2d;
 
 public class CoralPlacingCommands {
     public static boolean SHOULD_SCORE_AUTONOMOUSLY = true;
-    private static final ReefChooser REEF_CHOOSER = OperatorConstants.REEF_CHOOSER;
+    static final ReefChooser REEF_CHOOSER = OperatorConstants.REEF_CHOOSER;
 
     public static Command getScoreInReefCommand(boolean shouldScoreRight) {
-        return new ConditionalCommand(
-                getAutonomouslyScoreCommand(shouldScoreRight),
-                getScoreCommand(shouldScoreRight),
-                () -> SHOULD_SCORE_AUTONOMOUSLY
-        );
+        return new SequentialCommandGroup(
+                CoralCollectionCommands.getLoadCoralCommand(),
+                new ConditionalCommand(
+                        getAutonomouslyScoreCommand(shouldScoreRight),
+                        getScoreCommand(shouldScoreRight),
+                        () -> SHOULD_SCORE_AUTONOMOUSLY && REEF_CHOOSER.getScoringLevel() != ScoringLevel.L1
+                )
+        ).onlyIf(() -> RobotContainer.END_EFFECTOR.hasGamePiece() || RobotContainer.TRANSPORTER.hasCoral());
     }
 
     private static Command getAutonomouslyScoreCommand(boolean shouldScoreRight) {
         return new SequentialCommandGroup(
                 getAutonomouslyPrepareScoreCommand(shouldScoreRight).until(() -> isReadyToScore(shouldScoreRight)),
                 new ParallelCommandGroup(
-                        ElevatorCommands.getSetTargetStateCommand(REEF_CHOOSER::getElevatorState),
-                        ArmCommands.getSetTargetStateCommand(REEF_CHOOSER::getArmState, CoralPlacingCommands::shouldReverseScore)
+                        GeneralCommands.getFlippableOverridableArmCommand(REEF_CHOOSER::getArmElevatorState, false, CoralPlacingCommands::shouldReverseScore),
+                        EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.SCORE_CORAL)
                 )
         );
     }
@@ -47,27 +49,40 @@ public class CoralPlacingCommands {
         return new SequentialCommandGroup(
                 getAutonomouslyPrepareScoreCommand(shouldScoreRight).until(OperatorConstants.CONTINUE_TRIGGER),
                 new ParallelCommandGroup(
-                        ElevatorCommands.getSetTargetStateCommand(REEF_CHOOSER::getElevatorState),
-                        ArmCommands.getSetTargetStateCommand(REEF_CHOOSER::getArmState, CoralPlacingCommands::shouldReverseScore)
+                        GeneralCommands.getFlippableOverridableArmCommand(REEF_CHOOSER::getArmElevatorState, false, CoralPlacingCommands::shouldReverseScore),
+                        EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.SCORE_CORAL)
                 )
         );
     }
 
     private static Command getAutonomouslyPrepareScoreCommand(boolean shouldScoreRight) {
         return new ParallelCommandGroup(
-                ElevatorCommands.getPrepareStateCommand(REEF_CHOOSER::getElevatorState),
-                ArmCommands.getPrepareForStateCommand(REEF_CHOOSER::getArmState, CoralPlacingCommands::shouldReverseScore),
-                getAutonomousDriveToReefThenManualDriveCommand(shouldScoreRight).asProxy()
+                getPrepareArmElevatorIfWontHitReef(shouldScoreRight),
+                new SequentialCommandGroup(
+                        getAutonomousDriveToNoHitReefPose(shouldScoreRight).asProxy().onlyWhile(() -> !isPrepareArmAngleAboveCurrentArmAngle()),
+                        getAutonomousDriveToReef(shouldScoreRight).asProxy()
+                ).unless(() -> REEF_CHOOSER.getScoringLevel() == ScoringLevel.L1)
         );
     }
 
-    private static Command getAutonomousDriveToReefThenManualDriveCommand(boolean shouldScoreRight) {
-        return new SequentialCommandGroup(
-                SwerveCommands.getDriveToPoseCommand(
-                        () -> CoralPlacingCommands.calculateClosestScoringPose(shouldScoreRight),
-                        AutonomousConstants.DRIVE_TO_REEF_CONSTRAINTS
-                ),
-                GeneralCommands.getFieldRelativeDriveCommand()
+    private static Command getAutonomousDriveToReef(boolean shouldScoreRight) {
+        return SwerveCommands.getDriveToPoseCommand(
+                () -> CoralPlacingCommands.calculateClosestScoringPose(shouldScoreRight),
+                AutonomousConstants.DRIVE_TO_REEF_CONSTRAINTS
+        );
+    }
+
+    private static Command getAutonomousDriveToNoHitReefPose(boolean shouldScoreRight) {
+        return SwerveCommands.getDriveToPoseCommand(
+                () -> CoralPlacingCommands.calculateClosestNoHitReefPose(shouldScoreRight),
+                AutonomousConstants.DRIVE_TO_REEF_CONSTRAINTS
+        );
+    }
+
+    private static Command getPrepareArmElevatorIfWontHitReef(boolean shouldScoreRight) {
+        return GeneralCommands.runWhen(
+                GeneralCommands.getFlippableOverridableArmCommand(REEF_CHOOSER::getArmElevatorState, true, CoralPlacingCommands::shouldReverseScore),
+                () -> CoralPlacingCommands.isPrepareArmAngleAboveCurrentArmAngle() || calculateDistanceToTargetScoringPose(shouldScoreRight) > FieldConstants.SAFE_DISTANCE_FROM_SCORING_POSE_METERS
         );
     }
 
@@ -77,7 +92,7 @@ public class CoralPlacingCommands {
         return currentTranslation.getDistance(targetTranslation);
     }
 
-    public static FlippablePose2d calculateClosestScoringPose(boolean shouldScoreRight) {
+    private static FlippablePose2d calculateClosestScoringPose(boolean shouldScoreRight) {
         final Translation2d robotPositionOnField = RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().getTranslation();
         final Translation2d reefCenterPosition = new FlippableTranslation2d(FieldConstants.BLUE_REEF_CENTER_TRANSLATION, true).get();
         final Rotation2d[] reefClockAngles = FieldConstants.REEF_CLOCK_ANGLES;
@@ -106,13 +121,49 @@ public class CoralPlacingCommands {
         return new FlippablePose2d(closestScoringPose.transformBy(scoringPoseToBranch), false);
     }
 
+    private static FlippablePose2d calculateClosestNoHitReefPose(boolean shouldScoreRight) {
+        final Translation2d robotPositionOnField = RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().getTranslation();
+        final Translation2d reefCenterPosition = new FlippableTranslation2d(FieldConstants.BLUE_REEF_CENTER_TRANSLATION, true).get();
+        final Rotation2d[] reefClockAngles = FieldConstants.REEF_CLOCK_ANGLES;
+        final Transform2d reefCenterToScoringPose = new Transform2d(FieldConstants.REEF_CENTER_TO_TARGET_NO_HIT_REEF_POSITION_X_TRANSFORM_METERS, 0, new Rotation2d());
+
+        double distanceFromClosestScoringPoseMeters = Double.POSITIVE_INFINITY;
+        Pose2d closestScoringPose = new Pose2d();
+        for (final Rotation2d targetRotation : reefClockAngles) {
+            final Pose2d reefCenterAtTargetRotation = new Pose2d(reefCenterPosition, targetRotation);
+
+
+            final Pose2d currentScoringPose = reefCenterAtTargetRotation.transformBy(reefCenterToScoringPose);
+            final double distanceFromCurrentScoringPoseMeters = currentScoringPose.getTranslation().getDistance(robotPositionOnField);
+            if (distanceFromCurrentScoringPoseMeters < distanceFromClosestScoringPoseMeters) {
+                distanceFromClosestScoringPoseMeters = distanceFromCurrentScoringPoseMeters;
+                closestScoringPose = currentScoringPose;
+            }
+        }
+
+        final Transform2d scoringPoseToBranch = new Transform2d(
+                0,
+                shouldScoreRight ? FieldConstants.REEF_CENTER_TO_TARGET_SCORING_POSITION_Y_TRANSFORM_METERS : -FieldConstants.REEF_CENTER_TO_TARGET_SCORING_POSITION_Y_TRANSFORM_METERS,
+                shouldReverseScore() ? Rotation2d.k180deg : new Rotation2d()
+        );
+
+        return new FlippablePose2d(closestScoringPose.transformBy(scoringPoseToBranch), false);
+    }
+
+    private static boolean isPrepareArmAngleAboveCurrentArmAngle() {
+        ArmElevatorConstants.ArmElevatorState targetState = REEF_CHOOSER.getArmElevatorState();
+        final Rotation2d targetAngle = targetState.prepareState == null
+                ? targetState.targetAngle
+                : targetState.prepareState.targetAngle;
+        return RobotContainer.ARM_ELEVATOR.armAboveAngle(targetAngle) || RobotContainer.ARM_ELEVATOR.armAtAngle(targetAngle);
+    }
+
     private static boolean isReadyToScore(boolean shouldScoreRight) {
-        return RobotContainer.ELEVATOR.atPreparedTargetState()
-                && RobotContainer.ARM.atPrepareAngle()
+        return RobotContainer.ARM_ELEVATOR.atState(REEF_CHOOSER.getArmElevatorState().prepareState, shouldReverseScore())
                 && RobotContainer.SWERVE.atPose(calculateClosestScoringPose(shouldScoreRight));
     }
 
-    private static boolean shouldReverseScore() {
+    static boolean shouldReverseScore() {
         final Rotation2d robotRotation = RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().getRotation();
         final Translation2d robotTranslation = RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().getTranslation();
         final Translation2d reefCenterTranslation = FieldConstants.FLIPPABLE_REEF_CENTER_TRANSLATION.get();
@@ -134,8 +185,9 @@ public class CoralPlacingCommands {
         L3(L2.xTransformMeters, L2.positiveYTransformMeters, Rotation2d.fromDegrees(0)),
         L4(L2.xTransformMeters, L2.positiveYTransformMeters, Rotation2d.fromDegrees(0));
 
-        public final ElevatorConstants.ElevatorState elevatorState;
-        public final ArmConstants.ArmState armState;
+        public final ArmElevatorConstants.ArmElevatorState
+                armElevatorState,
+                armElevatorAlgaeCollectionState;
         public final int level = calculateLevel();
         final double xTransformMeters, positiveYTransformMeters;
         final Rotation2d rotationTransform;
@@ -153,45 +205,25 @@ public class CoralPlacingCommands {
             this.xTransformMeters = xTransformMeters;
             this.positiveYTransformMeters = positiveYTransformMeters;
             this.rotationTransform = rotationTransform;
-            this.elevatorState = determineElevatorState();
-            this.armState = determineArmState();
+            this.armElevatorState = determineArmElevatorState();
+            this.armElevatorAlgaeCollectionState = determineArmElevatorAlgaeCollectionState();
         }
 
-        /**
-         * Calculates the target placing position using the clock position and the target reef side.
-         * The reef side transform will be flipped depending on operator input.
-         * To make it more intuitive for the operator to input the reef side,
-         * left will always correspond to the physical left side in the driver station,
-         * as opposed to "reef relative" left.
-         *
-         * @param reefClockPosition the desired clock position of the reef
-         * @param reefSide          the desired side of the reef, left or right (as seen from the driver station)
-         * @return the target placing position
-         */
-        public FlippablePose2d calculateTargetPlacingPosition(FieldConstants.ReefClockPosition reefClockPosition, FieldConstants.ReefSide reefSide) {
-            final Pose2d reefCenterPose = new Pose2d(FieldConstants.BLUE_REEF_CENTER_TRANSLATION, reefClockPosition.clockAngle);
-            final double yTransform = reefSide.shouldFlipYTransform(reefClockPosition) ? -positiveYTransformMeters : positiveYTransformMeters;
-            final Transform2d transform = new Transform2d(xTransformMeters, yTransform, rotationTransform);
 
-            return new FlippablePose2d(reefCenterPose.plus(transform), true);
-        }
-
-        private ElevatorConstants.ElevatorState determineElevatorState() {
+        private ArmElevatorConstants.ArmElevatorState determineArmElevatorState() {
             return switch (level) {
-                case 1 -> ElevatorConstants.ElevatorState.SCORE_L1;
-                case 2 -> ElevatorConstants.ElevatorState.SCORE_L2;
-                case 3 -> ElevatorConstants.ElevatorState.SCORE_L3;
-                case 4 -> ElevatorConstants.ElevatorState.SCORE_L4;
+                case 1 -> ArmElevatorConstants.ArmElevatorState.SCORE_L1;
+                case 2 -> ArmElevatorConstants.ArmElevatorState.SCORE_L2;
+                case 3 -> ArmElevatorConstants.ArmElevatorState.SCORE_L3;
+                case 4 -> ArmElevatorConstants.ArmElevatorState.SCORE_L4;
                 default -> throw new IllegalStateException("Unexpected value: " + ordinal());
             };
         }
 
-        private ArmConstants.ArmState determineArmState() {
+        private ArmElevatorConstants.ArmElevatorState determineArmElevatorAlgaeCollectionState() {
             return switch (level) {
-                case 1 -> ArmConstants.ArmState.SCORE_L1;
-                case 2 -> ArmConstants.ArmState.SCORE_L2;
-                case 3 -> ArmConstants.ArmState.SCORE_L3;
-                case 4 -> ArmConstants.ArmState.SCORE_L4;
+                case 1, 2 -> ArmElevatorConstants.ArmElevatorState.COLLECT_ALGAE_L2;
+                case 3, 4 -> ArmElevatorConstants.ArmElevatorState.COLLECT_ALGAE_L3;
                 default -> throw new IllegalStateException("Unexpected value: " + ordinal());
             };
         }

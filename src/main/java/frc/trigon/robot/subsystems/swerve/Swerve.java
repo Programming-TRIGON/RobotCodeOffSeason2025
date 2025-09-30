@@ -5,6 +5,7 @@ import com.pathplanner.lib.util.swerve.SwerveSetpoint;
 import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -91,6 +92,14 @@ public class Swerve extends MotorSubsystem {
 
     public Rotation2d getHeading() {
         return Rotation2d.fromDegrees(SwerveConstants.GYRO.getSignal(Pigeon2Signal.YAW));
+    }
+
+    public Translation3d getFieldRelativeVelocity3d() {
+        return new Translation3d(
+                getFieldRelativeVelocity().vxMetersPerSecond,
+                getFieldRelativeVelocity().vyMetersPerSecond,
+                0
+        );
     }
 
     public ChassisSpeeds getFieldRelativeVelocity() {

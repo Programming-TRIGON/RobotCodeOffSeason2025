@@ -64,8 +64,8 @@ public class IntakeConstants {
             INTAKE_LENGTH_METERS = 0.365,
             INTAKE_MASS_KILOGRAMS = 3.26;
     private static final Rotation2d
-            MINIMUM_ANGLE = Rotation2d.fromDegrees(8.34),
-            MAXIMUM_ANGLE = Rotation2d.fromDegrees(70);
+            MINIMUM_ANGLE = Rotation2d.fromDegrees(-12),
+            MAXIMUM_ANGLE = Rotation2d.fromDegrees(110);
     private static final boolean SHOULD_SIMULATE_GRAVITY = true;
     private static final SimpleMotorSimulation INTAKE_SIMULATION = new SimpleMotorSimulation(
             INTAKE_GEARBOX,
@@ -84,7 +84,7 @@ public class IntakeConstants {
     private static final DoubleSupplier
             REVERSE_LIMIT_SENSOR_SIMULATION_SUPPLIER = () -> 0,
             FORWARD_LIMIT_SENSOR_SIMULATION_SUPPLIER = () -> 0,
-            DISTANCE_SENSOR_SIMULATION_SUPPLIER = () -> SimulationFieldHandler.isHoldingGamePiece() ? 0 : 1;
+            DISTANCE_SENSOR_SIMULATION_SUPPLIER = () -> SimulationFieldHandler.isHoldingCoral() && !SimulationFieldHandler.isCoralInEndEffector() ? 1 : 0;
 
     static final SysIdRoutine.Config ANGLE_SYSID_CONFIG = new SysIdRoutine.Config(
             Units.Volts.of(0.2).per(Units.Second),
@@ -94,8 +94,9 @@ public class IntakeConstants {
 
     static final Pose3d INTAKE_VISUALIZATION_ORIGIN_POINT = new Pose3d(
             new Translation3d(0.3234, 0, 0.2944),
-            new Rotation3d(0, MINIMUM_ANGLE.getRadians(), 0)
+            new Rotation3d(0, -2, 0)
     );
+
     private static final double MAXIMUM_DISPLAYABLE_VELOCITY = 12;
     static final SpeedMechanism2d INTAKE_MECHANISM = new SpeedMechanism2d(
             "IntakeMechanism",
@@ -125,6 +126,11 @@ public class IntakeConstants {
                     CommandScheduler.getInstance().getActiveButtonLoop(),
                     FORWARD_LIMIT_SENSOR::getBinaryValue
             ).debounce(FORWARD_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS);
+    public static Pose3d CORAL_COLLECTION_POSE = new Pose3d(
+            new Translation3d(0.6827, 0, 0),
+            new Rotation3d()
+    );
+    static final double WHEEL_RADIUS_METERS = edu.wpi.first.math.util.Units.inchesToMeters(1.5);
 
     static {
         configureIntakeMotor();
@@ -211,9 +217,11 @@ public class IntakeConstants {
     }
 
     public enum IntakeState {
-        REST(0, MAXIMUM_ANGLE),
-        COLLECT(5, MINIMUM_ANGLE),
-        EJECT(-5, MINIMUM_ANGLE);
+        REST(0, MINIMUM_ANGLE),
+        OPEN_REST(0, MAXIMUM_ANGLE),
+        REST_FOR_CLIMB(0, MAXIMUM_ANGLE),
+        COLLECT(5, MAXIMUM_ANGLE),
+        EJECT(-5, MAXIMUM_ANGLE);
 
         public final double targetVoltage;
         public final Rotation2d targetAngle;
