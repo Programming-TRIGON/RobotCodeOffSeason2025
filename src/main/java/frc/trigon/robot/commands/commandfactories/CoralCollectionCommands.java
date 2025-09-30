@@ -21,7 +21,10 @@ public class CoralCollectionCommands {
         return new SequentialCommandGroup(
                 getIntakeSequenceCommand(),
                 new InstantCommand(
-                        () -> getLoadCoralCommand().schedule()
+                        () -> {
+                            if (!AlgaeManipulationCommands.isHoldingAlgae())
+                                getLoadCoralCommand().schedule();
+                        }
                 )
         );
         // new IntakeAssistCommand(OperatorConstants.DEFAULT_INTAKE_ASSIST_MODE)
@@ -34,11 +37,15 @@ public class CoralCollectionCommands {
         ).until(RobotContainer.END_EFFECTOR::hasGamePiece).onlyWhile(() -> !RobotContainer.END_EFFECTOR.hasGamePiece());
     }
 
+    public static Command getUnloadCoralCommand() {
+        return new ParallelCommandGroup(
+                ArmElevatorCommands.getSetTargetStateCommand(ArmElevatorConstants.ArmElevatorState.UNLOAD_CORAL),
+                EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.UNLOAD_CORAL)
+        ).until(() -> !RobotContainer.END_EFFECTOR.hasGamePiece() && RobotContainer.INTAKE.hasCoral());
+    }
+
     private static Command getIntakeSequenceCommand() {
-        return new SequentialCommandGroup(
-                getInitiateCollectionCommand().until(RobotContainer.INTAKE::hasCoral),
-                new InstantCommand(() -> getAlignCoralCommand().schedule()).alongWith(getCollectionConfirmationCommand())
-        ).until(RobotContainer.INTAKE::hasCoral);
+        return getInitiateCollectionCommand().until(RobotContainer.TRANSPORTER::hasCoral);
     }
 
     private static Command getInitiateCollectionCommand() {

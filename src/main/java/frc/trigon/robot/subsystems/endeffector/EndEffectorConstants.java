@@ -87,6 +87,7 @@ public class EndEffectorConstants {
         REST(0),
         EJECT(4),
         LOAD_CORAL(-4),
+        UNLOAD_CORAL(4),
         SCORE_CORAL(4),
         COLLECT_ALGAE(-4),
         SCORE_ALGAE(4),
