@@ -1,6 +1,9 @@
 package frc.trigon.robot.subsystems.transporter;
 
-import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.trigon.robot.RobotContainer;
 import lib.commands.NetworkTablesCommand;
 
@@ -18,12 +21,10 @@ public class TransporterCommands {
     }
 
     public static Command getSetTargetStateWithPulsesCommand(TransporterConstants.TransporterState targetState) {
-        return new RepeatCommand(
-                new SequentialCommandGroup(
-                        getSetTargetStateCommand(targetState).withTimeout(TransporterConstants.PULSE_VOLTAGE_APPLIED_TIME_SECONDS),
-                        new WaitCommand(TransporterConstants.PULSE_WAIT_TIME_SECONDS)
-                )
-        );
+        return new SequentialCommandGroup(
+                getSetTargetStateCommand(targetState).withTimeout(TransporterConstants.PULSE_VOLTAGE_APPLIED_TIME_SECONDS),
+                new WaitCommand(TransporterConstants.PULSE_WAIT_TIME_SECONDS)
+        ).repeatedly();
     }
 
     public static Command getSetTargetStateCommand(TransporterConstants.TransporterState targetState) {

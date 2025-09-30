@@ -32,7 +32,7 @@ public class ArmElevatorConstants {
             ANGLE_ENCODER_ID = 13,
             ELEVATOR_MASTER_MOTOR_ID = 16,
             ELEVATOR_FOLLOWER_MOTOR_ID = 17,
-            REVERSE_LIMIT_SENSOR_CHANNEL = 0;
+            REVERSE_LIMIT_SENSOR_CHANNEL = 1;
     private static final String
             ARM_MASTER_MOTOR_NAME = "ArmMasterMotor",
             ARM_FOLLOWER_MOTOR_NAME = "ArmFollowerMotor",

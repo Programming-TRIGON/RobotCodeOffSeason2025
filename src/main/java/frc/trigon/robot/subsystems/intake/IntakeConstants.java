@@ -14,7 +14,9 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.event.BooleanEvent;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.trigon.robot.constants.OperatorConstants;
 import frc.trigon.robot.misc.simulatedfield.SimulationFieldHandler;
 import lib.hardware.RobotHardwareStats;
 import lib.hardware.misc.simplesensor.SimpleSensor;
@@ -31,9 +33,9 @@ public class IntakeConstants {
     private static final int
             INTAKE_MOTOR_ID = 9,
             ANGLE_MOTOR_ID = 10,
-            REVERSE_LIMIT_SENSOR_CHANNEL = 0,
-            FORWARD_LIMIT_CHANNEL = 1,
-            DISTANCE_SENSOR_CHANNEL = 2;
+            REVERSE_LIMIT_SENSOR_CHANNEL = 3,
+            FORWARD_LIMIT_CHANNEL = 4,
+            DISTANCE_SENSOR_CHANNEL = 5;
     private static final String
             INTAKE_MOTOR_NAME = "IntakeMotor",
             ANGLE_MOTOR_NAME = "IntakeAngleMotor",
@@ -50,7 +52,7 @@ public class IntakeConstants {
 
     private static final double
             INTAKE_MOTOR_GEAR_RATIO = 4,
-            ANGLE_MOTOR_GEAR_RATIO = 28;
+            ANGLE_MOTOR_GEAR_RATIO = 40;
     static final boolean FOC_ENABLED = true;
 
     private static final int
@@ -64,8 +66,8 @@ public class IntakeConstants {
             INTAKE_LENGTH_METERS = 0.365,
             INTAKE_MASS_KILOGRAMS = 3.26;
     private static final Rotation2d
-            MINIMUM_ANGLE = Rotation2d.fromDegrees(-12),
-            MAXIMUM_ANGLE = Rotation2d.fromDegrees(110);
+            MINIMUM_ANGLE = Rotation2d.fromDegrees(0),
+            MAXIMUM_ANGLE = Rotation2d.fromDegrees(-127);
     private static final boolean SHOULD_SIMULATE_GRAVITY = true;
     private static final SimpleMotorSimulation INTAKE_SIMULATION = new SimpleMotorSimulation(
             INTAKE_GEARBOX,
@@ -87,8 +89,8 @@ public class IntakeConstants {
             DISTANCE_SENSOR_SIMULATION_SUPPLIER = () -> SimulationFieldHandler.isHoldingCoral() && !SimulationFieldHandler.isCoralInEndEffector() ? 1 : 0;
 
     static final SysIdRoutine.Config ANGLE_SYSID_CONFIG = new SysIdRoutine.Config(
-            Units.Volts.of(0.2).per(Units.Second),
-            Units.Volts.of(0.6),
+            Units.Volts.of(1.2).per(Units.Second),
+            Units.Volts.of(1.5),
             null
     );
 
@@ -149,7 +151,7 @@ public class IntakeConstants {
         config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
-        config.Feedback.RotorToSensorRatio = INTAKE_MOTOR_GEAR_RATIO;
+        config.Feedback.SensorToMechanismRatio = INTAKE_MOTOR_GEAR_RATIO;
         config.CurrentLimits.SupplyCurrentLimit = 60;
 
         INTAKE_MOTOR.applyConfiguration(config);
@@ -169,28 +171,28 @@ public class IntakeConstants {
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
-        config.Feedback.RotorToSensorRatio = ANGLE_MOTOR_GEAR_RATIO;
+        config.Feedback.SensorToMechanismRatio = ANGLE_MOTOR_GEAR_RATIO;
 
-        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 500 : 0;
+        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 500 : 30;
         config.Slot0.kI = RobotHardwareStats.isSimulation() ? 0 : 0;
-        config.Slot0.kD = RobotHardwareStats.isSimulation() ? 0 : 0;
-        config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0.0054454 : 0;
-        config.Slot0.kV = RobotHardwareStats.isSimulation() ? 3.3247 : 0;
+        config.Slot0.kD = RobotHardwareStats.isSimulation() ? 0 : 0.5;
+        config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0.0054454 : 0.61;
+        config.Slot0.kV = RobotHardwareStats.isSimulation() ? 3.3247 : 4;
         config.Slot0.kA = RobotHardwareStats.isSimulation() ? 0.047542 : 0;
-        config.Slot0.kG = RobotHardwareStats.isSimulation() ? 0.35427 : 0.32151;
+        config.Slot0.kG = RobotHardwareStats.isSimulation() ? 0.35427 : 0.3;
 
         config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
         config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
 
-        config.MotionMagic.MotionMagicCruiseVelocity = RobotHardwareStats.isSimulation() ? 12 / config.Slot0.kV : 2;
+        config.MotionMagic.MotionMagicCruiseVelocity = RobotHardwareStats.isSimulation() ? 12 / config.Slot0.kV : 3;
         config.MotionMagic.MotionMagicAcceleration = RobotHardwareStats.isSimulation() ? 8 : 8;
         config.MotionMagic.MotionMagicJerk = config.MotionMagic.MotionMagicAcceleration * 10;
 
-        config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-        config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = MINIMUM_ANGLE.getRotations();
-
-        config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-        config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = MAXIMUM_ANGLE.getRotations();
+//        config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+//        config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = MINIMUM_ANGLE.getRotations();
+//
+//        config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+//        config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = MAXIMUM_ANGLE.getRotations();
 
         config.CurrentLimits.SupplyCurrentLimit = 60;
 
@@ -204,23 +206,25 @@ public class IntakeConstants {
         ANGLE_MOTOR.registerSignal(TalonFXSignal.ROTOR_POSITION, 100);
         ANGLE_MOTOR.registerSignal(TalonFXSignal.ROTOR_VELOCITY, 100);
         ANGLE_MOTOR.registerSignal(TalonFXSignal.CLOSED_LOOP_REFERENCE, 100);
+
+        OperatorConstants.DEBUGGING_TRIGGER.onTrue(new InstantCommand(() -> ANGLE_MOTOR.setPosition(0)).ignoringDisable(true));
     }
 
     private static void configureLimitSensor(SimpleSensor limitSensor, DoubleSupplier simulationSupplier, BooleanEvent booleanEvent, Rotation2d resetPosition) {
         limitSensor.setSimulationSupplier(simulationSupplier);
 
-        booleanEvent.ifHigh(() -> ANGLE_MOTOR.setPosition(resetPosition.getRotations()));
+//        booleanEvent.ifHigh(() -> ANGLE_MOTOR.setPosition(resetPosition.getRotations()));
     }
 
     private static void configureDistanceSensor() {
-        DISTANCE_SENSOR.setSimulationSupplier(DISTANCE_SENSOR_SIMULATION_SUPPLIER);
+//        DISTANCE_SENSOR.setSimulationSupplier(DISTANCE_SENSOR_SIMULATION_SUPPLIER);
     }
 
     public enum IntakeState {
         REST(0, MINIMUM_ANGLE),
         REST_FOR_CLIMB(0, MAXIMUM_ANGLE),
-        COLLECT(5, MAXIMUM_ANGLE),
-        EJECT(-5, MAXIMUM_ANGLE);
+        COLLECT(-8, MAXIMUM_ANGLE),
+        EJECT(5, MINIMUM_ANGLE);
 
         public final double targetVoltage;
         public final Rotation2d targetAngle;

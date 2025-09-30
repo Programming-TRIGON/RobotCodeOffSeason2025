@@ -44,7 +44,7 @@ public class OperatorConstants {
             BACKWARD_DYNAMIC_CHARACTERIZATION_TRIGGER = OPERATOR_CONTROLLER.down();
 
     public static final Trigger
-            CORAL_COLLECTION_TRIGGER = DRIVER_CONTROLLER.leftTrigger().or(OPERATOR_CONTROLLER.c()),
+            CORAL_COLLECTION_TRIGGER = DRIVER_CONTROLLER.leftTrigger().or(OPERATOR_CONTROLLER.z()),
             SPAWN_CORAL_TRIGGER = OPERATOR_CONTROLLER.equals(),
             SCORE_CORAL_LEFT_TRIGGER = DRIVER_CONTROLLER.leftBumper(),
             SCORE_CORAL_RIGHT_TRIGGER = DRIVER_CONTROLLER.rightBumper(),

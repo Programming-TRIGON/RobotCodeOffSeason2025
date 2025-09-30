@@ -18,7 +18,7 @@ import java.util.function.DoubleSupplier;
 public class EndEffectorConstants {
     private static final int
             END_EFFECTOR_MOTOR_ID = 15,
-            DISTANCE_SENSOR_CHANNEL = 4;
+            DISTANCE_SENSOR_CHANNEL = 0;
     private static final String
             END_EFFECTOR_MOTOR_NAME = "EndEffectorMotor",
             DISTANCE_SENSOR_NAME = "EndEffectorDistanceSensor";

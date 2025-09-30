@@ -101,8 +101,8 @@ public class Climber extends MotorSubsystem {
     }
 
     private void setServoPowers(double power) {
-        rightServo.setTargetSpeed(power);
-        leftServo.setTargetSpeed(-power);
+//        rightServo.setTargetSpeed(power);
+//        leftServo.setTargetSpeed(-power);
     }
 
     private Pose3d calculateVisualizationPose() {
