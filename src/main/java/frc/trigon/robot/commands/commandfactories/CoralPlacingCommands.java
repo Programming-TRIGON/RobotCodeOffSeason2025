@@ -32,7 +32,7 @@ public class CoralPlacingCommands {
                         getScoreCommand(shouldScoreRight),
                         () -> SHOULD_SCORE_AUTONOMOUSLY && REEF_CHOOSER.getScoringLevel() != ScoringLevel.L1
                 )
-        );
+        ).onlyIf(() -> RobotContainer.END_EFFECTOR.hasGamePiece() || RobotContainer.INTAKE.hasCoral());
     }
 
     private static Command getAutonomouslyScoreCommand(boolean shouldScoreRight) {
