@@ -112,7 +112,7 @@ public class AlgaeManipulationCommands {
     }
 
     private static Command getScoreInNetCommand() {
-        return new ParallelCommandGroup(
+        return new ParallelRaceGroup(
                 GeneralCommands.getFlippableOverridableArmCommand(ArmElevatorConstants.ArmElevatorState.SCORE_NET, false, AlgaeManipulationCommands::shouldReverseNetScore),
                 GeneralCommands.runWhen(EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.SCORE_ALGAE), OperatorConstants.CONTINUE_TRIGGER),
                 getDriveToNetCommand()

@@ -126,9 +126,13 @@ public class SimulationFieldHandler {
 
     private static boolean isCollectingAlgae() {
         return RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.COLLECT_ALGAE_L2)
+                || RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.COLLECT_ALGAE_L2, true)
                 || RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.COLLECT_ALGAE_L3)
+                || RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.COLLECT_ALGAE_L3, true)
                 || RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.COLLECT_ALGAE_FLOOR)
-                || RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.COLLECT_ALGAE_LOLLIPOP);
+                || RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.COLLECT_ALGAE_FLOOR, true)
+                || RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.COLLECT_ALGAE_LOLLIPOP)
+                || RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.COLLECT_ALGAE_LOLLIPOP, true);
     }
 
     private static boolean isCoralLoading() {

@@ -85,7 +85,6 @@ public class ArmElevator extends MotorSubsystem {
         Logger.recordOutput("Poses/Components/ArmPose", calculateVisualizationPose());
         Logger.recordOutput("Poses/Components/ElevatorFirstPose", getFirstStageComponentPose());
         Logger.recordOutput("Poses/Components/ElevatorSecondPose", getSecondStageComponentPose());
-        System.out.println("Arm elevator state " + targetState.name());
     }
 
     @Override
