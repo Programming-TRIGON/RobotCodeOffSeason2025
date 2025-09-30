@@ -50,7 +50,7 @@ public class IntakeConstants {
 
     private static final double
             INTAKE_MOTOR_GEAR_RATIO = 4,
-            ANGLE_MOTOR_GEAR_RATIO = 28;
+            ANGLE_MOTOR_GEAR_RATIO = 40;
     static final boolean FOC_ENABLED = true;
 
     private static final int

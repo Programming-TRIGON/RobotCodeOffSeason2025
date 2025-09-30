@@ -49,8 +49,8 @@ public class ArmElevatorConstants {
     private static final SimpleSensor REVERSE_LIMIT_SENSOR = SimpleSensor.createDigitalSensor(REVERSE_LIMIT_SENSOR_CHANNEL, REVERSE_LIMIT_SENSOR_NAME);
 
     private static final double
-            ARM_GEAR_RATIO = 40,
-            ELEVATOR_GEAR_RATIO = 4;
+            ARM_GEAR_RATIO = 42,
+            ELEVATOR_GEAR_RATIO = 3;
     private static final double REVERSE_LIMIT_RESET_POSITION_ROTATIONS = 0;
     private static final double
             ARM_MOTOR_CURRENT_LIMIT = 50,
