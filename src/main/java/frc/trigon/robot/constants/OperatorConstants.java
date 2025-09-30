@@ -61,7 +61,8 @@ public class OperatorConstants {
     public static final Trigger
             SPAWN_CORAL_IN_SIMULATION_TRIGGER = OPERATOR_CONTROLLER.equals(),
             FLIP_ARM_TRIGGER = DRIVER_CONTROLLER.start(),
-            LOLLIPOP_ALGAE_TOGGLE_TRIGGER = DRIVER_CONTROLLER.a();
+            LOLLIPOP_ALGAE_TOGGLE_TRIGGER = DRIVER_CONTROLLER.a(),
+            CLIMB_TRIGGER = DRIVER_CONTROLLER.back().or(OPERATOR_CONTROLLER.c());
 
     public static final Trigger
             SET_TARGET_SCORING_REEF_LEVEL_L1_TRIGGER = OPERATOR_CONTROLLER.numpad0().or(DRIVER_CONTROLLER.a().and(() -> !AlgaeManipulationCommands.isHoldingAlgae())),

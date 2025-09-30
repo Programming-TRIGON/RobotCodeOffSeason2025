@@ -63,8 +63,6 @@ public class CoralCollectionCommands {
     }
 
     private static Command getCollectionConfirmationCommand() {
-        return new ParallelCommandGroup(
-                new InstantCommand(() -> OperatorConstants.DRIVER_CONTROLLER.rumble(OperatorConstants.RUMBLE_DURATION_SECONDS, OperatorConstants.RUMBLE_POWER))
-        );
+        return new InstantCommand(() -> OperatorConstants.DRIVER_CONTROLLER.rumble(OperatorConstants.RUMBLE_DURATION_SECONDS, OperatorConstants.RUMBLE_POWER));
     }
 }

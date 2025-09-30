@@ -50,11 +50,18 @@ public class ClimberConstants {
     private static final double GEAR_RATIO = 37.5;
     private static final double REVERSE_LIMIT_RESET_POSITION_ROTATIONS = 0;
     private static final double FORWARD_SOFT_LIMIT_POSITION_ROTATIONS = 3;
+    private static final int
+            SERVO_PULSE_WIDTH_MICROSECONDS = 20000,
+            SERVO_MAXIMUM_DEADBAND_RANGE_MICROSECONDS = 0,
+            SERVO_CENTER_PULSE_WIDTH_MICROSECONDS = 1500,
+            SERVO_MINIMUM_DEADBAND_RANGE_MICROSECONDS = 1000,
+            SERVO_MAXIMUM_PULSE_WIDTH_MICROSECONDS = 2000;
+
     static final boolean FOC_ENABLED = true;
 
     private static final int MOTOR_AMOUNT = 1;
     private static final DCMotor
-            GEARBOX = DCMotor.getFalcon500Foc(MOTOR_AMOUNT);//TODO: KrakenX44
+            GEARBOX = DCMotor.getFalcon500Foc(MOTOR_AMOUNT);
     private static final double MOMENT_OF_INERTIA = 0.003;
     private static final SimpleMotorSimulation MOTOR_SIMULATION = new SimpleMotorSimulation(
             GEARBOX,
@@ -96,6 +103,7 @@ public class ClimberConstants {
 
     static {
         configureMotor();
+        configureServos();
         configureReverseLimitSensor();
     }
 
@@ -143,6 +151,23 @@ public class ClimberConstants {
         MOTOR.registerSignal(TalonFXSignal.MOTOR_VOLTAGE, 100);
         MOTOR.registerSignal(TalonFXSignal.REVERSE_LIMIT, 100);
         MOTOR.registerSignal(TalonFXSignal.FORWARD_LIMIT, 100);
+    }
+
+    private static void configureServos() {
+        RIGHT_SERVO.setPWMBoundaries(
+                SERVO_PULSE_WIDTH_MICROSECONDS,
+                SERVO_MAXIMUM_DEADBAND_RANGE_MICROSECONDS,
+                SERVO_CENTER_PULSE_WIDTH_MICROSECONDS,
+                SERVO_MINIMUM_DEADBAND_RANGE_MICROSECONDS,
+                SERVO_MAXIMUM_PULSE_WIDTH_MICROSECONDS
+        );
+        LEFT_SERVO.setPWMBoundaries(
+                SERVO_PULSE_WIDTH_MICROSECONDS,
+                SERVO_MAXIMUM_DEADBAND_RANGE_MICROSECONDS,
+                SERVO_CENTER_PULSE_WIDTH_MICROSECONDS,
+                SERVO_MINIMUM_DEADBAND_RANGE_MICROSECONDS,
+                SERVO_MAXIMUM_PULSE_WIDTH_MICROSECONDS
+        );
     }
 
     private static void configureReverseLimitSensor() {
