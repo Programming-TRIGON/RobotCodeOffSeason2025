@@ -74,8 +74,8 @@ public class ArmElevator extends MotorSubsystem {
     @Override
     public void updateMechanism() {
         ArmElevatorConstants.ARM_MECHANISM.update(
-                Rotation2d.fromRotations(getCurrentArmAngle().getRotations() + ArmElevatorConstants.POSITION_OFFSET_FROM_GRAVITY_OFFSET),
-                Rotation2d.fromRotations(armMasterMotor.getSignal(TalonFXSignal.CLOSED_LOOP_REFERENCE) + ArmElevatorConstants.POSITION_OFFSET_FROM_GRAVITY_OFFSET)
+                Rotation2d.fromRotations(getCurrentArmAngle().getRotations()),
+                Rotation2d.fromRotations(armMasterMotor.getSignal(TalonFXSignal.CLOSED_LOOP_REFERENCE) + ArmElevatorConstants.ARM_POSITION_OFFSET_FROM_GRAVITY_OFFSET)
         );
         ArmElevatorConstants.ELEVATOR_MECHANISM.update(
                 getCurrentElevatorPositionMeters(),
@@ -141,7 +141,7 @@ public class ArmElevator extends MotorSubsystem {
     }
 
     public Rotation2d getCurrentArmAngle() {
-        return Rotation2d.fromRotations(angleEncoder.getSignal(CANcoderSignal.POSITION));
+        return Rotation2d.fromRotations(angleEncoder.getSignal(CANcoderSignal.POSITION) + ArmElevatorConstants.ARM_POSITION_OFFSET_FROM_GRAVITY_OFFSET);
     }
 
     public double getCurrentElevatorPositionMeters() {
@@ -196,7 +196,8 @@ public class ArmElevator extends MotorSubsystem {
     }
 
     void setTargetArmAngle(Rotation2d targetAngle, boolean ignoreConstraints) {
-        armMasterMotor.setControl(armPositionRequest.withPosition(ignoreConstraints ? targetAngle.getRotations() : Math.max(targetAngle.getRotations(), calculateMinimumArmSafeAngle().getRotations())));
+        final double targetPosition = ignoreConstraints ? targetAngle.getRotations() : Math.max(targetAngle.getRotations(), calculateMinimumArmSafeAngle().getRotations());
+        armMasterMotor.setControl(armPositionRequest.withPosition(targetPosition - ArmElevatorConstants.ARM_POSITION_OFFSET_FROM_GRAVITY_OFFSET));
     }
 
     void setTargetElevatorPositionMeters(double targetPositionMeters, boolean ignoreConstraints) {

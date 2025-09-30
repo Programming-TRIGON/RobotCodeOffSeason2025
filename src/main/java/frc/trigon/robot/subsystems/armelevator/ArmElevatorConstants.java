@@ -48,21 +48,21 @@ public class ArmElevatorConstants {
     static final CANcoderEncoder ANGLE_ENCODER = new CANcoderEncoder(ANGLE_ENCODER_ID, ANGLE_ENCODER_NAME);
     private static final SimpleSensor REVERSE_LIMIT_SENSOR = SimpleSensor.createDigitalSensor(REVERSE_LIMIT_SENSOR_CHANNEL, REVERSE_LIMIT_SENSOR_NAME);
 
-    private static final double
-            ARM_GEAR_RATIO = 40,
+    static final double
+            ARM_GEAR_RATIO = 42,
             ELEVATOR_GEAR_RATIO = 4;
-    private static final double REVERSE_LIMIT_RESET_POSITION_ROTATIONS = 0;
+    private static final double ELEVATOR_REVERSE_LIMIT_RESET_POSITION_ROTATIONS = 0;
     private static final double
             ARM_MOTOR_CURRENT_LIMIT = 50,
             ELEVATOR_MOTOR_CURRENT_LIMIT = 50;
     private static final double ANGLE_ENCODER_GRAVITY_OFFSET = 0;
-    static final double POSITION_OFFSET_FROM_GRAVITY_OFFSET = RobotHardwareStats.isSimulation() ? 0 - Conversions.degreesToRotations(90) : 0 + Conversions.degreesToRotations(0) - ANGLE_ENCODER_GRAVITY_OFFSET;
+    static final double ARM_POSITION_OFFSET_FROM_GRAVITY_OFFSET = RobotHardwareStats.isSimulation() ? 0 - Conversions.degreesToRotations(90) : 0.3466796875 - 0.25 - ANGLE_ENCODER_GRAVITY_OFFSET;
     private static final boolean
             SHOULD_ARM_FOLLOWER_OPPOSE_MASTER = false,
             SHOULD_ELEVATOR_FOLLOWER_OPPOSE_MASTER = false;
     static final double
-            ARM_DEFAULT_MAXIMUM_VELOCITY = RobotHardwareStats.isSimulation() ? 2.4614 : 0,
-            ARM_DEFAULT_MAXIMUM_ACCELERATION = RobotHardwareStats.isSimulation() ? 67.2344 : 0,
+            ARM_DEFAULT_MAXIMUM_VELOCITY = RobotHardwareStats.isSimulation() ? 2.4614 : 20,
+            ARM_DEFAULT_MAXIMUM_ACCELERATION = RobotHardwareStats.isSimulation() ? 67.2344 : 2,
             ARM_DEFAULT_MAXIMUM_JERK = ARM_DEFAULT_MAXIMUM_ACCELERATION * 10,
             ELEVATOR_DEFAULT_MAXIMUM_VELOCITY = RobotHardwareStats.isSimulation() ? 25.178 : 20,
             ELEVATOR_DEFAULT_MAXIMUM_ACCELERATION = RobotHardwareStats.isSimulation() ? 80 : 20;
@@ -109,7 +109,7 @@ public class ArmElevatorConstants {
 
     static final SysIdRoutine.Config ARM_SYSID_CONFIG = new SysIdRoutine.Config(
             Units.Volts.of(1.5).per(Units.Seconds),
-            Units.Volts.of(3),
+            Units.Volts.of(1.5),
             Units.Second.of(1000)
     );
 
@@ -207,12 +207,17 @@ public class ArmElevatorConstants {
         config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
         config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
 
+        config.Feedback.VelocityFilterTimeConstant = 0.2;
+
         config.MotionMagic.MotionMagicCruiseVelocity = ARM_DEFAULT_MAXIMUM_VELOCITY;
         config.MotionMagic.MotionMagicAcceleration = ARM_DEFAULT_MAXIMUM_ACCELERATION;
         config.MotionMagic.MotionMagicJerk = config.MotionMagic.MotionMagicAcceleration * 10;
 
-        config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-        config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = Conversions.degreesToRotations(270);
+//        config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+//        config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = Conversions.degreesToRotations(270);
+
+//        config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+//        config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = Conversions.degreesToRotations(-270);
 
         config.CurrentLimits.StatorCurrentLimitEnable = true;
         config.CurrentLimits.StatorCurrentLimit = ARM_MOTOR_CURRENT_LIMIT;
@@ -225,6 +230,8 @@ public class ArmElevatorConstants {
         ARM_MASTER_MOTOR.registerSignal(TalonFXSignal.MOTOR_VOLTAGE, 100);
         ARM_MASTER_MOTOR.registerSignal(TalonFXSignal.CLOSED_LOOP_REFERENCE, 100);
         ARM_MASTER_MOTOR.registerSignal(TalonFXSignal.STATOR_CURRENT, 100);
+        ARM_MASTER_MOTOR.registerSignal(TalonFXSignal.ROTOR_VELOCITY, 100);
+        ARM_MASTER_MOTOR.registerSignal(TalonFXSignal.ROTOR_POSITION, 100);
     }
 
     private static void configureArmFollowerMotor() {
@@ -267,7 +274,7 @@ public class ArmElevatorConstants {
         config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
 
         config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-        config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = REVERSE_LIMIT_RESET_POSITION_ROTATIONS;
+        config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = ELEVATOR_REVERSE_LIMIT_RESET_POSITION_ROTATIONS;
 
         config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
         config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 6.8;
@@ -310,7 +317,7 @@ public class ArmElevatorConstants {
     private static void configureAngleEncoder() {
         final CANcoderConfiguration config = new CANcoderConfiguration();
 
-        config.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
+        config.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
         config.MagnetSensor.MagnetOffset = ANGLE_ENCODER_GRAVITY_OFFSET;
         config.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 1;
 
@@ -323,7 +330,7 @@ public class ArmElevatorConstants {
 
     private static void configureReverseLimitSensor() {
         REVERSE_LIMIT_SENSOR.setSimulationSupplier(REVERSE_LIMIT_SENSOR_SIMULATION_SUPPLIER);
-        REVERSE_LIMIT_SENSOR_BOOLEAN_EVENT.ifHigh(() -> ELEVATOR_MASTER_MOTOR.setPosition(REVERSE_LIMIT_RESET_POSITION_ROTATIONS));
+        REVERSE_LIMIT_SENSOR_BOOLEAN_EVENT.ifHigh(() -> ELEVATOR_MASTER_MOTOR.setPosition(ELEVATOR_REVERSE_LIMIT_RESET_POSITION_ROTATIONS));
     }
 
     public enum ArmElevatorState {
