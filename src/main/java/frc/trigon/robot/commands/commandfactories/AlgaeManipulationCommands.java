@@ -11,7 +11,6 @@ import frc.trigon.robot.commands.CommandConstants;
 import frc.trigon.robot.commands.commandclasses.WaitUntilChangeCommand;
 import frc.trigon.robot.constants.AutonomousConstants;
 import frc.trigon.robot.constants.FieldConstants;
-import frc.trigon.robot.constants.LEDConstants;
 import frc.trigon.robot.constants.OperatorConstants;
 import frc.trigon.robot.subsystems.armelevator.ArmElevatorCommands;
 import frc.trigon.robot.subsystems.armelevator.ArmElevatorConstants;
@@ -21,7 +20,6 @@ import frc.trigon.robot.subsystems.intake.IntakeCommands;
 import frc.trigon.robot.subsystems.intake.IntakeConstants;
 import frc.trigon.robot.subsystems.swerve.SwerveCommands;
 import lib.hardware.RobotHardwareStats;
-import lib.hardware.misc.leds.LEDCommands;
 import lib.utilities.flippable.Flippable;
 import lib.utilities.flippable.FlippablePose2d;
 import lib.utilities.flippable.FlippableRotation2d;
@@ -211,10 +209,7 @@ public class AlgaeManipulationCommands {
     }
 
     private static Command getAlgaeCollectionConfirmationCommand() {
-        return new ParallelCommandGroup(
-                new InstantCommand(() -> OperatorConstants.DRIVER_CONTROLLER.rumble(OperatorConstants.RUMBLE_DURATION_SECONDS, OperatorConstants.RUMBLE_POWER)),
-                LEDCommands.getAnimateCommand(LEDConstants.ALGAE_COLLECTION_CONFIRMATION_ANIMATION_SETTINGS)
-        );
+        return new InstantCommand(() -> OperatorConstants.DRIVER_CONTROLLER.rumble(OperatorConstants.RUMBLE_DURATION_SECONDS, OperatorConstants.RUMBLE_POWER));
     }
 
     private static FlippablePose2d calculateClosestNetScoringPose() {
