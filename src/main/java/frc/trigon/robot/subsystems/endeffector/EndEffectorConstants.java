@@ -26,7 +26,7 @@ public class EndEffectorConstants {
     static final SimpleSensor DISTANCE_SENSOR = SimpleSensor.createDigitalSensor(DISTANCE_SENSOR_CHANNEL, DISTANCE_SENSOR_NAME);
 
     static final boolean FOC_ENABLED = true;
-    private static final double END_EFFECTOR_GEAR_RATIO = 13;
+    private static final double END_EFFECTOR_GEAR_RATIO = 12.82;
     private static final int END_EFFECTOR_MOTOR_AMOUNT = 1;
     private static final DCMotor END_EFFECTOR_GEARBOX = DCMotor.getKrakenX60Foc(END_EFFECTOR_MOTOR_AMOUNT);
     private static final double
