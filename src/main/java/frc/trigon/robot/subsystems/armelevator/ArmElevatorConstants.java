@@ -1,4 +1,4 @@
-package frc.trigon.robot.subsystems.arm;
+package frc.trigon.robot.subsystems.armelevator;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -343,7 +343,7 @@ public class ArmElevatorConstants {
         SCORE_L3(Rotation2d.fromDegrees(90), 0.7, PREPARE_SCORE_L3, false, 1),
         SCORE_L4(Rotation2d.fromDegrees(100), 1.2, PREPARE_SCORE_L4, false, 1),
         SCORE_NET(Rotation2d.fromDegrees(160), 1.382, null, false, 0.3),
-        SCORE_PROCESSOR(Rotation2d.fromDegrees(90), 0.603, null, false, 0.7),
+        SCORE_PROCESSOR(Rotation2d.fromDegrees(90), 0.1, null, false, 0.7),
         COLLECT_ALGAE_L2(Rotation2d.fromDegrees(90), 0.603, null, false, 1),
         COLLECT_ALGAE_L3(Rotation2d.fromDegrees(90), 0.953, null, false, 1),
         COLLECT_ALGAE_LOLLIPOP(Rotation2d.fromDegrees(70), 0.3, null, false, 1),

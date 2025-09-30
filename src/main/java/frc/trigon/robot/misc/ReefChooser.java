@@ -3,11 +3,10 @@ package frc.trigon.robot.misc;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import frc.trigon.robot.commands.commandfactories.CoralPlacingCommands;
 import frc.trigon.robot.constants.FieldConstants;
 import frc.trigon.robot.constants.OperatorConstants;
-import frc.trigon.robot.subsystems.arm.ArmElevatorConstants;
+import frc.trigon.robot.subsystems.armelevator.ArmElevatorConstants;
 
 import java.util.function.Supplier;
 

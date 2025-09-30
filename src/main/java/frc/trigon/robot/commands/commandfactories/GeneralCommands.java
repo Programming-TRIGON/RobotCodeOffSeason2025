@@ -5,8 +5,8 @@ import edu.wpi.first.wpilibj2.command.*;
 import frc.trigon.robot.commands.CommandConstants;
 import frc.trigon.robot.constants.OperatorConstants;
 import frc.trigon.robot.subsystems.MotorSubsystem;
-import frc.trigon.robot.subsystems.arm.ArmElevatorCommands;
-import frc.trigon.robot.subsystems.arm.ArmElevatorConstants;
+import frc.trigon.robot.subsystems.armelevator.ArmElevatorCommands;
+import frc.trigon.robot.subsystems.armelevator.ArmElevatorConstants;
 import frc.trigon.robot.subsystems.swerve.SwerveCommands;
 
 import java.util.function.BooleanSupplier;

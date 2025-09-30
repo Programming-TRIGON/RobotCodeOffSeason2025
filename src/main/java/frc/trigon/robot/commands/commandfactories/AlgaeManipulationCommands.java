@@ -13,8 +13,8 @@ import frc.trigon.robot.constants.AutonomousConstants;
 import frc.trigon.robot.constants.FieldConstants;
 import frc.trigon.robot.constants.LEDConstants;
 import frc.trigon.robot.constants.OperatorConstants;
-import frc.trigon.robot.subsystems.arm.ArmElevatorCommands;
-import frc.trigon.robot.subsystems.arm.ArmElevatorConstants;
+import frc.trigon.robot.subsystems.armelevator.ArmElevatorCommands;
+import frc.trigon.robot.subsystems.armelevator.ArmElevatorConstants;
 import frc.trigon.robot.subsystems.endeffector.EndEffectorCommands;
 import frc.trigon.robot.subsystems.endeffector.EndEffectorConstants;
 import frc.trigon.robot.subsystems.intake.IntakeCommands;
@@ -29,7 +29,6 @@ import lib.utilities.flippable.FlippableTranslation2d;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.BooleanSupplier;
 
 public class AlgaeManipulationCommands {
     private static boolean
@@ -113,31 +112,19 @@ public class AlgaeManipulationCommands {
     }
 
     private static Command getScoreInNetCommand() {
-        return new ParallelRaceGroup(
-                getArmNetSequenceCommand(AlgaeManipulationCommands::shouldReverseNetScore),
+        return new ParallelCommandGroup(
+                GeneralCommands.getFlippableOverridableArmCommand(ArmElevatorConstants.ArmElevatorState.SCORE_NET, false, AlgaeManipulationCommands::shouldReverseNetScore),
+                GeneralCommands.runWhen(EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.SCORE_ALGAE), OperatorConstants.CONTINUE_TRIGGER),
                 getDriveToNetCommand()
         );
     }
 
     private static Command getScoreInProcessorCommand() {
         return new ParallelCommandGroup(
-                getArmProcessorSequenceCommand(),
+                GeneralCommands.getFlippableOverridableArmCommand(ArmElevatorConstants.ArmElevatorState.SCORE_PROCESSOR, false),
+                GeneralCommands.runWhen(EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.SCORE_ALGAE), OperatorConstants.CONTINUE_TRIGGER),
                 getDriveToProcessorCommand()
         ).finallyDo(GeneralCommands.getFieldRelativeDriveCommand()::schedule);
-    }
-
-    private static Command getArmNetSequenceCommand(BooleanSupplier shouldReverseScore) {
-        return new SequentialCommandGroup(
-                GeneralCommands.getFlippableOverridableArmCommand(ArmElevatorConstants.ArmElevatorState.SCORE_NET, true, shouldReverseScore).until(OperatorConstants.CONTINUE_TRIGGER),
-                EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.SCORE_ALGAE)
-        );
-    }
-
-    private static Command getArmProcessorSequenceCommand() {
-        return new SequentialCommandGroup(
-                GeneralCommands.getFlippableOverridableArmCommand(ArmElevatorConstants.ArmElevatorState.SCORE_PROCESSOR, true).until(OperatorConstants.CONTINUE_TRIGGER),
-                EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.SCORE_ALGAE)
-        );
     }
 
     private static Command getDriveToNetCommand() {
