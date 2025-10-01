@@ -121,17 +121,13 @@ public class PoseEstimator implements AutoCloseable {
     }
 
     /**
-     * @param seconds the predicted pose in that many seconds
+     * gets the predicted pose of the robot in 5 seconds
+     *
      * @return the robots predicted pose
      */
     @AutoLogOutput(key = "Poses/Robot/PoseEstimator/PredictedOdometryPose")
-    public Pose2d getPredictRobotPose(double seconds) {
-        final double xSpeed = RobotContainer.SWERVE.getFieldRelativeVelocity3d().getX();
-        final double ySpeed = RobotContainer.SWERVE.getFieldRelativeVelocity3d().getY();
-        final double predictedX = xSpeed * seconds;
-        final double predictedY = ySpeed * seconds;
-        final Pose2d predictedPose = getEstimatedRobotPose().transformBy(new Transform2d(predictedX, predictedY, new Rotation2d()));
-        return predictedPose;
+    public Pose2d getPredictedRobotPose() {
+        return getPredictRobotPose(5);
     }
 
     /**
@@ -157,6 +153,15 @@ public class PoseEstimator implements AutoCloseable {
      */
     public Pose2d getEstimatedPoseAtTimestamp(double timestamp) {
         return swerveDrivePoseEstimator.sampleAt(timestamp).orElse(null);
+    }
+
+    public Pose2d getPredictRobotPose(double seconds) {
+        final double xSpeed = RobotContainer.SWERVE.getFieldRelativeVelocity3d().getX();
+        final double ySpeed = RobotContainer.SWERVE.getFieldRelativeVelocity3d().getY();
+        final double predictedX = xSpeed * seconds;
+        final double predictedY = ySpeed * seconds;
+        final Pose2d predictedPose = getEstimatedRobotPose().transformBy(new Transform2d(predictedX, predictedY, new Rotation2d()));
+        return predictedPose;
     }
 
     private void initialize() {
