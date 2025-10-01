@@ -44,7 +44,7 @@ public class CoralCollectionCommands {
         ).until(() -> !RobotContainer.END_EFFECTOR.hasGamePiece() && RobotContainer.INTAKE.hasCoral());
     }
 
-    private static Command getIntakeSequenceCommand() {
+    static Command getIntakeSequenceCommand() {
         return getInitiateCollectionCommand().until(RobotContainer.TRANSPORTER::hasCoral);
     }
 

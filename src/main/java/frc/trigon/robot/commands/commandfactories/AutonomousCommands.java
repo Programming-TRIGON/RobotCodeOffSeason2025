@@ -13,11 +13,7 @@ import frc.trigon.robot.subsystems.armelevator.ArmElevatorCommands;
 import frc.trigon.robot.subsystems.armelevator.ArmElevatorConstants;
 import frc.trigon.robot.subsystems.endeffector.EndEffectorCommands;
 import frc.trigon.robot.subsystems.endeffector.EndEffectorConstants;
-import frc.trigon.robot.subsystems.intake.IntakeCommands;
-import frc.trigon.robot.subsystems.intake.IntakeConstants;
 import frc.trigon.robot.subsystems.swerve.SwerveCommands;
-import frc.trigon.robot.subsystems.transporter.TransporterCommands;
-import frc.trigon.robot.subsystems.transporter.TransporterConstants;
 import lib.utilities.flippable.FlippablePose2d;
 import org.json.simple.parser.ParseException;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
@@ -65,8 +61,8 @@ public class AutonomousCommands {
 
     public static Command getCollectCoralCommand(boolean isRight) {
         return new ParallelCommandGroup(
-                IntakeCommands.getSetTargetStateCommand(IntakeConstants.IntakeState.COLLECT),
-                TransporterCommands.getSetTargetStateCommand(TransporterConstants.TransporterState.COLLECT),
+                CoralCollectionCommands.getIntakeSequenceCommand(),
+                ArmElevatorCommands.getPrepareForStateCommand(() -> ArmElevatorConstants.ArmElevatorState.LOAD_CORAL),
                 getDriveToCoralCommand(isRight)
         )
                 .until(RobotContainer.INTAKE::hasCoral)
