@@ -63,8 +63,8 @@ public class AlgaeManipulationCommands {
     public static Command getReefAlgaeCollectionCommand() {
         return new SequentialCommandGroup(
                 GeneralCommands.getResetFlipArmOverrideCommand(),
-                new InstantCommand(() -> IS_HOLDING_ALGAE = true),
                 CoralCollectionCommands.getUnloadCoralCommand().onlyIf(RobotContainer.END_EFFECTOR::hasGamePiece),
+                new InstantCommand(() -> IS_HOLDING_ALGAE = true),
                 getInitiateReefAlgaeCollectionCommand().until(RobotContainer.END_EFFECTOR::hasGamePiece),
                 GeneralCommands.getResetFlipArmOverrideCommand(),
                 getScoreAlgaeCommand().alongWith(getAlgaeCollectionConfirmationCommand())
@@ -86,7 +86,7 @@ public class AlgaeManipulationCommands {
                         () -> calculateClosestAlgaeCollectionPose().getRotation()
                 )
         ).raceWith(
-                new WaitUntilCommand(RobotContainer.END_EFFECTOR::hasGamePiece),
+                new WaitUntilCommand(() -> RobotContainer.END_EFFECTOR.hasGamePiece() && IS_HOLDING_ALGAE),
                 new WaitUntilCommand(OperatorConstants.STOP_REEF_ALGAE_ALIGN_TRIGGER)
         ).onlyIf(() -> CoralPlacingCommands.SHOULD_SCORE_AUTONOMOUSLY).asProxy();
     }

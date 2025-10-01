@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.trigon.robot.RobotContainer;
+import frc.trigon.robot.commands.commandclasses.IntakeAssistCommand;
 import frc.trigon.robot.constants.OperatorConstants;
 import frc.trigon.robot.subsystems.armelevator.ArmElevatorCommands;
 import frc.trigon.robot.subsystems.armelevator.ArmElevatorConstants;
@@ -26,8 +27,7 @@ public class CoralCollectionCommands {
                                 getLoadCoralCommand().schedule();
                         }
                 )
-        );
-        // new IntakeAssistCommand(OperatorConstants.DEFAULT_INTAKE_ASSIST_MODE)
+        ).alongWith(new IntakeAssistCommand(OperatorConstants.DEFAULT_INTAKE_ASSIST_MODE));
     }
 
     public static Command getLoadCoralCommand() {
@@ -40,8 +40,8 @@ public class CoralCollectionCommands {
     public static Command getUnloadCoralCommand() {
         return new ParallelCommandGroup(
                 ArmElevatorCommands.getSetTargetStateCommand(ArmElevatorConstants.ArmElevatorState.UNLOAD_CORAL),
-                EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.UNLOAD_CORAL)
-        ).until(() -> !RobotContainer.END_EFFECTOR.hasGamePiece() && RobotContainer.INTAKE.hasCoral());
+                GeneralCommands.runWhen(EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.UNLOAD_CORAL), () -> RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.UNLOAD_CORAL))
+        ).until(() -> !RobotContainer.END_EFFECTOR.hasGamePiece());
     }
 
     static Command getIntakeSequenceCommand() {

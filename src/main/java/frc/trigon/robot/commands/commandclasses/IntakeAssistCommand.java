@@ -28,7 +28,7 @@ public class IntakeAssistCommand extends ParallelCommandGroup {
                     new ProfiledPIDController(0.5, 0, 0, new TrapezoidProfile.Constraints(2.8, 5)) :
                     new ProfiledPIDController(0.3, 0, 0.03, new TrapezoidProfile.Constraints(2.65, 5.5)),
             THETA_PID_CONTROLLER = RobotHardwareStats.isSimulation() ?
-                    new ProfiledPIDController(0.2, 0, 0, new TrapezoidProfile.Constraints(2.8, 5)) :
+                    new ProfiledPIDController(0.4, 0, 0, new TrapezoidProfile.Constraints(2.8, 5)) :
                     new ProfiledPIDController(2.4, 0, 0, new TrapezoidProfile.Constraints(2.65, 5.5));
     private Translation2d distanceFromTrackedGamePiece;
 
@@ -104,7 +104,15 @@ public class IntakeAssistCommand extends ParallelCommandGroup {
     private static double calculateThetaPower(AssistMode assistMode, Translation2d distanceFromTrackedGamePiece, double intakeAssistScalar) {
         if (distanceFromTrackedGamePiece == null || !assistMode.shouldAssistTheta)
             return 0;
-        return calculateThetaAssistPower(assistMode, distanceFromTrackedGamePiece.getAngle().plus(Rotation2d.k180deg), intakeAssistScalar);
+        Rotation2d distanceAngle = distanceFromTrackedGamePiece.getAngle().plus(Rotation2d.k180deg).unaryMinus();
+        Rotation2d robotAngle = RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().getRotation();
+        Rotation2d diff = robotAngle.minus(distanceAngle);
+        Logger.recordOutput("IntakeAssist/difference", diff);
+        Logger.recordOutput("IntakeAssist/robotAngle", robotAngle);
+        Logger.recordOutput("IntakeAssist/distanceAngle", distanceAngle);
+        var pow = calculateThetaAssistPower(assistMode, distanceAngle, intakeAssistScalar);
+        Logger.recordOutput("IntakeAssist/pow", pow);
+        return pow;
     }
 
     private static Translation2d calculateAlternateAssistTranslationPower(Translation2d joystickValue, double xPIDOutput, double yPIDOutput) {
@@ -155,7 +163,7 @@ public class IntakeAssistCommand extends ParallelCommandGroup {
     private static void resetPIDControllers(Translation2d distanceFromTrackedGamePiece) {
         X_PID_CONTROLLER.reset(distanceFromTrackedGamePiece.getX(), RobotContainer.SWERVE.getSelfRelativeVelocity().vxMetersPerSecond);
         Y_PID_CONTROLLER.reset(distanceFromTrackedGamePiece.getY(), RobotContainer.SWERVE.getSelfRelativeVelocity().vyMetersPerSecond);
-        THETA_PID_CONTROLLER.reset(distanceFromTrackedGamePiece.getAngle().getRadians(), RobotContainer.SWERVE.getSelfRelativeVelocity().omegaRadiansPerSecond);
+        THETA_PID_CONTROLLER.reset(distanceFromTrackedGamePiece.getAngle().plus(Rotation2d.k180deg).unaryMinus().getRadians(), RobotContainer.SWERVE.getSelfRelativeVelocity().omegaRadiansPerSecond);
     }
 
     /**

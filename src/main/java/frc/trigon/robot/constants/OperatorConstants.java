@@ -36,7 +36,7 @@ public class OperatorConstants {
             ROTATION_STICK_SPEED_DIVIDER = 1;
 
     public static final double INTAKE_ASSIST_SCALAR = 1;
-    public static final IntakeAssistCommand.AssistMode DEFAULT_INTAKE_ASSIST_MODE = IntakeAssistCommand.AssistMode.ALTERNATE_ASSIST;
+    public static final IntakeAssistCommand.AssistMode DEFAULT_INTAKE_ASSIST_MODE = IntakeAssistCommand.AssistMode.FULL_ASSIST;
 
     public static final Trigger
             RESET_HEADING_TRIGGER = DRIVER_CONTROLLER.povUp(),
