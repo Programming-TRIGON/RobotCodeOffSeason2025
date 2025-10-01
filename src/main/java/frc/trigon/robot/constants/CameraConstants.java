@@ -11,7 +11,7 @@ import frc.trigon.robot.poseestimation.poseestimator.StandardDeviations;
 
 public class CameraConstants {
     private static final Transform3d ROBOT_CENTER_TO_OBJECT_DETECTION_CAMERA = new Transform3d(
-            new Translation3d(0.2015, 195, 715.6),
+            new Translation3d(0.2015, 0.195, 0.7156),
             new Rotation3d(0, Units.degreesToRadians(60), 0)
     );
 
@@ -25,7 +25,7 @@ public class CameraConstants {
             AprilTagCameraConstants.AprilTagCameraType.PHOTON_CAMERA,
             "IntakeSideCamera",
             new Transform3d(
-                    new Translation3d(0.2247, 195, 749.8),
+                    new Translation3d(0.2247, 0.195, 0.7498),
                     new Rotation3d(0, Units.degreesToRadians(51), 0)
             ),
             new StandardDeviations(0, 0) //TOD0: Measure
