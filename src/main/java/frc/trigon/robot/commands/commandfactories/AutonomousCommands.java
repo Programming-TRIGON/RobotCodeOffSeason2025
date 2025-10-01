@@ -90,8 +90,10 @@ public class AutonomousCommands {
     }
 
     public static Command getDriveToCoralCommand(boolean isRight) {
-                getFindCoralCommand(isRight).unless(() -> CORAL_POSE_ESTIMATOR.getClosestObjectToRobot() != null).until(() -> CORAL_POSE_ESTIMATOR.getClosestObjectToRobot() != null),
-                IntakeAssistCommand.getAssistIntakeCommand(IntakeAssistCommand.AssistMode.FULL_ASSIST, IntakeAssistCommand::calculateDistanceFromTrackedGamePiece).withTimeout(1.5)
+        return new ConditionalCommand(
+                getFindCoralCommand(isRight).onlyWhile(() -> CORAL_POSE_ESTIMATOR.getClosestObjectToRobot() == null),
+                IntakeAssistCommand.getAssistIntakeCommand(IntakeAssistCommand.AssistMode.FULL_ASSIST, IntakeAssistCommand::calculateDistanceFromTrackedGamePiece).withTimeout(1.5),
+                () -> CORAL_POSE_ESTIMATOR.getClosestObjectToRobot() == null
         ).repeatedly();
     }
 
