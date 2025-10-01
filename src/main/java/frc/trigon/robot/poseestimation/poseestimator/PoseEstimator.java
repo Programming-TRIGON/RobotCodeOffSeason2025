@@ -121,16 +121,6 @@ public class PoseEstimator implements AutoCloseable {
     }
 
     /**
-     * gets the predicted pose of the robot in 5 seconds
-     *
-     * @return the robots predicted pose
-     */
-    @AutoLogOutput(key = "Poses/Robot/PoseEstimator/PredictedOdometryPose")
-    public Pose2d getPredictedRobotPose() {
-        return getPredictRobotPose(5);
-    }
-
-    /**
      * Updates the pose estimator with the given swerve wheel positions and gyro rotations.
      * This function accepts an array of swerve wheel positions and an array of gyro rotations because the odometry can be updated at a faster rate than the main loop (which is 50 hertz).
      * This means you could have a couple of odometry updates per main loop, and you would want to update the pose estimator with all of them.
@@ -146,22 +136,29 @@ public class PoseEstimator implements AutoCloseable {
     }
 
     /**
-     * Gets the estimated pose of the robot at the target timestamp.
+     * Samples the estimated pose of the robot at a specific timestamp.
+     * Unlike {@link #getPredictedRobotFuturePose} which predicts a pose in the future, this samples a past pose from the estimator's buffer.
      *
-     * @param timestamp the target timestamp
+     * @param timestamp the rio FPGA timestamp
      * @return the robot's estimated pose at the timestamp
      */
-    public Pose2d getEstimatedPoseAtTimestamp(double timestamp) {
+    public Pose2d samplePoseAtTimestamp(double timestamp) {
         return swerveDrivePoseEstimator.sampleAt(timestamp).orElse(null);
     }
 
-    public Pose2d getPredictRobotPose(double seconds) {
-        final double xSpeed = RobotContainer.SWERVE.getFieldRelativeVelocity3d().getX();
-        final double ySpeed = RobotContainer.SWERVE.getFieldRelativeVelocity3d().getY();
-        final double predictedX = xSpeed * seconds;
-        final double predictedY = ySpeed * seconds;
-        final Pose2d predictedPose = getEstimatedRobotPose().transformBy(new Transform2d(predictedX, predictedY, new Rotation2d()));
-        return predictedPose;
+    /**
+     * Predicts the robots pose in a specific amount of time.
+     * Unlike {@link #samplePoseAtTimestamp(double)} which samples a past pose, this predicts the future pose of the robot.
+     *
+     * @param seconds the number of seconds into the future for which the robots pose should be predicted
+     * @return the predicted pose
+     */
+    public Pose2d getPredictedRobotFuturePose(double seconds) {
+        final ChassisSpeeds robotVelocity = RobotContainer.SWERVE.getSelfRelativeVelocity();
+        final double predictedX = robotVelocity.vxMetersPerSecond * seconds;
+        final double predictedY = robotVelocity.vyMetersPerSecond * seconds;
+        final Rotation2d predictedRotation = Rotation2d.fromRadians(robotVelocity.omegaRadiansPerSecond * seconds);
+        return getEstimatedRobotPose().transformBy(new Transform2d(predictedX, predictedY, predictedRotation));
     }
 
     private void initialize() {
