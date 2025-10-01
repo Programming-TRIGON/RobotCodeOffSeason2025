@@ -12,7 +12,7 @@ import frc.trigon.robot.poseestimation.poseestimator.StandardDeviations;
 public class CameraConstants {
     private static final Transform3d ROBOT_CENTER_TO_OBJECT_DETECTION_CAMERA = new Transform3d(
             new Translation3d(0.2015, 0.195, 0.7156),
-            new Rotation3d(0, Units.degreesToRadians(60), 0)
+            new Rotation3d(0, Units.degreesToRadians(30), 0)
     );
 
     public static final double OBJECT_POSE_ESTIMATOR_DELETION_THRESHOLD_SECONDS = 0;
