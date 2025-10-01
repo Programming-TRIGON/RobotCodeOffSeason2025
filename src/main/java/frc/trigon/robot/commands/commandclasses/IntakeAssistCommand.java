@@ -28,7 +28,7 @@ public class IntakeAssistCommand extends ParallelCommandGroup {
                     new ProfiledPIDController(0.5, 0, 0, new TrapezoidProfile.Constraints(2.8, 5)) :
                     new ProfiledPIDController(0.3, 0, 0.03, new TrapezoidProfile.Constraints(2.65, 5.5)),
             THETA_PID_CONTROLLER = RobotHardwareStats.isSimulation() ?
-                    new ProfiledPIDController(0.4, 0, 0, new TrapezoidProfile.Constraints(2.8, 5)) :
+                    new ProfiledPIDController(0.2, 0, 0, new TrapezoidProfile.Constraints(2.8, 5)) :
                     new ProfiledPIDController(2.4, 0, 0, new TrapezoidProfile.Constraints(2.65, 5.5));
     private Translation2d distanceFromTrackedGamePiece;
 
@@ -88,6 +88,8 @@ public class IntakeAssistCommand extends ParallelCommandGroup {
     }
 
     private static Translation2d calculateTranslationPower(AssistMode assistMode, Translation2d distanceFromTrackedGamePiece, double intakeAssistScalar) {
+        if (distanceFromTrackedGamePiece == null)
+            return new Translation2d(0, 0);
         final Translation2d joystickPower = new Translation2d(OperatorConstants.DRIVER_CONTROLLER.getLeftY(), OperatorConstants.DRIVER_CONTROLLER.getLeftX());
         final Translation2d selfRelativeJoystickPower = joystickPower.rotateBy(RobotContainer.SWERVE.getDriveRelativeAngle().unaryMinus());
 
@@ -100,7 +102,9 @@ public class IntakeAssistCommand extends ParallelCommandGroup {
     }
 
     private static double calculateThetaPower(AssistMode assistMode, Translation2d distanceFromTrackedGamePiece, double intakeAssistScalar) {
-        return calculateThetaAssistPower(assistMode, distanceFromTrackedGamePiece.getAngle().plus(Rotation2d.k180deg).unaryMinus(), intakeAssistScalar);
+        if (distanceFromTrackedGamePiece == null || !assistMode.shouldAssistTheta)
+            return 0;
+        return calculateThetaAssistPower(assistMode, distanceFromTrackedGamePiece.getAngle().plus(Rotation2d.k180deg), intakeAssistScalar);
     }
 
     private static Translation2d calculateAlternateAssistTranslationPower(Translation2d joystickValue, double xPIDOutput, double yPIDOutput) {
