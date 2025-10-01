@@ -46,7 +46,7 @@ public class RobotContainer {
     public static final PoseEstimator ROBOT_POSE_ESTIMATOR = new PoseEstimator();
     public static final ObjectPoseEstimator CORAL_POSE_ESTIMATOR = new ObjectPoseEstimator(
             CameraConstants.OBJECT_POSE_ESTIMATOR_DELETION_THRESHOLD_SECONDS,
-            ObjectPoseEstimator.DistanceCalculationMethod.ROTATION_AND_TRANSLATION,
+            ObjectPoseEstimator.DistanceCalculationMethod.TRANSLATION,
             SimulatedGamePieceConstants.GamePieceType.CORAL,
             CameraConstants.OBJECT_DETECTION_CAMERA
     );

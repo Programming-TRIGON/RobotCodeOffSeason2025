@@ -90,7 +90,6 @@ public class AutonomousCommands {
     }
 
     public static Command getDriveToCoralCommand(boolean isRight) {
-        return new SequentialCommandGroup(
                 getFindCoralCommand(isRight).unless(() -> CORAL_POSE_ESTIMATOR.getClosestObjectToRobot() != null).until(() -> CORAL_POSE_ESTIMATOR.getClosestObjectToRobot() != null),
                 IntakeAssistCommand.getAssistIntakeCommand(IntakeAssistCommand.AssistMode.FULL_ASSIST, IntakeAssistCommand::calculateDistanceFromTrackedGamePiece).withTimeout(1.5)
         ).repeatedly();
@@ -104,7 +103,7 @@ public class AutonomousCommands {
     }
 
     private static boolean canScore() {
-        return RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.SCORE_L4, true) &&
+        return (RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.SCORE_L4.prepareState, true) || RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.SCORE_L4.prepareState)) &&
                 TARGET_SCORING_POSE != null &&
                 Math.abs(RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().relativeTo(TARGET_SCORING_POSE.get()).getX()) < AutonomousConstants.REEF_RELATIVE_X_TOLERANCE_METERS &&
                 Math.abs(RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose().relativeTo(TARGET_SCORING_POSE.get()).getY()) < AutonomousConstants.REEF_RELATIVE_Y_TOLERANCE_METERS;

@@ -99,8 +99,8 @@ public class IntakeAssistCommand extends ParallelCommandGroup {
         return calculateNormalAssistTranslationPower(assistMode, selfRelativeJoystickPower, xPIDOutput, yPIDOutput);
     }
 
-    private static double calculateThetaPower(AssistMode assistMode, Translation2d distanceFromTrackedGamepiece) {
-        return calculateThetaAssistPower(assistMode, distanceFromTrackedGamepiece.getAngle().plus(Rotation2d.k180deg).unaryMinus());
+    private static double calculateThetaPower(AssistMode assistMode, Translation2d distanceFromTrackedGamePiece) {
+        return calculateThetaAssistPower(assistMode, distanceFromTrackedGamePiece.getAngle().plus(Rotation2d.k180deg).unaryMinus());
     }
 
     private static Translation2d calculateAlternateAssistTranslationPower(Translation2d joystickValue, double xPIDOutput, double yPIDOutput) {
