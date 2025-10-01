@@ -23,6 +23,7 @@ import frc.trigon.robot.poseestimation.poseestimator.PoseEstimator;
 import frc.trigon.robot.subsystems.MotorSubsystem;
 import frc.trigon.robot.subsystems.armelevator.ArmElevator;
 import frc.trigon.robot.subsystems.armelevator.ArmElevatorCommands;
+import frc.trigon.robot.subsystems.armelevator.ArmElevatorConstants;
 import frc.trigon.robot.subsystems.climber.Climber;
 import frc.trigon.robot.subsystems.climber.ClimberCommands;
 import frc.trigon.robot.subsystems.climber.ClimberConstants;
@@ -111,6 +112,7 @@ public class RobotContainer {
         OperatorConstants.FLIP_ARM_TRIGGER.onTrue(new InstantCommand(() -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE = !OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE));
         OperatorConstants.LOLLIPOP_ALGAE_TOGGLE_TRIGGER.onTrue(new InstantCommand(AlgaeManipulationCommands::toggleLollipopCollection));
         OperatorConstants.CLIMB_TRIGGER.toggleOnTrue(ClimbCommands.getClimbCommand());
+        OperatorConstants.OPERATOR_CONTROLLER.f().whileTrue(ArmElevatorCommands.getSetTargetStateCommand(ArmElevatorConstants.ArmElevatorState.ELEVATOR_0));
     }
 
     private void configureSysIDBindings(MotorSubsystem subsystem) {
