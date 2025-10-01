@@ -6,6 +6,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -17,10 +18,10 @@ import frc.trigon.robot.poseestimation.apriltagcamera.AprilTagCamera;
 import frc.trigon.robot.poseestimation.relativerobotposesource.RelativeRobotPoseSource;
 import frc.trigon.robot.poseestimation.relativerobotposesource.RelativeRobotPoseSourceConstants;
 import frc.trigon.robot.subsystems.swerve.SwerveConstants;
-import org.littletonrobotics.junction.AutoLogOutput;
-import org.littletonrobotics.junction.Logger;
 import lib.utilities.QuickSortHandler;
 import lib.utilities.flippable.Flippable;
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -117,6 +118,20 @@ public class PoseEstimator implements AutoCloseable {
     @AutoLogOutput(key = "Poses/Robot/PoseEstimator/EstimatedOdometryPose")
     public Pose2d getEstimatedOdometryPose() {
         return swerveDriveOdometry.getPoseMeters();
+    }
+
+    /**
+     * @param seconds the predicted pose in that many seconds
+     * @return the robots predicted pose
+     */
+    @AutoLogOutput(key = "Poses/Robot/PoseEstimator/PredictedOdometryPose")
+    public Pose2d predictPose(double seconds) {
+        final double xSpeed = RobotContainer.SWERVE.getFieldRelativeVelocity3d().getX();
+        final double ySpeed = RobotContainer.SWERVE.getFieldRelativeVelocity3d().getY();
+        final double predictedX = xSpeed * seconds;
+        final double predictedY = ySpeed * seconds;
+        final Pose2d predictedPose = getEstimatedRobotPose().transformBy(new Transform2d(predictedX, predictedY, new Rotation2d()));
+        return predictedPose;
     }
 
     /**
