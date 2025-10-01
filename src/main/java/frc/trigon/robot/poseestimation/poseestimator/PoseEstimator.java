@@ -125,7 +125,7 @@ public class PoseEstimator implements AutoCloseable {
      * @return the robots predicted pose
      */
     @AutoLogOutput(key = "Poses/Robot/PoseEstimator/PredictedOdometryPose")
-    public Pose2d predictPose(double seconds) {
+    public Pose2d getPredictRobotPose(double seconds) {
         final double xSpeed = RobotContainer.SWERVE.getFieldRelativeVelocity3d().getX();
         final double ySpeed = RobotContainer.SWERVE.getFieldRelativeVelocity3d().getY();
         final double predictedX = xSpeed * seconds;
