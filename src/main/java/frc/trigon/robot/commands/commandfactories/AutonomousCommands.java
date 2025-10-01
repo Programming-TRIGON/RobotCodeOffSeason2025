@@ -9,6 +9,7 @@ import frc.trigon.robot.RobotContainer;
 import frc.trigon.robot.commands.commandclasses.IntakeAssistCommand;
 import frc.trigon.robot.constants.AutonomousConstants;
 import frc.trigon.robot.constants.FieldConstants;
+import frc.trigon.robot.constants.OperatorConstants;
 import frc.trigon.robot.subsystems.armelevator.ArmElevatorCommands;
 import frc.trigon.robot.subsystems.armelevator.ArmElevatorConstants;
 import frc.trigon.robot.subsystems.endeffector.EndEffectorCommands;
@@ -87,9 +88,9 @@ public class AutonomousCommands {
 
     public static Command getDriveToCoralCommand(boolean isRight) {
         return new ConditionalCommand(
-                getFindCoralCommand(isRight).onlyWhile(() -> CORAL_POSE_ESTIMATOR.getClosestObjectToRobot() == null),
-                IntakeAssistCommand.getAssistIntakeCommand(IntakeAssistCommand.AssistMode.FULL_ASSIST, IntakeAssistCommand::calculateDistanceFromTrackedGamePiece).until(() -> CORAL_POSE_ESTIMATOR.getClosestObjectToRobot() == null).withTimeout(1.5),
-                () -> CORAL_POSE_ESTIMATOR.getClosestObjectToRobot() == null
+                IntakeAssistCommand.getAssistIntakeCommand(IntakeAssistCommand.AssistMode.FULL_ASSIST, IntakeAssistCommand::calculateDistanceFromTrackedGamePiece, OperatorConstants.INTAKE_ASSIST_SCALAR).onlyWhile(() -> CORAL_POSE_ESTIMATOR.getClosestObjectToRobot() != null).withTimeout(1.5),
+                getFindCoralCommand(isRight).until(() -> CORAL_POSE_ESTIMATOR.getClosestObjectToRobot() != null),
+                () -> CORAL_POSE_ESTIMATOR.getClosestObjectToRobot() != null
         ).repeatedly();
     }
 
