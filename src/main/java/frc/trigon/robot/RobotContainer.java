@@ -112,7 +112,6 @@ public class RobotContainer {
         OperatorConstants.FLIP_ARM_TRIGGER.onTrue(new InstantCommand(() -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE = !OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE));
         OperatorConstants.LOLLIPOP_ALGAE_TOGGLE_TRIGGER.onTrue(new InstantCommand(AlgaeManipulationCommands::toggleLollipopCollection));
         OperatorConstants.CLIMB_TRIGGER.toggleOnTrue(ClimbCommands.getClimbCommand());
-        OperatorConstants.OPERATOR_CONTROLLER.f().whileTrue(ArmElevatorCommands.getSetTargetStateCommand(ArmElevatorConstants.ArmElevatorState.ELEVATOR_0));
     }
 
     private void configureSysIDBindings(MotorSubsystem subsystem) {
