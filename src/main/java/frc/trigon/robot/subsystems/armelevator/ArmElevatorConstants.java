@@ -56,7 +56,7 @@ public class ArmElevatorConstants {
             ARM_MOTOR_CURRENT_LIMIT = 50,
             ELEVATOR_MOTOR_CURRENT_LIMIT = 50;
     private static final double ANGLE_ENCODER_GRAVITY_OFFSET = -0.059326171875;
-    static final double ARM_POSITION_OFFSET_FROM_GRAVITY_OFFSET = RobotHardwareStats.isSimulation() ? 0 - Conversions.degreesToRotations(90) : edu.wpi.first.math.util.Units.degreesToRotations(-24.7) - ANGLE_ENCODER_GRAVITY_OFFSET;
+    static final double ARM_POSITION_OFFSET_FROM_GRAVITY_OFFSET = RobotHardwareStats.isSimulation() ? 0 - Conversions.degreesToRotations(90) : edu.wpi.first.math.util.Units.degreesToRotations(-23.56) - ANGLE_ENCODER_GRAVITY_OFFSET;
     private static final boolean
             SHOULD_ARM_FOLLOWER_OPPOSE_MASTER = false,
             SHOULD_ELEVATOR_FOLLOWER_OPPOSE_MASTER = false;
@@ -202,7 +202,7 @@ public class ArmElevatorConstants {
         config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0.026331 : 0.02;
         config.Slot0.kV = RobotHardwareStats.isSimulation() ? 4.8752 : 0;
         config.Slot0.kA = RobotHardwareStats.isSimulation() ? 0.17848 : 0;
-        config.Slot0.kG = RobotHardwareStats.isSimulation() ? 0.1117 : 0.4;
+        config.Slot0.kG = RobotHardwareStats.isSimulation() ? 0.1117 : 0.39;
 
         config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
         config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
