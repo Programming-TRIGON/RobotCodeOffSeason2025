@@ -30,6 +30,7 @@ import static frc.trigon.robot.RobotContainer.CORAL_POSE_ESTIMATOR;
 public class AutonomousCommands {
     public static final LoggedNetworkBoolean[] SCORED_L4S = getEmptyL4LoggedNetworkBooleanArray();
     private static FlippablePose2d TARGET_SCORING_POSE = null;
+    private static boolean IS_FIRST_CORAL = true;
 
     public static Command getFloorAutonomousCommand(boolean isRight) {
         return getCycleCoralCommand(isRight).repeatedly().withName("FloorAutonomous" + (isRight ? "Right" : "Left"));
@@ -44,12 +45,20 @@ public class AutonomousCommands {
 
     public static Command getFindCoralCommand(boolean isRight) {
         return new SequentialCommandGroup(
-                SwerveCommands.getDriveToPoseCommand(() -> isRight ? AutonomousConstants.AUTO_FIND_CORAL_POSE_RIGHT : AutonomousConstants.AUTO_FIND_CORAL_POSE_LEFT, AutonomousConstants.DRIVE_TO_REEF_CONSTRAINTS, AutonomousConstants.AUTO_FIND_CORAL_END_VELOCITY_METERS_PER_SECOND),
+                getDriveToFindCoralPoseCommand(isRight),
                 SwerveCommands.getClosedLoopSelfRelativeDriveCommand(
                         () -> 0,
                         () -> 0,
                         () -> AutonomousConstants.AUTO_FIND_CORAL_ROTATION_POWER
                 )
+        );
+    }
+
+    private static Command getDriveToFindCoralPoseCommand(boolean isRight) {
+        return new ConditionalCommand(
+                SwerveCommands.getDriveToPoseCommand(() -> isRight ? AutonomousConstants.AUTO_FIND_CORAL_POSE_RIGHT : AutonomousConstants.AUTO_FIND_CORAL_POSE_LEFT, AutonomousConstants.DRIVE_TO_REEF_CONSTRAINTS, AutonomousConstants.AUTO_FIND_CORAL_END_VELOCITY_METERS_PER_SECOND),
+                SwerveCommands.getDriveToPoseCommand(() -> isRight ? AutonomousConstants.AUTO_FIND_FIRST_CORAL_POSE_RIGHT : AutonomousConstants.AUTO_FIND_FIRST_CORAL_POSE_LEFT, AutonomousConstants.DRIVE_TO_REEF_CONSTRAINTS, AutonomousConstants.AUTO_FIND_CORAL_END_VELOCITY_METERS_PER_SECOND).alongWith(new InstantCommand(() -> IS_FIRST_CORAL = false)),
+                () -> !IS_FIRST_CORAL
         );
     }
 
@@ -63,7 +72,7 @@ public class AutonomousCommands {
     public static Command getCollectCoralCommand(boolean isRight) {
         return new ParallelCommandGroup(
                 CoralCollectionCommands.getIntakeSequenceCommand(),
-                new WaitCommand(0.5).andThen(ArmElevatorCommands.getPrepareForStateCommand(() -> ArmElevatorConstants.ArmElevatorState.LOAD_CORAL)),
+                ArmElevatorCommands.getPrepareForStateCommand(() -> ArmElevatorConstants.ArmElevatorState.LOAD_CORAL),
                 getDriveToCoralCommand(isRight)
         )
                 .until(RobotContainer.INTAKE::hasCoral)
