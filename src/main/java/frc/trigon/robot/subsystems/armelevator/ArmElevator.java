@@ -128,7 +128,7 @@ public class ArmElevator extends MotorSubsystem {
     public boolean atState(ArmElevatorConstants.ArmElevatorState targetState, boolean isStateReversed) {
         if (targetState == null)
             return false;
-        return armAtAngle(isStateReversed ? subtractFrom360Degrees(targetState.targetAngle) : targetState.targetAngle)
+        return armAtAngle(isStateReversed ? subtractFrom180Degrees(targetState.targetAngle) : targetState.targetAngle)
                 && elevatorAtPosition(targetState.targetPositionMeters);
     }
 
@@ -190,7 +190,7 @@ public class ArmElevator extends MotorSubsystem {
 
     void setTargetArmState(ArmElevatorConstants.ArmElevatorState targetState, boolean isStateReversed) {
         if (isStateReversed) {
-            setTargetArmAngle(subtractFrom360Degrees(targetState.targetAngle), targetState.ignoreConstraints);
+            setTargetArmAngle(subtractFrom180Degrees(targetState.targetAngle), targetState.ignoreConstraints);
             return;
         }
         setTargetArmAngle(targetState.targetAngle, targetState.ignoreConstraints);
@@ -237,8 +237,8 @@ public class ArmElevator extends MotorSubsystem {
         return getCurrentElevatorPositionMeters() - ArmElevatorConstants.MINIMUM_ELEVATOR_SAFE_ZONE_METERS;
     }
 
-    private static Rotation2d subtractFrom360Degrees(Rotation2d angleToSubtract) {
-        return Rotation2d.fromDegrees(Rotation2d.k180deg.getDegrees() * 2 - angleToSubtract.getDegrees());
+    private static Rotation2d subtractFrom180Degrees(Rotation2d angleToSubtract) {
+        return Rotation2d.fromDegrees(Rotation2d.k180deg.getDegrees() - angleToSubtract.getDegrees());
     }
 
     private Pose3d calculateVisualizationPose() {
