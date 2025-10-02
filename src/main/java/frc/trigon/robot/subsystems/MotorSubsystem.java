@@ -8,8 +8,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.trigon.robot.RobotContainer;
-import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 import lib.hardware.RobotHardwareStats;
+import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +27,7 @@ public abstract class MotorSubsystem extends edu.wpi.first.wpilibj2.command.Subs
     private static final List<MotorSubsystem> REGISTERED_SUBSYSTEMS = new ArrayList<>();
     private static final Trigger DISABLED_TRIGGER = new Trigger(DriverStation::isDisabled);
     private static final Executor BRAKE_MODE_EXECUTOR = Executors.newFixedThreadPool(8);
-    private static final LoggedNetworkBoolean ENABLE_EXTENSIVE_LOGGING = new LoggedNetworkBoolean("/SmartDashboard/EnableExtensiveLogging", RobotHardwareStats.isSimulation());
+    private static final LoggedNetworkBoolean ENABLE_EXTENSIVE_LOGGING = new LoggedNetworkBoolean("/SmartDashboard/EnableExtensiveLogging", true);//TODO: AHAHAHAHAHHA
 
     static {
         DISABLED_TRIGGER.onTrue(new InstantCommand(() -> forEach(MotorSubsystem::stop)).ignoringDisable(true));

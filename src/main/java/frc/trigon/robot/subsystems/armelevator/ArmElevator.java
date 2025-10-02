@@ -17,6 +17,7 @@ import lib.utilities.Conversions;
 import org.littletonrobotics.junction.Logger;
 
 public class ArmElevator extends MotorSubsystem {
+    private static final boolean SHOULD_CALIBRATE_ELEVATOR = false;
     private final TalonFXMotor
             armMasterMotor = ArmElevatorConstants.ARM_MASTER_MOTOR,
             elevatorMasterMotor = ArmElevatorConstants.ELEVATOR_MASTER_MOTOR;
@@ -43,8 +44,7 @@ public class ArmElevator extends MotorSubsystem {
 
     @Override
     public SysIdRoutine.Config getSysIDConfig() {
-        return ArmElevatorConstants.ARM_SYSID_CONFIG;
-        //return ArmElevatorConstants.ELEVATOR_SYSID_CONFIG;
+        return SHOULD_CALIBRATE_ELEVATOR ? ArmElevatorConstants.ELEVATOR_SYSID_CONFIG : ArmElevatorConstants.ARM_SYSID_CONFIG;
     }
 
     @Override
@@ -61,14 +61,17 @@ public class ArmElevator extends MotorSubsystem {
 
     @Override
     public void updateLog(SysIdRoutineLog log) {
+        if (SHOULD_CALIBRATE_ELEVATOR) {
+            log.motor("Elevator")
+                    .linearPosition(Units.Meters.of(getElevatorPositionRotations()))
+                    .linearVelocity(Units.MetersPerSecond.of(elevatorMasterMotor.getSignal(TalonFXSignal.ROTOR_VELOCITY) / ArmElevatorConstants.ELEVATOR_GEAR_RATIO))
+                    .voltage(Units.Volts.of(elevatorMasterMotor.getSignal(TalonFXSignal.MOTOR_VOLTAGE)));
+            return;
+        }
         log.motor("Arm")
-                .angularPosition(Units.Rotations.of(getCurrentArmAngle().getRotations()))
-                .angularVelocity(Units.RotationsPerSecond.of(armMasterMotor.getSignal(TalonFXSignal.VELOCITY)))
+                .angularPosition(Units.Rotations.of(armMasterMotor.getSignal(TalonFXSignal.POSITION)))
+                .angularVelocity(Units.RotationsPerSecond.of(armMasterMotor.getSignal(TalonFXSignal.ROTOR_VELOCITY) / ArmElevatorConstants.ARM_GEAR_RATIO))
                 .voltage(Units.Volts.of(armMasterMotor.getSignal(TalonFXSignal.MOTOR_VOLTAGE)));
-//        log.motor("Elevator")
-//                .linearPosition(Units.Meters.of(getPositionRotations()))
-//                .linearVelocity(Units.MetersPerSecond.of(masterMotor.getSignal(TalonFXSignal.VELOCITY)))
-//                .voltage(Units.Volts.of(masterMotor.getSignal(TalonFXSignal.MOTOR_VOLTAGE)));
     }
 
     @Override
@@ -98,8 +101,11 @@ public class ArmElevator extends MotorSubsystem {
 
     @Override
     public void sysIDDrive(double targetVoltage) {
+        if (SHOULD_CALIBRATE_ELEVATOR) {
+            elevatorMasterMotor.setControl(voltageRequest.withOutput(targetVoltage));
+            return;
+        }
         armMasterMotor.setControl(voltageRequest.withOutput(targetVoltage));
-//        elevatorMasterMotor.setControl(voltageRequest.withOutput(targetVoltage));
     }
 
     public Pose3d calculateGamePieceCollectionPose() {

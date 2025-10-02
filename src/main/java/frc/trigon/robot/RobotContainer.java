@@ -25,18 +25,10 @@ import frc.trigon.robot.subsystems.MotorSubsystem;
 import frc.trigon.robot.subsystems.armelevator.ArmElevator;
 import frc.trigon.robot.subsystems.armelevator.ArmElevatorCommands;
 import frc.trigon.robot.subsystems.climber.Climber;
-import frc.trigon.robot.subsystems.climber.ClimberCommands;
-import frc.trigon.robot.subsystems.climber.ClimberConstants;
 import frc.trigon.robot.subsystems.endeffector.EndEffector;
-import frc.trigon.robot.subsystems.endeffector.EndEffectorCommands;
-import frc.trigon.robot.subsystems.endeffector.EndEffectorConstants;
 import frc.trigon.robot.subsystems.intake.Intake;
-import frc.trigon.robot.subsystems.intake.IntakeCommands;
-import frc.trigon.robot.subsystems.intake.IntakeConstants;
 import frc.trigon.robot.subsystems.swerve.Swerve;
 import frc.trigon.robot.subsystems.transporter.Transporter;
-import frc.trigon.robot.subsystems.transporter.TransporterCommands;
-import frc.trigon.robot.subsystems.transporter.TransporterConstants;
 import lib.utilities.flippable.Flippable;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -76,12 +68,14 @@ public class RobotContainer {
     }
 
     private void bindDefaultCommands() {
-        SWERVE.setDefaultCommand(GeneralCommands.getFieldRelativeDriveCommand());
-        ARM_ELEVATOR.setDefaultCommand(ArmElevatorCommands.getDefaultCommand());
-        CLIMBER.setDefaultCommand(ClimberCommands.getSetTargetStateCommand(ClimberConstants.ClimberState.REST));
-        END_EFFECTOR.setDefaultCommand(EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.REST));
-        INTAKE.setDefaultCommand(IntakeCommands.getSetTargetStateCommand(IntakeConstants.IntakeState.REST));
-        TRANSPORTER.setDefaultCommand(TransporterCommands.getSetTargetStateCommand(TransporterConstants.TransporterState.REST));
+//        SWERVE.setDefaultCommand(GeneralCommands.getFieldRelativeDriveCommand());
+//        ARM_ELEVATOR.setDefaultCommand(ArmElevatorCommands.getDefaultCommand());
+//        CLIMBER.setDefaultCommand(ClimberCommands.getSetTargetStateCommand(ClimberConstants.ClimberState.REST));
+//        END_EFFECTOR.setDefaultCommand(EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.REST));
+//        INTAKE.setDefaultCommand(IntakeCommands.getSetTargetStateCommand(IntakeConstants.IntakeState.REST));
+//        TRANSPORTER.setDefaultCommand(TransporterCommands.getSetTargetStateCommand(TransporterConstants.TransporterState.REST));
+        configureSysIDBindings(ARM_ELEVATOR);
+        OperatorConstants.DEBUGGING_TRIGGER.whileTrue(ArmElevatorCommands.getDebuggingCommand(true));
     }
 
     /**
