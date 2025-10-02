@@ -63,7 +63,7 @@ public class AutonomousCommands {
     public static Command getCollectCoralCommand(boolean isRight) {
         return new ParallelCommandGroup(
                 CoralCollectionCommands.getIntakeSequenceCommand(),
-                ArmElevatorCommands.getPrepareForStateCommand(() -> ArmElevatorConstants.ArmElevatorState.LOAD_CORAL),
+                new WaitCommand(0.5).andThen(ArmElevatorCommands.getPrepareForStateCommand(() -> ArmElevatorConstants.ArmElevatorState.LOAD_CORAL)),
                 getDriveToCoralCommand(isRight)
         )
                 .until(RobotContainer.INTAKE::hasCoral)
