@@ -17,7 +17,6 @@ import frc.trigon.robot.subsystems.transporter.TransporterCommands;
 import frc.trigon.robot.subsystems.transporter.TransporterConstants;
 
 public class CoralCollectionCommands {
-
     public static Command getCoralCollectionCommand() {
         return new SequentialCommandGroup(
                 getIntakeSequenceCommand(),
