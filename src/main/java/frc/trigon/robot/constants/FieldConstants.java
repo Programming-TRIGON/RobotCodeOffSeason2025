@@ -5,6 +5,7 @@ import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.*;
+import frc.trigon.robot.misc.simulatedfield.SimulatedGamePieceConstants;
 import lib.utilities.Conversions;
 import lib.utilities.FilesHandler;
 import lib.utilities.flippable.FlippablePose2d;
@@ -22,6 +23,17 @@ public class FieldConstants {
             1, 2, 3, 4, 5, 12, 13, 14, 15, 16
     );
 
+    public static final int REEF_CLOCK_POSITIONS = 6;
+    public static final Rotation2d REEF_CLOCK_POSITION_DIFFERENCE = Rotation2d.fromDegrees(Conversions.DEGREES_PER_ROTATIONS / REEF_CLOCK_POSITIONS);
+    public static final Rotation2d[] REEF_CLOCK_ANGLES = ReefClockPosition.getClockAngles();
+    public static final Translation2d BLUE_REEF_CENTER_TRANSLATION = new Translation2d(4.48945, FIELD_WIDTH_METERS / 2);
+    public static final double
+            REEF_CENTER_TO_TARGET_SCORING_POSITION_X_TRANSFORM_METERS = 1.3,
+            REEF_CENTER_TO_TARGET_SCORING_POSITION_Y_TRANSFORM_METERS = 0.17,
+            REEF_CENTER_TO_TARGET_ALGAE_COLLECTION_POSITION_X_TRANSFORM_METERS = 1.6,
+            REEF_CENTER_TO_TARGET_NO_HIT_REEF_POSITION_X_TRANSFORM_METERS = REEF_CENTER_TO_TARGET_SCORING_POSITION_X_TRANSFORM_METERS + 0.3;
+    public static final double SAFE_DISTANCE_FROM_SCORING_POSE_METERS = 0.25;
+
     private static final boolean SHOULD_USE_HOME_TAG_LAYOUT = false;
     public static final AprilTagFieldLayout APRIL_TAG_FIELD_LAYOUT = createAprilTagFieldLayout();
     private static final Transform3d TAG_OFFSET = new Transform3d(0, 0, 0, new Rotation3d(0, 0, 0));
@@ -36,18 +48,10 @@ public class FieldConstants {
             AUTO_FIND_CORAL_POSE_RIGHT = new FlippablePose2d(AUTO_FIND_CORAL_POSE_X, FieldConstants.FIELD_WIDTH_METERS - AUTO_FIND_CORAL_POSE_LEFT_Y, AUTO_FIND_CORAL_POSE_LEFT_ROTATION.unaryMinus(), true);
 
     public static final Rotation2d LEFT_FEEDER_ANGLE = Rotation2d.fromDegrees(54);
-
-    public static final int REEF_CLOCK_POSITIONS = 6;
-    public static final Rotation2d REEF_CLOCK_POSITION_DIFFERENCE = Rotation2d.fromDegrees(Conversions.DEGREES_PER_ROTATIONS / REEF_CLOCK_POSITIONS);
-    public static final Rotation2d[] REEF_CLOCK_ANGLES = ReefClockPosition.getClockAngles();
-    public static final Translation2d BLUE_REEF_CENTER_TRANSLATION = new Translation2d(4.48945, FIELD_WIDTH_METERS / 2);
     public static final FlippableTranslation2d FLIPPABLE_REEF_CENTER_TRANSLATION = new FlippableTranslation2d(BLUE_REEF_CENTER_TRANSLATION, true);
-    public static final double
-            REEF_CENTER_TO_TARGET_SCORING_POSITION_X_TRANSFORM_METERS = 1.3,
-            REEF_CENTER_TO_TARGET_SCORING_POSITION_Y_TRANSFORM_METERS = 0.17,
-            REEF_CENTER_TO_TARGET_NO_HIT_REEF_POSITION_X_TRANSFORM_METERS = REEF_CENTER_TO_TARGET_SCORING_POSITION_X_TRANSFORM_METERS + 0.3,
-
-            REEF_CENTER_TO_TARGET_ALGAE_COLLECTION_POSITION_X_TRANSFORM_METERS = 1.6;
+    public static final FlippablePose2d
+            FLIPPABLE_PROCESSOR_SCORE_POSE = new FlippablePose2d(SimulatedGamePieceConstants.PROCESSOR_LOCATION.get().toPose2d(), true),
+            FLIPPABLE_NET_SCORE_POSE = new FlippablePose2d(SimulatedGamePieceConstants.NET_MINIMUM_X_LOCATION.get().toPose2d(), true);
 
     private static AprilTagFieldLayout createAprilTagFieldLayout() {
         try {

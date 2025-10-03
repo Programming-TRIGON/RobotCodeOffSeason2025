@@ -25,25 +25,34 @@ import java.io.IOException;
  * A class that contains the constants and configurations for everything related to the 15-second autonomous period at the start of the match.
  */
 public class AutonomousConstants {
+    public static final String DEFAULT_AUTO_NAME = "DefaultAutoName";
     public static final RobotConfig ROBOT_CONFIG = getRobotConfig();
-    public static final PathConstraints DRIVE_TO_REEF_CONSTRAINTS = new PathConstraints(2.5, 4, Units.degreesToRadians(450), Units.degreesToRadians(900));
     public static final double FEEDFORWARD_SCALAR = 0.5;//TODO: Calibrate
+    public static final PathConstraints DRIVE_TO_REEF_CONSTRAINTS = new PathConstraints(2.5, 4, Units.degreesToRadians(450), Units.degreesToRadians(900));
     public static final double MINIMUM_DISTANCE_FROM_REEF_TO_OPEN_ELEVATOR = 2.2;
     public static final double
             REEF_RELATIVE_X_TOLERANCE_METERS = 0.085,
             REEF_RELATIVE_Y_TOLERANCE_METERS = 0.03;
-
-    public static final String DEFAULT_AUTO_NAME = "DefaultAutoName";
-
+    
     private static final double
             AUTO_FIND_CORAL_POSE_X = 3.3,
-            AUTO_FIND_CORAL_POSE_LEFT_Y = 5.5;
-    private static final Rotation2d AUTO_FIND_CORAL_POSE_LEFT_ROTATION = Rotation2d.fromDegrees(130);
+            AUTO_FIND_CORAL_POSE_LEFT_Y = 5.5,
+            AUTO_FIND_FIRST_CORAL_FIRST_POSE_X = 4.6,
+            AUTO_FIND_FIRST_CORAL_FIRST_POSE_LEFT_Y = 6.1,
+            AUTO_FIND_FIRST_CORAL_SECOND_POSE_X = 2.75,
+            AUTO_FIND_FIRST_CORAL_SECOND_POSE_LEFT_Y = 6.5;
+    private static final Rotation2d
+            AUTO_FIND_CORAL_POSE_LEFT_ROTATION = Rotation2d.fromDegrees(130),
+            AUTO_FIND_FIRST_CORAL_POSE_LEFT_ROTATION = Rotation2d.fromDegrees(170);
     public static final FlippablePose2d
             AUTO_FIND_CORAL_POSE_LEFT = new FlippablePose2d(AUTO_FIND_CORAL_POSE_X, AUTO_FIND_CORAL_POSE_LEFT_Y, AUTO_FIND_CORAL_POSE_LEFT_ROTATION, true),
-            AUTO_FIND_CORAL_POSE_RIGHT = new FlippablePose2d(AUTO_FIND_CORAL_POSE_X, FieldConstants.FIELD_WIDTH_METERS - AUTO_FIND_CORAL_POSE_LEFT_Y, AUTO_FIND_CORAL_POSE_LEFT_ROTATION.unaryMinus(), true);
+            AUTO_FIND_CORAL_POSE_RIGHT = new FlippablePose2d(AUTO_FIND_CORAL_POSE_X, FieldConstants.FIELD_WIDTH_METERS - AUTO_FIND_CORAL_POSE_LEFT_Y, AUTO_FIND_CORAL_POSE_LEFT_ROTATION.unaryMinus(), true),
+            AUTO_FIND_FIRST_CORAL_FIRST_POSE_LEFT = new FlippablePose2d(AUTO_FIND_FIRST_CORAL_FIRST_POSE_X, AUTO_FIND_FIRST_CORAL_FIRST_POSE_LEFT_Y, AUTO_FIND_FIRST_CORAL_POSE_LEFT_ROTATION, true),
+            AUTO_FIND_FIRST_CORAL_FIRST_POSE_RIGHT = new FlippablePose2d(AUTO_FIND_FIRST_CORAL_FIRST_POSE_X, FieldConstants.FIELD_WIDTH_METERS - AUTO_FIND_FIRST_CORAL_FIRST_POSE_LEFT_Y, AUTO_FIND_FIRST_CORAL_POSE_LEFT_ROTATION.unaryMinus(), true),
+            AUTO_FIND_FIRST_CORAL_SECOND_POSE_LEFT = new FlippablePose2d(AUTO_FIND_FIRST_CORAL_SECOND_POSE_X, AUTO_FIND_FIRST_CORAL_SECOND_POSE_LEFT_Y, AUTO_FIND_FIRST_CORAL_POSE_LEFT_ROTATION, true),
+            AUTO_FIND_FIRST_CORAL_SECOND_POSE_RIGHT = new FlippablePose2d(AUTO_FIND_FIRST_CORAL_SECOND_POSE_X, FieldConstants.FIELD_WIDTH_METERS - AUTO_FIND_FIRST_CORAL_SECOND_POSE_LEFT_Y, AUTO_FIND_FIRST_CORAL_POSE_LEFT_ROTATION.unaryMinus(), true);
     public static final double
-            AUTO_FIND_CORAL_END_VELOCITY_METERS_PER_SECOND = 2.5,
+            AUTO_FIND_CORAL_END_VELOCITY_METERS_PER_SECOND = 3.5,
             AUTO_FIND_CORAL_ROTATION_POWER = 0.2;
 
     private static final PIDConstants

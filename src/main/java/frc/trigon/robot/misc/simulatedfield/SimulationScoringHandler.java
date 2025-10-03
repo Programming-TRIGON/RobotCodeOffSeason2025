@@ -27,7 +27,7 @@ public class SimulationScoringHandler {
     }
 
     private static void checkAlgaeScored(SimulatedGamePiece algae) {
-        if (!isGamePieceScored(algae, SimulatedGamePieceConstants.PROCESSOR_LOCATION, SimulatedGamePieceConstants.ALGAE_SCORING_TOLERANCE_METERS))
+        if (!isGamePieceScored(algae, SimulatedGamePieceConstants.PROCESSOR_LOCATION.get(), SimulatedGamePieceConstants.ALGAE_SCORING_TOLERANCE_METERS))
             return;
 
         algae.isScored = true;

@@ -89,6 +89,15 @@ public class Intake extends MotorSubsystem {
         return IntakeConstants.COLLECTION_DETECTION_BOOLEAN_EVENT.getAsBoolean();
     }
 
+    void prepareForState(IntakeConstants.IntakeState targetState) {
+        this.targetState = targetState;
+
+        setTargetState(
+                targetState.targetAngle,
+                targetState.targetVoltage
+        );
+    }
+    
     public Translation3d calculateLinearIntakeVelocity() {
         double velocityMetersPerSecond = intakeMotor.getSignal(TalonFXSignal.VELOCITY) * 2 * Math.PI * IntakeConstants.WHEEL_RADIUS_METERS;
         return new Translation3d(

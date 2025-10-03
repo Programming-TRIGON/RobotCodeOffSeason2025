@@ -17,15 +17,17 @@ import frc.trigon.robot.subsystems.transporter.TransporterCommands;
 import frc.trigon.robot.subsystems.transporter.TransporterConstants;
 
 public class CoralCollectionCommands {
-
     public static Command getCoralCollectionCommand() {
         return new SequentialCommandGroup(
                 getIntakeCoralCommand().until(RobotContainer.TRANSPORTER::hasCoral),
                 getCollectionConfirmationCommand(),
                 new InstantCommand(
-                        () -> getLoadCoralCommand().schedule()
+                        () -> {
+                            if (!AlgaeManipulationCommands.isHoldingAlgae())
+                                getLoadCoralCommand().schedule();
+                        }
                 )
-        ).alongWith(new IntakeAssistCommand(OperatorConstants.DEFAULT_INTAKE_ASSIST_MODE));
+        ).alongWith(new IntakeAssistCommand(OperatorConstants.DEFAULT_INTAKE_ASSIST_MODE)).unless(CoralCollectionCommands::hasCoral);
     }
 
     public static Command getLoadCoralCommand() {
@@ -46,5 +48,9 @@ public class CoralCollectionCommands {
 
     private static Command getCollectionConfirmationCommand() {
         return new InstantCommand(() -> OperatorConstants.DRIVER_CONTROLLER.rumble(OperatorConstants.RUMBLE_DURATION_SECONDS, OperatorConstants.RUMBLE_POWER));
+    }
+
+    static boolean hasCoral() {
+        return (!AlgaeManipulationCommands.isHoldingAlgae() && RobotContainer.END_EFFECTOR.hasGamePiece()) || RobotContainer.TRANSPORTER.hasCoral();
     }
 }

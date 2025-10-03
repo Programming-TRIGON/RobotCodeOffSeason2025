@@ -222,6 +222,7 @@ public class IntakeConstants {
 
     public enum IntakeState {
         REST(0, MINIMUM_ANGLE),
+        OPEN_REST(0, MAXIMUM_ANGLE),
         REST_FOR_CLIMB(0, MAXIMUM_ANGLE),
         COLLECT(-8, MAXIMUM_ANGLE),
         EJECT(5, MINIMUM_ANGLE);

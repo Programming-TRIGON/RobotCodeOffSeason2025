@@ -142,7 +142,7 @@ public class ArmElevatorConstants {
     );
 
     static final Pose3d ELEVATOR_SECOND_STAGE_VISUALIZATION_ORIGIN_POINT = new Pose3d(
-            new Translation3d(0, -0.17, 0.0814),
+            new Translation3d(0, -0.17, 0.095),
             new Rotation3d(0, 0, 0)
     );
 
@@ -150,7 +150,7 @@ public class ArmElevatorConstants {
             new Translation3d(0, 0.1, -0.5855),
             new Rotation3d(0, edu.wpi.first.math.util.Units.degreesToRadians(0), 0)
     );
-    static final double SECOND_ELEVATOR_COMPONENT_EXTENDED_LENGTH_METERS = 0.603;
+    static final double SECOND_ELEVATOR_COMPONENT_EXTENDED_LENGTH_METERS = 0.593;
     static final double DRUM_DIAMETER_METERS = DRUM_RADIUS_METERS * 2;
     private static final double REVERSE_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS = 0.1;
     private static final BooleanEvent REVERSE_LIMIT_SENSOR_BOOLEAN_EVENT = new BooleanEvent(
