@@ -26,14 +26,14 @@ public class CoralCollectionCommands {
                                 getLoadCoralCommand().schedule();
                         }
                 )
-        ).alongWith(new IntakeAssistCommand(OperatorConstants.DEFAULT_INTAKE_ASSIST_MODE));
+        ).alongWith(new IntakeAssistCommand(OperatorConstants.DEFAULT_INTAKE_ASSIST_MODE)).unless(CoralCollectionCommands::hasCoral);
     }
 
     public static Command getLoadCoralCommand() {
         return new ParallelCommandGroup(
                 ArmElevatorCommands.getSetTargetStateCommand(ArmElevatorConstants.ArmElevatorState.LOAD_CORAL),
                 EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.LOAD_CORAL)
-        ).until(RobotContainer.END_EFFECTOR::hasGamePiece).onlyWhile(() -> !RobotContainer.END_EFFECTOR.hasGamePiece());
+        ).until(RobotContainer.END_EFFECTOR::hasGamePiece);
     }
 
     public static Command getUnloadCoralCommand() {
@@ -63,5 +63,9 @@ public class CoralCollectionCommands {
 
     private static Command getCollectionConfirmationCommand() {
         return new InstantCommand(() -> OperatorConstants.DRIVER_CONTROLLER.rumble(OperatorConstants.RUMBLE_DURATION_SECONDS, OperatorConstants.RUMBLE_POWER));
+    }
+
+    static boolean hasCoral() {
+        return (!AlgaeManipulationCommands.isHoldingAlgae() && RobotContainer.END_EFFECTOR.hasGamePiece()) || RobotContainer.TRANSPORTER.hasCoral();
     }
 }

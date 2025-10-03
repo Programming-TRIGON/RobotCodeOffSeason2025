@@ -32,7 +32,7 @@ public class FieldConstants {
             REEF_CENTER_TO_TARGET_SCORING_POSITION_Y_TRANSFORM_METERS = 0.17,
             REEF_CENTER_TO_TARGET_ALGAE_COLLECTION_POSITION_X_TRANSFORM_METERS = 1.6,
             REEF_CENTER_TO_TARGET_NO_HIT_REEF_POSITION_X_TRANSFORM_METERS = REEF_CENTER_TO_TARGET_SCORING_POSITION_X_TRANSFORM_METERS + 0.3;
-    public static final double SAFE_DISTANCE_FROM_SCORING_POSE_METERS = 2.2;
+    public static final double SAFE_DISTANCE_FROM_SCORING_POSE_METERS = 0.25;
 
     private static final boolean SHOULD_USE_HOME_TAG_LAYOUT = false;
     public static final AprilTagFieldLayout APRIL_TAG_FIELD_LAYOUT = createAprilTagFieldLayout();

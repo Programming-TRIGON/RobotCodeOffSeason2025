@@ -48,12 +48,12 @@ public class AlgaeManipulationCommands {
     public static Command getFloorAlgaeCollectionCommand() {
         return new SequentialCommandGroup(
                 GeneralCommands.getResetFlipArmOverrideCommand(),
+                CoralCollectionCommands.getUnloadCoralCommand().onlyIf(RobotContainer.END_EFFECTOR::hasGamePiece),
+                getInitiateFloorAlgaeCollectionCommand().until(RobotContainer.END_EFFECTOR::hasGamePiece),
                 new InstantCommand(() -> {
                     IS_HOLDING_ALGAE = true;
                     SHOULD_COLLECT_FROM_LOLLIPOP = false;
                 }),
-                CoralCollectionCommands.getUnloadCoralCommand().onlyIf(RobotContainer.END_EFFECTOR::hasGamePiece),
-                getInitiateFloorAlgaeCollectionCommand().until(RobotContainer.END_EFFECTOR::hasGamePiece),
                 GeneralCommands.getResetFlipArmOverrideCommand(),
                 getScoreAlgaeCommand().alongWith(getAlgaeCollectionConfirmationCommand())
                         .until(() -> !RobotContainer.END_EFFECTOR.hasGamePiece() && !isScoreAlgaeButtonPressed())
@@ -64,8 +64,8 @@ public class AlgaeManipulationCommands {
         return new SequentialCommandGroup(
                 GeneralCommands.getResetFlipArmOverrideCommand(),
                 CoralCollectionCommands.getUnloadCoralCommand().onlyIf(RobotContainer.END_EFFECTOR::hasGamePiece),
-                new InstantCommand(() -> IS_HOLDING_ALGAE = true),
                 getInitiateReefAlgaeCollectionCommand().until(RobotContainer.END_EFFECTOR::hasGamePiece),
+                new InstantCommand(() -> IS_HOLDING_ALGAE = true),
                 GeneralCommands.getResetFlipArmOverrideCommand(),
                 getScoreAlgaeCommand().alongWith(getAlgaeCollectionConfirmationCommand())
                         .until(() -> !RobotContainer.END_EFFECTOR.hasGamePiece() && !isScoreAlgaeButtonPressed())
