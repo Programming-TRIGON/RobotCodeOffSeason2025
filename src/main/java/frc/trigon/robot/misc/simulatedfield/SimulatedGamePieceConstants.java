@@ -71,14 +71,13 @@ public class SimulatedGamePieceConstants {
     public static final ArrayList<FlippablePose3d> CORAL_SCORING_LOCATIONS = calculatedCoralScoringLocations();
     public static final FlippablePose3d
             PROCESSOR_LOCATION = new FlippablePose3d(new Pose3d(11.6, 7.5, 0.18, new Rotation3d(0, 0, Rotation2d.kCW_90deg.getRadians())), true),
-            NET_MINIMUM_X_LOCATION = new FlippablePose3d(FlippablePose3d.flipPose(new Pose3d(FIELD_LENGTH_METERS - 10.724 + 0.82, 4.730, 2.131, new Rotation3d())), true),
-            NET_MAXIMUM_X_LOCATION = new FlippablePose3d(FlippablePose3d.flipPose(new Pose3d(FIELD_LENGTH_METERS - 10.724 + 0.82, 8.429, 2.131, new Rotation3d())), true);
+            NET_MINIMUM_X_LOCATION = new FlippablePose3d(FlippablePose3d.flipPose(new Pose3d(FIELD_LENGTH_METERS - 10.724 + 0.82, 4.730, 2.131, new Rotation3d())), true);
     public static final FlippableTranslation2d
             LEFT_FEEDER_POSITION = new FlippableTranslation2d(0.923, 7.370, true),
             RIGHT_FEEDER_POSITION = new FlippableTranslation2d(0.923, 0.668, true);
     static final FlippablePose3d
-            RIGHT_CORAL_SPAWN_POSE = new FlippablePose3d(new Pose3d(1.5, 1.5, 0, new Rotation3d()), true),
-            LEFT_CORAL_SPAWN_POSE = new FlippablePose3d(new Pose3d(1.5, 6.5, 0, new Rotation3d()), true);
+            RIGHT_CORAL_SPAWN_POSE = new FlippablePose3d(new Pose3d(1.25, 1.25, 0, new Rotation3d()), true),
+            LEFT_CORAL_SPAWN_POSE = new FlippablePose3d(new Pose3d(1.25, 6.75, 0, new Rotation3d()), true);
 
     static {
         ALGAE_ON_FIELD.addAll(createAlgaeOnReef());

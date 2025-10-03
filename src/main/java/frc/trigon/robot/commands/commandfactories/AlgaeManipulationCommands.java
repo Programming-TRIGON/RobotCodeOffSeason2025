@@ -48,12 +48,12 @@ public class AlgaeManipulationCommands {
     public static Command getFloorAlgaeCollectionCommand() {
         return new SequentialCommandGroup(
                 GeneralCommands.getResetFlipArmOverrideCommand(),
+                CoralCollectionCommands.getUnloadCoralCommand().onlyIf(RobotContainer.END_EFFECTOR::hasGamePiece),
+                getInitiateFloorAlgaeCollectionCommand().until(RobotContainer.END_EFFECTOR::hasGamePiece),
                 new InstantCommand(() -> {
                     IS_HOLDING_ALGAE = true;
                     SHOULD_COLLECT_FROM_LOLLIPOP = false;
                 }),
-                CoralCollectionCommands.getUnloadCoralCommand().onlyIf(RobotContainer.END_EFFECTOR::hasGamePiece),
-                getInitiateFloorAlgaeCollectionCommand().until(RobotContainer.END_EFFECTOR::hasGamePiece),
                 GeneralCommands.getResetFlipArmOverrideCommand(),
                 getScoreAlgaeCommand().alongWith(getAlgaeCollectionConfirmationCommand())
                         .until(() -> !RobotContainer.END_EFFECTOR.hasGamePiece() && !isScoreAlgaeButtonPressed())
@@ -63,9 +63,9 @@ public class AlgaeManipulationCommands {
     public static Command getReefAlgaeCollectionCommand() {
         return new SequentialCommandGroup(
                 GeneralCommands.getResetFlipArmOverrideCommand(),
-                new InstantCommand(() -> IS_HOLDING_ALGAE = true),
                 CoralCollectionCommands.getUnloadCoralCommand().onlyIf(RobotContainer.END_EFFECTOR::hasGamePiece),
                 getInitiateReefAlgaeCollectionCommand().until(RobotContainer.END_EFFECTOR::hasGamePiece),
+                new InstantCommand(() -> IS_HOLDING_ALGAE = true),
                 GeneralCommands.getResetFlipArmOverrideCommand(),
                 getScoreAlgaeCommand().alongWith(getAlgaeCollectionConfirmationCommand())
                         .until(() -> !RobotContainer.END_EFFECTOR.hasGamePiece() && !isScoreAlgaeButtonPressed())
@@ -86,7 +86,7 @@ public class AlgaeManipulationCommands {
                         () -> calculateClosestAlgaeCollectionPose().getRotation()
                 )
         ).raceWith(
-                new WaitUntilCommand(RobotContainer.END_EFFECTOR::hasGamePiece),
+                new WaitUntilCommand(() -> RobotContainer.END_EFFECTOR.hasGamePiece() && IS_HOLDING_ALGAE),
                 new WaitUntilCommand(OperatorConstants.STOP_REEF_ALGAE_ALIGN_TRIGGER)
         ).onlyIf(() -> CoralPlacingCommands.SHOULD_SCORE_AUTONOMOUSLY).asProxy();
     }

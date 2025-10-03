@@ -8,6 +8,8 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.trigon.robot.RobotContainer;
+import frc.trigon.robot.commands.commandfactories.CoralCollectionCommands;
+import frc.trigon.robot.commands.commandfactories.CoralPlacingCommands;
 import frc.trigon.robot.subsystems.MotorSubsystem;
 import lib.hardware.phoenix6.cancoder.CANcoderEncoder;
 import lib.hardware.phoenix6.cancoder.CANcoderSignal;
@@ -94,6 +96,7 @@ public class ArmElevator extends MotorSubsystem {
         elevatorMasterMotor.update();
         Logger.recordOutput("Elevator/CurrentPositionMeters", getCurrentElevatorPositionMeters());
         Logger.recordOutput("Arm/CurrentPositionDegrees", getCurrentArmAngle().getDegrees());
+        Logger.recordOutput("Arm/isPrepareArmAngleAboveCurrentArmAngle", CoralPlacingCommands.isPrepareArmAngleAboveCurrentArmAngle());
     }
 
     @Override

@@ -3,11 +3,14 @@ package frc.trigon.robot.misc.objectdetectioncamera;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.trigon.robot.RobotContainer;
+import frc.trigon.robot.commands.commandfactories.CoralCollectionCommands;
 import frc.trigon.robot.misc.objectdetectioncamera.io.PhotonObjectDetectionCameraIO;
 import frc.trigon.robot.misc.objectdetectioncamera.io.SimulationObjectDetectionCameraIO;
 import frc.trigon.robot.misc.simulatedfield.SimulatedGamePieceConstants;
 import org.littletonrobotics.junction.Logger;
 import lib.hardware.RobotHardwareStats;
+
+import java.util.ArrayList;
 
 /**
  * An object detection camera is a class that represents a camera that detects objects other than apriltags, most likely game pieces.
@@ -71,6 +74,14 @@ public class ObjectDetectionCamera extends SubsystemBase {
     }
 
     public Rotation3d[] getTargetObjectsRotations(SimulatedGamePieceConstants.GamePieceType targetGamePiece) {
+        if (targetGamePiece == SimulatedGamePieceConstants.GamePieceType.CORAL) {
+            ArrayList<Rotation3d> rotations = new ArrayList<>();
+            for (Rotation3d rotation : objectDetectionCameraInputs.visibleObjectRotations[targetGamePiece.id]) {
+                if (!isLollipop(rotation.toRotation2d()))
+                    rotations.add(rotation);
+            }
+            return rotations.toArray(new Rotation3d[0]);
+        }
         return objectDetectionCameraInputs.visibleObjectRotations[targetGamePiece.id];
     }
 
@@ -96,6 +107,15 @@ public class ObjectDetectionCamera extends SubsystemBase {
         final Transform3d objectRotationStartToGround = new Transform3d(xTransform, 0, 0, new Rotation3d());
 
         return objectRotationStart.transformBy(objectRotationStartToGround).getTranslation().toTranslation2d();
+    }
+
+    private boolean isLollipop(Rotation2d objectYaw) {
+        for (Rotation3d algaeYaw : getTargetObjectsRotations(SimulatedGamePieceConstants.GamePieceType.ALGAE)) {
+            final double difference = Math.abs(algaeYaw.toRotation2d().minus(objectYaw).getDegrees());
+            if (difference < ObjectDetectionCameraConstants.LOLLIPOP_TOLERANCE.getDegrees())
+                return true;
+        }
+        return false;
     }
 
     private ObjectDetectionCameraIO generateIO(String hostname, Transform3d robotCenterToCamera) {
