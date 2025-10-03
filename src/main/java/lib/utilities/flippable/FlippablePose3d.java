@@ -58,4 +58,18 @@ public class FlippablePose3d extends Flippable<Pose3d> {
                 )
         );
     }
+
+    public static Pose3d flipPose(Pose3d pose) {
+        final Pose2d flippedPose2d = FlippingUtil.flipFieldPose(pose.toPose2d());
+        return new Pose3d(
+                flippedPose2d.getTranslation().getX(),
+                flippedPose2d.getTranslation().getY(),
+                pose.getZ(),
+                new Rotation3d(
+                        pose.getRotation().getX(),
+                        pose.getRotation().getY(),
+                        flippedPose2d.getRotation().getRadians()
+                )
+        );
+    }
 }

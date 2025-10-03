@@ -50,7 +50,7 @@ public class IntakeConstants {
 
     private static final double
             INTAKE_MOTOR_GEAR_RATIO = 4,
-            ANGLE_MOTOR_GEAR_RATIO = 28;
+            ANGLE_MOTOR_GEAR_RATIO = 40;
     static final boolean FOC_ENABLED = true;
 
     private static final int
@@ -218,6 +218,7 @@ public class IntakeConstants {
 
     public enum IntakeState {
         REST(0, MINIMUM_ANGLE),
+        OPEN_REST(0, MAXIMUM_ANGLE),
         REST_FOR_CLIMB(0, MAXIMUM_ANGLE),
         COLLECT(5, MAXIMUM_ANGLE),
         EJECT(-5, MAXIMUM_ANGLE);

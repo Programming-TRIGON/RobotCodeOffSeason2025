@@ -1,12 +1,16 @@
 package frc.trigon.robot.commands.commandfactories;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.trigon.robot.commands.CommandConstants;
 import frc.trigon.robot.constants.OperatorConstants;
 import frc.trigon.robot.subsystems.MotorSubsystem;
+import frc.trigon.robot.subsystems.armelevator.ArmElevatorCommands;
+import frc.trigon.robot.subsystems.armelevator.ArmElevatorConstants;
 import frc.trigon.robot.subsystems.swerve.SwerveCommands;
 
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 /**
  * A class that contains the general commands of the robot, such as commands that alter a command or commands that affect all subsystems.
@@ -52,6 +56,7 @@ public class GeneralCommands {
     }
 
     /**
+     * <B><font color="red">---- UNTESTED ----</font></B> <br>
      * A command that only runs when a condition is met for a certain amount of time.
      *
      * @param command             the command to run
@@ -60,6 +65,32 @@ public class GeneralCommands {
      * @return the command
      */
     public static Command runWhen(Command command, BooleanSupplier condition, double debounceTimeSeconds) {
-        return runWhen(new WaitCommand(debounceTimeSeconds).andThen(command.onlyIf(condition)), condition);
+        final Debouncer debouncer = new Debouncer(0, Debouncer.DebounceType.kRising);
+        return new SequentialCommandGroup(
+                new InstantCommand(() -> debouncer.setDebounceTime(debounceTimeSeconds)),
+                runWhen(command, () -> debouncer.calculate(condition.getAsBoolean()))
+        );
+    }
+
+    public static Command getResetFlipArmOverrideCommand() {
+        return new InstantCommand(() -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE = false);
+    }
+
+    public static Command getFlippableOverridableArmCommand(ArmElevatorConstants.ArmElevatorState targetState, boolean isPrepareState, BooleanSupplier shouldStartFlipped) {
+        return isPrepareState ?
+                ArmElevatorCommands.getPrepareForStateCommand(() -> targetState, () -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE ^ shouldStartFlipped.getAsBoolean()) :
+                ArmElevatorCommands.getSetTargetStateCommand(() -> targetState, () -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE ^ shouldStartFlipped.getAsBoolean());
+    }
+
+    public static Command getFlippableOverridableArmCommand(Supplier<ArmElevatorConstants.ArmElevatorState> targetState, boolean isPrepareState, BooleanSupplier shouldStartFlipped) {
+        return isPrepareState ?
+                ArmElevatorCommands.getPrepareForStateCommand(targetState, () -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE ^ shouldStartFlipped.getAsBoolean()) :
+                ArmElevatorCommands.getSetTargetStateCommand(targetState, () -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE ^ shouldStartFlipped.getAsBoolean());
+    }
+
+    public static Command getFlippableOverridableArmCommand(ArmElevatorConstants.ArmElevatorState targetState, boolean isPrepareState) {
+        return isPrepareState ?
+                ArmElevatorCommands.getPrepareForStateCommand(() -> targetState, () -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE) :
+                ArmElevatorCommands.getSetTargetStateCommand(() -> targetState, () -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE);
     }
 }
