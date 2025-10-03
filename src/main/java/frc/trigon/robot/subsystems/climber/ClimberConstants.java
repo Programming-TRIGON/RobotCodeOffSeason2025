@@ -26,10 +26,10 @@ import java.util.function.DoubleSupplier;
 public class ClimberConstants {
     private static final int
             MOTOR_ID = 18,
-            REVERSE_LIMIT_SENSOR_CHANNEL = 0,
-            RIGHT_SERVO_CHANNEL = 1,
-            LEFT_SERVO_CHANNEL = 2,
-            CAGE_SENSOR_CHANNEL = 3;
+            REVERSE_LIMIT_SENSOR_CHANNEL = 8,
+            RIGHT_SERVO_CHANNEL = 7,
+            LEFT_SERVO_CHANNEL = 8,
+            CAGE_SENSOR_CHANNEL = 2;
     private static final String
             MOTOR_NAME = "ClimberMotor",
             REVERSE_LIMIT_SENSOR_NAME = "ClimberReverseLimitSensor",
@@ -50,12 +50,12 @@ public class ClimberConstants {
     private static final double GEAR_RATIO = 37.5;
     private static final double REVERSE_LIMIT_RESET_POSITION_ROTATIONS = 0;
     private static final double FORWARD_SOFT_LIMIT_POSITION_ROTATIONS = 3;
-    private static final int
-            SERVO_PULSE_WIDTH_MICROSECONDS = 20000,
-            SERVO_MAXIMUM_DEADBAND_RANGE_MICROSECONDS = 0,
-            SERVO_CENTER_PULSE_WIDTH_MICROSECONDS = 1500,
-            SERVO_MINIMUM_DEADBAND_RANGE_MICROSECONDS = 1000,
-            SERVO_MAXIMUM_PULSE_WIDTH_MICROSECONDS = 2000;
+//    private static final int
+//            SERVO_PULSE_WIDTH_MICROSECONDS = 20000,
+//            SERVO_MAXIMUM_DEADBAND_RANGE_MICROSECONDS = 0,
+//            SERVO_CENTER_PULSE_WIDTH_MICROSECONDS = 1500,
+//            SERVO_MINIMUM_DEADBAND_RANGE_MICROSECONDS = 1000,
+//            SERVO_MAXIMUM_PULSE_WIDTH_MICROSECONDS = 2000;
 
     static final boolean FOC_ENABLED = true;
 
@@ -154,20 +154,20 @@ public class ClimberConstants {
     }
 
     private static void configureServos() {
-        RIGHT_SERVO.setPWMBoundaries(
-                SERVO_PULSE_WIDTH_MICROSECONDS,
-                SERVO_MAXIMUM_DEADBAND_RANGE_MICROSECONDS,
-                SERVO_CENTER_PULSE_WIDTH_MICROSECONDS,
-                SERVO_MINIMUM_DEADBAND_RANGE_MICROSECONDS,
-                SERVO_MAXIMUM_PULSE_WIDTH_MICROSECONDS
-        );
-        LEFT_SERVO.setPWMBoundaries(
-                SERVO_PULSE_WIDTH_MICROSECONDS,
-                SERVO_MAXIMUM_DEADBAND_RANGE_MICROSECONDS,
-                SERVO_CENTER_PULSE_WIDTH_MICROSECONDS,
-                SERVO_MINIMUM_DEADBAND_RANGE_MICROSECONDS,
-                SERVO_MAXIMUM_PULSE_WIDTH_MICROSECONDS
-        );
+//        RIGHT_SERVO.setPWMBoundaries(
+//                SERVO_PULSE_WIDTH_MICROSECONDS,
+//                SERVO_MAXIMUM_DEADBAND_RANGE_MICROSECONDS,
+//                SERVO_CENTER_PULSE_WIDTH_MICROSECONDS,
+//                SERVO_MINIMUM_DEADBAND_RANGE_MICROSECONDS,
+//                SERVO_MAXIMUM_PULSE_WIDTH_MICROSECONDS
+//        );
+//        LEFT_SERVO.setPWMBoundaries(
+//                SERVO_PULSE_WIDTH_MICROSECONDS,
+//                SERVO_MAXIMUM_DEADBAND_RANGE_MICROSECONDS,
+//                SERVO_CENTER_PULSE_WIDTH_MICROSECONDS,
+//                SERVO_MINIMUM_DEADBAND_RANGE_MICROSECONDS,
+//                SERVO_MAXIMUM_PULSE_WIDTH_MICROSECONDS
+//        );
     }
 
     private static void configureReverseLimitSensor() {

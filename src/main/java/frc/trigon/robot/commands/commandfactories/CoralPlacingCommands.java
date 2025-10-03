@@ -18,7 +18,7 @@ import lib.utilities.flippable.FlippablePose2d;
 import lib.utilities.flippable.FlippableTranslation2d;
 
 public class CoralPlacingCommands {
-    public static boolean SHOULD_SCORE_AUTONOMOUSLY = true;
+    public static boolean SHOULD_SCORE_AUTONOMOUSLY = false;
     static final ReefChooser REEF_CHOOSER = OperatorConstants.REEF_CHOOSER;
 
     public static Command getScoreInReefCommand(boolean shouldScoreRight) {
@@ -44,7 +44,7 @@ public class CoralPlacingCommands {
 
     private static Command getScoreCommand(boolean shouldScoreRight) {
         return new SequentialCommandGroup(
-                getAutonomouslyPrepareScoreCommand(shouldScoreRight).until(OperatorConstants.CONTINUE_TRIGGER),
+                getPrepareArmElevatorIfWontHitReef(shouldScoreRight).until(OperatorConstants.CONTINUE_TRIGGER),
                 new ParallelCommandGroup(
                         GeneralCommands.getFlippableOverridableArmCommand(REEF_CHOOSER::getArmElevatorState, false, CoralPlacingCommands::shouldReverseScore),
                         EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.SCORE_CORAL)

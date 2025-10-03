@@ -19,7 +19,8 @@ import frc.trigon.robot.subsystems.transporter.TransporterConstants;
 public class CoralCollectionCommands {
     public static Command getCoralCollectionCommand() {
         return new SequentialCommandGroup(
-                getIntakeSequenceCommand(),
+                getIntakeCoralCommand().until(RobotContainer.TRANSPORTER::hasCoral),
+                getCollectionConfirmationCommand(),
                 new InstantCommand(
                         () -> {
                             if (!AlgaeManipulationCommands.isHoldingAlgae())
@@ -33,7 +34,7 @@ public class CoralCollectionCommands {
         return new ParallelCommandGroup(
                 ArmElevatorCommands.getSetTargetStateCommand(ArmElevatorConstants.ArmElevatorState.LOAD_CORAL),
                 EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.LOAD_CORAL)
-        ).until(RobotContainer.END_EFFECTOR::hasGamePiece);
+        ).until(RobotContainer.END_EFFECTOR::hasGamePiece).unless(RobotContainer.END_EFFECTOR::hasGamePiece);
     }
 
     public static Command getUnloadCoralCommand() {
@@ -43,23 +44,13 @@ public class CoralCollectionCommands {
         ).until(() -> !RobotContainer.END_EFFECTOR.hasGamePiece());
     }
 
-    static Command getIntakeSequenceCommand() {
-        return getInitiateCollectionCommand().until(RobotContainer.TRANSPORTER::hasCoral);
-    }
-
-    private static Command getInitiateCollectionCommand() {
+    public static Command getIntakeCoralCommand() {
         return new ParallelCommandGroup(
                 IntakeCommands.getSetTargetStateCommand(IntakeConstants.IntakeState.COLLECT),
-                TransporterCommands.getSetTargetStateWithPulsesCommand(TransporterConstants.TransporterState.COLLECT)
+                TransporterCommands.getSetTargetStateCommand(TransporterConstants.TransporterState.COLLECT)
         );
     }
 
-    private static Command getAlignCoralCommand() {
-        return new SequentialCommandGroup(
-                TransporterCommands.getSetTargetStateWithPulsesCommand(TransporterConstants.TransporterState.ALIGN_CORAL).until(RobotContainer.TRANSPORTER::hasCoral),
-                TransporterCommands.getSetTargetStateWithPulsesCommand(TransporterConstants.TransporterState.HOLD_CORAL)
-        );
-    }
 
     private static Command getCollectionConfirmationCommand() {
         return new InstantCommand(() -> OperatorConstants.DRIVER_CONTROLLER.rumble(OperatorConstants.RUMBLE_DURATION_SECONDS, OperatorConstants.RUMBLE_POWER));

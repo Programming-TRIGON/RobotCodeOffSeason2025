@@ -22,7 +22,7 @@ public class TransporterConstants {
     private static final int
             RIGHT_MOTOR_ID = 11,
             LEFT_MOTOR_ID = 12,
-            BEAM_BREAK_CHANNEL = 3;
+            BEAM_BREAK_CHANNEL = 1;
     private static final String
             RIGHT_MOTOR_NAME = "TransporterRightMotor",
             LEFT_MOTOR_NAME = "TransporterLeftMotor",
@@ -61,8 +61,8 @@ public class TransporterConstants {
                     MAXIMUM_DISPLAYABLE_VELOCITY
             );
 
-    static final double PULSE_VOLTAGE_APPLIED_TIME_SECONDS = 0.1;
-    static final double PULSE_WAIT_TIME_SECONDS = 0.05;
+    static final double PULSE_VOLTAGE_APPLIED_TIME_SECONDS = 0.08;
+    static final double PULSE_WAIT_TIME_SECONDS = 0.03;
     private static final double HAS_CORAL_DEBOUNCE_TIME_SECONDS = 0.2;
     static final BooleanEvent HAS_CORAL_BOOLEAN_EVENT = new BooleanEvent(
             CommandScheduler.getInstance().getActiveButtonLoop(),
@@ -103,10 +103,10 @@ public class TransporterConstants {
 
     public enum TransporterState {
         REST(0, 0),
-        COLLECT(5, 5),
-        ALIGN_CORAL(5, 6),
-        HOLD_CORAL(1, 1),
-        EJECT(-5, -5);
+        COLLECT(-4, 5),
+        ALIGN_CORAL(-5, 6),
+        HOLD_CORAL(-1, 1),
+        EJECT(5, -5);
 
         public final double
                 targetRightMotorVoltage,

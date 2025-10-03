@@ -51,8 +51,6 @@ public class Intake extends MotorSubsystem {
     public void updatePeriodically() {
         intakeMotor.update();
         angleMotor.update();
-        IntakeConstants.FORWARD_LIMIT_SENSOR.updateSensor();
-        IntakeConstants.REVERSE_LIMIT_SENSOR.updateSensor();
         IntakeConstants.DISTANCE_SENSOR.updateSensor();
     }
 
@@ -97,7 +95,7 @@ public class Intake extends MotorSubsystem {
                 targetState.targetVoltage
         );
     }
-    
+
     public Translation3d calculateLinearIntakeVelocity() {
         double velocityMetersPerSecond = intakeMotor.getSignal(TalonFXSignal.VELOCITY) * 2 * Math.PI * IntakeConstants.WHEEL_RADIUS_METERS;
         return new Translation3d(
@@ -109,6 +107,7 @@ public class Intake extends MotorSubsystem {
 
     void setTargetState(IntakeConstants.IntakeState targetState) {
         this.targetState = targetState;
+        System.out.println("Setting intake state to " + targetState.name());
         setTargetState(targetState.targetAngle, targetState.targetVoltage);
     }
 
@@ -119,17 +118,20 @@ public class Intake extends MotorSubsystem {
 
     private void setTargetVoltage(double voltage) {
         IntakeConstants.INTAKE_MECHANISM.setTargetVelocity(voltage);
+        System.out.println("Setting intake voltage to " + voltage);
         intakeMotor.setControl(voltageRequest.withOutput(voltage));
     }
 
+
     private void setTargetAngle(Rotation2d targetAngle) {
+        System.out.println("Setting intake angle to " + targetAngle.getDegrees() + " degrees");
         angleMotor.setControl(positionRequest.withPosition(targetAngle.getRotations()));
     }
 
     private Pose3d calculateVisualizationPose() {
         final Transform3d transform = new Transform3d(
                 new Translation3d(),
-                new Rotation3d(0, getCurrentAngle().getRadians(), 0)
+                new Rotation3d(0, -getCurrentAngle().getRadians(), 0)
         );
         return IntakeConstants.INTAKE_VISUALIZATION_ORIGIN_POINT.transformBy(transform);
     }
