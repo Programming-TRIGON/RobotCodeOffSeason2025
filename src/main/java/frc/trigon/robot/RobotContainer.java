@@ -43,7 +43,11 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import java.util.List;
 
 public class RobotContainer {
-    public static final PoseEstimator ROBOT_POSE_ESTIMATOR = new PoseEstimator();
+    public static final PoseEstimator ROBOT_POSE_ESTIMATOR = new PoseEstimator(
+            CameraConstants.INTAKE_SIDE_REEF_TAG_CAMERA,
+            CameraConstants.LEFT_REEF_TAG_CAMERA,
+            CameraConstants.RIGHT_REEF_TAG_CAMERA
+    );
     public static final ObjectPoseEstimator CORAL_POSE_ESTIMATOR = new ObjectPoseEstimator(
             CameraConstants.OBJECT_POSE_ESTIMATOR_DELETION_THRESHOLD_SECONDS,
             ObjectPoseEstimator.DistanceCalculationMethod.TRANSLATION,
