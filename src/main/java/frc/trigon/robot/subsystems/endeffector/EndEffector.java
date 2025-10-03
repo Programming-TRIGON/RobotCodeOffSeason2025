@@ -31,6 +31,7 @@ public class EndEffector extends MotorSubsystem {
         EndEffectorConstants.DISTANCE_SENSOR.updateSensor();
 
         Logger.recordOutput("EndEffector/isHoldingAlgae", AlgaeManipulationCommands.isHoldingAlgae());
+        Logger.recordOutput("EndEffector/distanceSensorCM", EndEffectorConstants.DISTANCE_SENSOR.getScaledValue());
     }
 
     @AutoLogOutput(key = "EndEffector/HasCoral")

@@ -22,7 +22,7 @@ public class TransporterConstants {
     private static final int
             RIGHT_MOTOR_ID = 11,
             LEFT_MOTOR_ID = 12,
-            BEAM_BREAK_CHANNEL = 6;
+            BEAM_BREAK_CHANNEL = 1;
     private static final String
             RIGHT_MOTOR_NAME = "TransporterRightMotor",
             LEFT_MOTOR_NAME = "TransporterLeftMotor",

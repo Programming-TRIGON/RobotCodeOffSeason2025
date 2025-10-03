@@ -14,9 +14,7 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.event.BooleanEvent;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.trigon.robot.constants.OperatorConstants;
 import frc.trigon.robot.misc.simulatedfield.SimulationFieldHandler;
 import lib.hardware.RobotHardwareStats;
 import lib.hardware.misc.simplesensor.SimpleSensor;
@@ -33,21 +31,15 @@ public class IntakeConstants {
     private static final int
             INTAKE_MOTOR_ID = 9,
             ANGLE_MOTOR_ID = 10,
-            REVERSE_LIMIT_SENSOR_CHANNEL = 3,
-            FORWARD_LIMIT_CHANNEL = 4,
             DISTANCE_SENSOR_CHANNEL = 5;
     private static final String
             INTAKE_MOTOR_NAME = "IntakeMotor",
             ANGLE_MOTOR_NAME = "IntakeAngleMotor",
-            REVERSE_LIMIT_SWITCH_NAME = "IntakeReverseLimitSwitch",
-            FORWARD_LIMIT_SWITCH_NAME = "IntakeForwardLimitSwitch",
             DISTANCE_SENSOR_NAME = "IntakeDistanceSensor";
     static final TalonFXMotor
             INTAKE_MOTOR = new TalonFXMotor(INTAKE_MOTOR_ID, INTAKE_MOTOR_NAME),
             ANGLE_MOTOR = new TalonFXMotor(ANGLE_MOTOR_ID, ANGLE_MOTOR_NAME);
     static final SimpleSensor
-            REVERSE_LIMIT_SENSOR = SimpleSensor.createDigitalSensor(REVERSE_LIMIT_SENSOR_CHANNEL, REVERSE_LIMIT_SWITCH_NAME),
-            FORWARD_LIMIT_SENSOR = SimpleSensor.createDigitalSensor(FORWARD_LIMIT_CHANNEL, FORWARD_LIMIT_SWITCH_NAME),
             DISTANCE_SENSOR = SimpleSensor.createDigitalSensor(DISTANCE_SENSOR_CHANNEL, DISTANCE_SENSOR_NAME);
 
     private static final double
@@ -84,8 +76,6 @@ public class IntakeConstants {
             SHOULD_SIMULATE_GRAVITY
     );
     private static final DoubleSupplier
-            REVERSE_LIMIT_SENSOR_SIMULATION_SUPPLIER = () -> 0,
-            FORWARD_LIMIT_SENSOR_SIMULATION_SUPPLIER = () -> 0,
             DISTANCE_SENSOR_SIMULATION_SUPPLIER = () -> SimulationFieldHandler.isHoldingCoral() && !SimulationFieldHandler.isCoralInEndEffector() ? 1 : 0;
 
     static final SysIdRoutine.Config ANGLE_SYSID_CONFIG = new SysIdRoutine.Config(
@@ -112,22 +102,11 @@ public class IntakeConstants {
 
     static final Rotation2d ANGLE_TOLERANCE = Rotation2d.fromDegrees(1.5);
     private static final double
-            COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS = 0.2,
-            REVERSE_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS = 0.1,
-            FORWARD_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS = 0.1;
+            COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS = 0.2;
     static final BooleanEvent COLLECTION_DETECTION_BOOLEAN_EVENT = new BooleanEvent(
             CommandScheduler.getInstance().getActiveButtonLoop(),
             DISTANCE_SENSOR::getBinaryValue
     ).debounce(COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS);
-    private static final BooleanEvent
-            REVERSE_LIMIT_SENSOR_BOOLEAN_EVENT = new BooleanEvent(
-            CommandScheduler.getInstance().getActiveButtonLoop(),
-            REVERSE_LIMIT_SENSOR::getBinaryValue
-    ).debounce(REVERSE_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS),
-            FORWARD_LIMIT_SENSOR_BOOLEAN_EVENT = new BooleanEvent(
-                    CommandScheduler.getInstance().getActiveButtonLoop(),
-                    FORWARD_LIMIT_SENSOR::getBinaryValue
-            ).debounce(FORWARD_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS);
     public static Pose3d CORAL_COLLECTION_POSE = new Pose3d(
             new Translation3d(0.6827, 0, 0),
             new Rotation3d()
@@ -137,8 +116,6 @@ public class IntakeConstants {
     static {
         configureIntakeMotor();
         configureAngleMotor();
-        configureLimitSensor(REVERSE_LIMIT_SENSOR, REVERSE_LIMIT_SENSOR_SIMULATION_SUPPLIER, REVERSE_LIMIT_SENSOR_BOOLEAN_EVENT, MAXIMUM_ANGLE);
-        configureLimitSensor(FORWARD_LIMIT_SENSOR, FORWARD_LIMIT_SENSOR_SIMULATION_SUPPLIER, FORWARD_LIMIT_SENSOR_BOOLEAN_EVENT, MAXIMUM_ANGLE);
         configureDistanceSensor();
     }
 
@@ -208,12 +185,6 @@ public class IntakeConstants {
         ANGLE_MOTOR.registerSignal(TalonFXSignal.CLOSED_LOOP_REFERENCE, 100);
 
 //        OperatorConstants.DEBUGGING_TRIGGER.onTrue(new InstantCommand(() -> ANGLE_MOTOR.setPosition(0)).ignoringDisable(true));
-    }
-
-    private static void configureLimitSensor(SimpleSensor limitSensor, DoubleSupplier simulationSupplier, BooleanEvent booleanEvent, Rotation2d resetPosition) {
-        limitSensor.setSimulationSupplier(simulationSupplier);
-
-//        booleanEvent.ifHigh(() -> ANGLE_MOTOR.setPosition(resetPosition.getRotations()));
     }
 
     private static void configureDistanceSensor() {

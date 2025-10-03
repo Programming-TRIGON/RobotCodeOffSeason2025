@@ -51,8 +51,6 @@ public class Intake extends MotorSubsystem {
     public void updatePeriodically() {
         intakeMotor.update();
         angleMotor.update();
-        IntakeConstants.FORWARD_LIMIT_SENSOR.updateSensor();
-        IntakeConstants.REVERSE_LIMIT_SENSOR.updateSensor();
         IntakeConstants.DISTANCE_SENSOR.updateSensor();
     }
 

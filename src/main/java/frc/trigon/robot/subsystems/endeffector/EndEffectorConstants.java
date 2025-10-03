@@ -23,7 +23,7 @@ public class EndEffectorConstants {
             END_EFFECTOR_MOTOR_NAME = "EndEffectorMotor",
             DISTANCE_SENSOR_NAME = "EndEffectorDistanceSensor";
     static final TalonFXMotor END_EFFECTOR_MOTOR = new TalonFXMotor(END_EFFECTOR_MOTOR_ID, END_EFFECTOR_MOTOR_NAME);
-    static final SimpleSensor DISTANCE_SENSOR = SimpleSensor.createDigitalSensor(DISTANCE_SENSOR_CHANNEL, DISTANCE_SENSOR_NAME);
+    static final SimpleSensor DISTANCE_SENSOR = SimpleSensor.createDutyCycleSensor(DISTANCE_SENSOR_CHANNEL, DISTANCE_SENSOR_NAME);
 
     static final boolean FOC_ENABLED = true;
     private static final double END_EFFECTOR_GEAR_RATIO = 12.82;
@@ -46,9 +46,13 @@ public class EndEffectorConstants {
     );
 
     private static final double COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS = 0.2;
+    private static final double
+            DISTANCE_SENSOR_SCALING_SLOPE = 0.0002,
+            DISTANCE_SENSOR_SCALING_INTERCEPT_POINT = -200;
+    private static final double COLLECTION_DETECTION_DISTANCE_CENTIMETRES = 3;
     static final BooleanEvent COLLECTION_DETECTION_BOOLEAN_EVENT = new BooleanEvent(
             CommandScheduler.getInstance().getActiveButtonLoop(),
-            DISTANCE_SENSOR::getBinaryValue
+            () -> DISTANCE_SENSOR.getScaledValue() < COLLECTION_DETECTION_DISTANCE_CENTIMETRES
     ).debounce(COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS);
     static final double WHEEL_RADIUS_METERS = edu.wpi.first.math.util.Units.inchesToMeters(1.5);
 
@@ -63,7 +67,7 @@ public class EndEffectorConstants {
         config.Audio.BeepOnConfig = false;
 
         config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         config.Feedback.RotorToSensorRatio = END_EFFECTOR_GEAR_RATIO;
 
         config.CurrentLimits.StatorCurrentLimitEnable = true;
@@ -80,6 +84,7 @@ public class EndEffectorConstants {
     }
 
     private static void configureDistanceSensor() {
+        DISTANCE_SENSOR.setScalingConstants(DISTANCE_SENSOR_SCALING_SLOPE, DISTANCE_SENSOR_SCALING_INTERCEPT_POINT);
         DISTANCE_SENSOR.setSimulationSupplier(DISTANCE_SENSOR_SIMULATION_SUPPLIER);
     }
 
@@ -91,6 +96,7 @@ public class EndEffectorConstants {
         SCORE_CORAL(4),
         COLLECT_ALGAE(-4),
         SCORE_ALGAE(4),
+        HOLD_CORAL(-0.5),
         HOLD_ALGAE(-4);
 
         public final double targetVoltage;

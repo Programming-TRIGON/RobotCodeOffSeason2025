@@ -8,7 +8,6 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.trigon.robot.RobotContainer;
-import frc.trigon.robot.commands.commandfactories.CoralCollectionCommands;
 import frc.trigon.robot.commands.commandfactories.CoralPlacingCommands;
 import frc.trigon.robot.subsystems.MotorSubsystem;
 import lib.hardware.phoenix6.cancoder.CANcoderEncoder;
@@ -31,7 +30,7 @@ public class ArmElevator extends MotorSubsystem {
             ArmElevatorConstants.ARM_DEFAULT_MAXIMUM_ACCELERATION,
             ArmElevatorConstants.ARM_DEFAULT_MAXIMUM_JERK
     ).withEnableFOC(ArmElevatorConstants.FOC_ENABLED);
-    private final DynamicMotionMagicVoltage positionRequest = new DynamicMotionMagicVoltage(
+    private final DynamicMotionMagicVoltage elevatorPositionRequest = new DynamicMotionMagicVoltage(
             0,
             ArmElevatorConstants.ELEVATOR_DEFAULT_MAXIMUM_VELOCITY,
             ArmElevatorConstants.ELEVATOR_DEFAULT_MAXIMUM_ACCELERATION,
@@ -194,6 +193,7 @@ public class ArmElevator extends MotorSubsystem {
     }
 
     void setTargetArmState(ArmElevatorConstants.ArmElevatorState targetState, boolean isStateReversed) {
+        scaleArmPositionRequestSpeed(targetState.speedScalar);
         if (isStateReversed) {
             setTargetArmAngle(subtractFrom180Degrees(targetState.targetAngle), targetState.ignoreConstraints);
             return;
@@ -216,7 +216,7 @@ public class ArmElevator extends MotorSubsystem {
     }
 
     void setTargetElevatorPositionRotations(double targetPositionRotations, boolean ignoreConstraints) {
-        elevatorMasterMotor.setControl(positionRequest.withPosition(ignoreConstraints ? targetPositionRotations : Math.max(targetPositionRotations, calculateMinimumSafeElevatorHeightRotations())));
+        elevatorMasterMotor.setControl(elevatorPositionRequest.withPosition(ignoreConstraints ? targetPositionRotations : Math.max(targetPositionRotations, calculateMinimumSafeElevatorHeightRotations())));
     }
 
     private Rotation2d calculateMinimumArmSafeAngle() {
@@ -254,10 +254,16 @@ public class ArmElevator extends MotorSubsystem {
         return ArmElevatorConstants.ARM_VISUALIZATION_ORIGIN_POINT.transformBy(armTransform);
     }
 
+    private void scaleArmPositionRequestSpeed(double speedScalar) {
+        armPositionRequest.Velocity = ArmElevatorConstants.ARM_DEFAULT_MAXIMUM_VELOCITY * speedScalar;
+        armPositionRequest.Acceleration = ArmElevatorConstants.ARM_DEFAULT_MAXIMUM_ACCELERATION * speedScalar;
+        armPositionRequest.Jerk = armPositionRequest.Acceleration * 10;
+    }
+
     private void scaleElevatorPositionRequestSpeed(double speedScalar) {
-        positionRequest.Velocity = ArmElevatorConstants.ELEVATOR_DEFAULT_MAXIMUM_VELOCITY * speedScalar;
-        positionRequest.Acceleration = ArmElevatorConstants.ELEVATOR_DEFAULT_MAXIMUM_ACCELERATION * speedScalar;
-        positionRequest.Jerk = positionRequest.Acceleration * 10;
+        elevatorPositionRequest.Velocity = ArmElevatorConstants.ELEVATOR_DEFAULT_MAXIMUM_VELOCITY * speedScalar;
+        elevatorPositionRequest.Acceleration = ArmElevatorConstants.ELEVATOR_DEFAULT_MAXIMUM_ACCELERATION * speedScalar;
+        elevatorPositionRequest.Jerk = elevatorPositionRequest.Acceleration * 10;
     }
 
     private Pose3d getFirstStageComponentPose() {

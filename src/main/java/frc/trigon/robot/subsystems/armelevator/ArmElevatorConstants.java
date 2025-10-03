@@ -7,12 +7,9 @@ import com.ctre.phoenix6.signals.*;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
-import edu.wpi.first.wpilibj.event.BooleanEvent;
 import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import lib.hardware.RobotHardwareStats;
-import lib.hardware.misc.simplesensor.SimpleSensor;
 import lib.hardware.phoenix6.cancoder.CANcoderEncoder;
 import lib.hardware.phoenix6.cancoder.CANcoderSignal;
 import lib.hardware.phoenix6.talonfx.TalonFXMotor;
@@ -22,35 +19,29 @@ import lib.hardware.simulation.SingleJointedArmSimulation;
 import lib.utilities.mechanisms.ElevatorMechanism2d;
 import lib.utilities.mechanisms.SingleJointedArmMechanism2d;
 
-import java.util.function.DoubleSupplier;
-
 public class ArmElevatorConstants {
     private static final int
             ARM_MASTER_MOTOR_ID = 13,
             ARM_FOLLOWER_MOTOR_ID = 14,
             ANGLE_ENCODER_ID = 13,
             ELEVATOR_MASTER_MOTOR_ID = 16,
-            ELEVATOR_FOLLOWER_MOTOR_ID = 17,
-            REVERSE_LIMIT_SENSOR_CHANNEL = 1;
+            ELEVATOR_FOLLOWER_MOTOR_ID = 17;
     private static final String
             ARM_MASTER_MOTOR_NAME = "ArmMasterMotor",
             ARM_FOLLOWER_MOTOR_NAME = "ArmFollowerMotor",
             ANGLE_ENCODER_NAME = "ArmEncoder",
             ELEVATOR_MASTER_MOTOR_NAME = "ElevatorMasterMotor",
-            ELEVATOR_FOLLOWER_MOTOR_NAME = "ElevatorFollowerMotor",
-            REVERSE_LIMIT_SENSOR_NAME = "ElevatorReverseLimitSensor";
+            ELEVATOR_FOLLOWER_MOTOR_NAME = "ElevatorFollowerMotor";
     static final TalonFXMotor
             ARM_MASTER_MOTOR = new TalonFXMotor(ARM_MASTER_MOTOR_ID, ARM_MASTER_MOTOR_NAME),
             ARM_FOLLOWER_MOTOR = new TalonFXMotor(ARM_FOLLOWER_MOTOR_ID, ARM_FOLLOWER_MOTOR_NAME),
             ELEVATOR_MASTER_MOTOR = new TalonFXMotor(ELEVATOR_MASTER_MOTOR_ID, ELEVATOR_MASTER_MOTOR_NAME),
             ELEVATOR_FOLLOWER_MOTOR = new TalonFXMotor(ELEVATOR_FOLLOWER_MOTOR_ID, ELEVATOR_FOLLOWER_MOTOR_NAME);
     static final CANcoderEncoder ANGLE_ENCODER = new CANcoderEncoder(ANGLE_ENCODER_ID, ANGLE_ENCODER_NAME);
-    private static final SimpleSensor REVERSE_LIMIT_SENSOR = SimpleSensor.createDigitalSensor(REVERSE_LIMIT_SENSOR_CHANNEL, REVERSE_LIMIT_SENSOR_NAME);
 
     static final double
             ARM_GEAR_RATIO = 42,
             ELEVATOR_GEAR_RATIO = 4;
-    private static final double ELEVATOR_REVERSE_LIMIT_RESET_POSITION_ROTATIONS = 0;
     private static final double
             ARM_MOTOR_CURRENT_LIMIT = 50,
             ELEVATOR_MOTOR_CURRENT_LIMIT = 50;
@@ -152,11 +143,6 @@ public class ArmElevatorConstants {
     );
     static final double SECOND_ELEVATOR_COMPONENT_EXTENDED_LENGTH_METERS = 0.593;
     static final double DRUM_DIAMETER_METERS = DRUM_RADIUS_METERS * 2;
-    private static final double REVERSE_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS = 0.1;
-    private static final BooleanEvent REVERSE_LIMIT_SENSOR_BOOLEAN_EVENT = new BooleanEvent(
-            CommandScheduler.getInstance().getActiveButtonLoop(),
-            REVERSE_LIMIT_SENSOR::getBinaryValue
-    ).debounce(REVERSE_LIMIT_SENSOR_DEBOUNCE_TIME_SECONDS);
 
     static final Rotation2d ANGLE_TOLERANCE = Rotation2d.fromDegrees(5);
 
@@ -169,8 +155,6 @@ public class ArmElevatorConstants {
      * The lowest point in the Elevators zone where the safety logic applies.
      */
     public static final double MINIMUM_ELEVATOR_SAFE_ZONE_METERS = 0.05;
-
-    private static final DoubleSupplier REVERSE_LIMIT_SENSOR_SIMULATION_SUPPLIER = () -> 0;
     static final double ELEVATOR_POSITION_TOLERANCE_METERS = 0.02;
 
     static {
@@ -179,7 +163,6 @@ public class ArmElevatorConstants {
         configureElevatorMasterMotor();
         configureElevatorFollowerMotor();
         configureAngleEncoder();
-        configureReverseLimitSensor();
     }
 
     private static void configureArmMasterMotor() {
@@ -294,6 +277,7 @@ public class ArmElevatorConstants {
         ELEVATOR_MASTER_MOTOR.registerSignal(TalonFXSignal.CLOSED_LOOP_REFERENCE, 100);
         ELEVATOR_MASTER_MOTOR.registerSignal(TalonFXSignal.STATOR_CURRENT, 100);
         ELEVATOR_MASTER_MOTOR.registerSignal(TalonFXSignal.ROTOR_VELOCITY, 100);
+        ELEVATOR_MASTER_MOTOR.setPosition(0);
     }
 
     private static void configureElevatorFollowerMotor() {
@@ -328,27 +312,22 @@ public class ArmElevatorConstants {
         ANGLE_ENCODER.registerSignal(CANcoderSignal.VELOCITY, 100);
     }
 
-    private static void configureReverseLimitSensor() {
-        REVERSE_LIMIT_SENSOR.setSimulationSupplier(REVERSE_LIMIT_SENSOR_SIMULATION_SUPPLIER);
-        REVERSE_LIMIT_SENSOR_BOOLEAN_EVENT.ifHigh(() -> ELEVATOR_MASTER_MOTOR.setPosition(ELEVATOR_REVERSE_LIMIT_RESET_POSITION_ROTATIONS));
-    }
-
     public enum ArmElevatorState {
         PREPARE_SCORE_L1(Rotation2d.fromDegrees(20), 0.3, null, false, 1),
         PREPARE_SCORE_L2(Rotation2d.fromDegrees(10), 0.3, null, false, 1),
         PREPARE_SCORE_L3(Rotation2d.fromDegrees(10), 0.7, null, false, 1),
-        PREPARE_SCORE_L4(Rotation2d.fromDegrees(30), 1.2, null, false, 1),
+        PREPARE_SCORE_L4(Rotation2d.fromDegrees(48), 1.4, null, false, 1),
         REST(Rotation2d.fromDegrees(-90), 0.603, null, false, 0.7),
-        REST_WITH_CORAL(Rotation2d.fromDegrees(90), 0.603, null, false, 0.7),
-        REST_WITH_ALGAE(Rotation2d.fromDegrees(0), 0.603, null, false, 0.7),
+        REST_WITH_CORAL(Rotation2d.fromDegrees(90), 0.603, null, false, 0.02),
+        REST_WITH_ALGAE(Rotation2d.fromDegrees(0), 0.603, null, false, 0.02),
         REST_FOR_CLIMB(Rotation2d.fromDegrees(90), 0.603, null, false, 0.7),
-        LOAD_CORAL(Rotation2d.fromDegrees(-90), 0.5519, REST, true, 0.7),
+        LOAD_CORAL(Rotation2d.fromDegrees(-90), 0.42, REST, true, 0.7),
         UNLOAD_CORAL(Rotation2d.fromDegrees(-90), 0.5519, null, false, 0.7),
         EJECT(Rotation2d.fromDegrees(-30), 0.603, null, false, 0.7),
         SCORE_L1(Rotation2d.fromDegrees(-20), 0.4, null, false, 1),
         SCORE_L2(Rotation2d.fromDegrees(0), 0.3, PREPARE_SCORE_L2, false, 1),
         SCORE_L3(Rotation2d.fromDegrees(0), 0.7, PREPARE_SCORE_L3, false, 1),
-        SCORE_L4(Rotation2d.fromDegrees(10), 1.2, PREPARE_SCORE_L4, false, 1),
+        SCORE_L4(Rotation2d.fromDegrees(40), 1.4, PREPARE_SCORE_L4, false, 1),
         SCORE_NET(Rotation2d.fromDegrees(70), 1.382, null, false, 0.3),
         SCORE_PROCESSOR(Rotation2d.fromDegrees(0), 0.603, null, false, 0.7),
         COLLECT_ALGAE_L2(Rotation2d.fromDegrees(0), 0.603, null, false, 1),
