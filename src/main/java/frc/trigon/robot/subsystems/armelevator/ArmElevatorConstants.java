@@ -327,27 +327,27 @@ public class ArmElevatorConstants {
     }
 
     public enum ArmElevatorState {
-        PREPARE_SCORE_L1(Rotation2d.fromDegrees(110), 0.3, null, false, 1),
-        PREPARE_SCORE_L2(Rotation2d.fromDegrees(100), 0.3, null, false, 1),
-        PREPARE_SCORE_L3(Rotation2d.fromDegrees(100), 0.7, null, false, 1),
-        PREPARE_SCORE_L4(Rotation2d.fromDegrees(120), 1.2, null, false, 1),
-        REST(Rotation2d.fromDegrees(0), 0.603, null, false, 0.7),
-        REST_WITH_CORAL(Rotation2d.fromDegrees(180), 0.603, null, false, 0.7),
-        REST_WITH_ALGAE(Rotation2d.fromDegrees(90), 0.603, null, false, 0.7),
-        REST_FOR_CLIMB(Rotation2d.fromDegrees(180), 0.603, null, false, 0.7),
-        LOAD_CORAL(Rotation2d.fromDegrees(0), 0.5519, REST, true, 0.7),
-        UNLOAD_CORAL(Rotation2d.fromDegrees(0), 0.603, null, false, 0.7),
-        EJECT(Rotation2d.fromDegrees(60), 0.603, null, false, 0.7),
-        SCORE_L1(Rotation2d.fromDegrees(70), 0.4, null, false, 1),
-        SCORE_L2(Rotation2d.fromDegrees(90), 0.3, PREPARE_SCORE_L2, false, 1),
-        SCORE_L3(Rotation2d.fromDegrees(90), 0.7, PREPARE_SCORE_L3, false, 1),
-        SCORE_L4(Rotation2d.fromDegrees(100), 1.2, PREPARE_SCORE_L4, false, 1),
-        SCORE_NET(Rotation2d.fromDegrees(160), 1.382, null, false, 0.3),
-        SCORE_PROCESSOR(Rotation2d.fromDegrees(90), 0.1, null, false, 0.7),
-        COLLECT_ALGAE_L2(Rotation2d.fromDegrees(90), 0.603, null, false, 1),
-        COLLECT_ALGAE_L3(Rotation2d.fromDegrees(90), 0.953, null, false, 1),
-        COLLECT_ALGAE_LOLLIPOP(Rotation2d.fromDegrees(70), 0.3, null, false, 1),
-        COLLECT_ALGAE_FLOOR(Rotation2d.fromDegrees(70), 0.1, null, true, 1);
+        PREPARE_SCORE_L1(Rotation2d.fromDegrees(110), 0.29, null, false, 1),
+        PREPARE_SCORE_L2(Rotation2d.fromDegrees(100), 0.29, null, false, 1),
+        PREPARE_SCORE_L3(Rotation2d.fromDegrees(100), 0.69, null, false, 1),
+        PREPARE_SCORE_L4(Rotation2d.fromDegrees(120), 1.19, null, false, 1),
+        REST(Rotation2d.fromDegrees(0), 0.593, null, false, 0.7),
+        REST_WITH_CORAL(Rotation2d.fromDegrees(180), 0.593, null, false, 0.7),
+        REST_WITH_ALGAE(Rotation2d.fromDegrees(90), 0.593, null, false, 0.7),
+        REST_FOR_CLIMB(Rotation2d.fromDegrees(180), 0.593, null, false, 0.7),
+        LOAD_CORAL(Rotation2d.fromDegrees(0), 0.5419, REST, true, 0.7),
+        UNLOAD_CORAL(Rotation2d.fromDegrees(0), 0.5419, null, false, 0.7),
+        EJECT(Rotation2d.fromDegrees(60), 0.593, null, false, 0.7),
+        SCORE_L1(Rotation2d.fromDegrees(70), 0.39, null, false, 1),
+        SCORE_L2(Rotation2d.fromDegrees(90), 0.29, PREPARE_SCORE_L2, false, 1),
+        SCORE_L3(Rotation2d.fromDegrees(90), 0.69, PREPARE_SCORE_L3, false, 1),
+        SCORE_L4(Rotation2d.fromDegrees(100), 1.19, PREPARE_SCORE_L4, false, 1),
+        SCORE_NET(Rotation2d.fromDegrees(160), 1.372, null, false, 0.3),
+        SCORE_PROCESSOR(Rotation2d.fromDegrees(90), 0.09, null, false, 0.7),
+        COLLECT_ALGAE_L2(Rotation2d.fromDegrees(90), 0.593, null, false, 1),
+        COLLECT_ALGAE_L3(Rotation2d.fromDegrees(90), 0.943, null, false, 1),
+        COLLECT_ALGAE_LOLLIPOP(Rotation2d.fromDegrees(70), 0.29, null, false, 1),
+        COLLECT_ALGAE_FLOOR(Rotation2d.fromDegrees(70), 0.09, null, true, 1);
 
         public final Rotation2d targetAngle;
         public final double targetPositionMeters;
