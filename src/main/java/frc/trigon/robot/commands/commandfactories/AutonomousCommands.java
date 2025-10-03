@@ -90,7 +90,7 @@ public class AutonomousCommands {
 
     public static Command getCollectCoralCommand(boolean isRight) {
         return new ParallelCommandGroup(
-                CoralCollectionCommands.getIntakeSequenceCommand(),
+                CoralCollectionCommands.getIntakeCoralCommand(),
                 ArmElevatorCommands.getPrepareForStateCommand(() -> ArmElevatorConstants.ArmElevatorState.LOAD_CORAL),
                 getDriveToCoralCommand(isRight)
         )
