@@ -4,10 +4,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.*;
 import frc.trigon.robot.RobotContainer;
 import frc.trigon.robot.constants.AutonomousConstants;
 import frc.trigon.robot.constants.FieldConstants;
@@ -32,7 +29,7 @@ public class CoralPlacingCommands {
                         getScoreCommand(shouldScoreRight),
                         () -> SHOULD_SCORE_AUTONOMOUSLY && REEF_CHOOSER.getScoringLevel() != ScoringLevel.L1
                 )
-        ).onlyIf(() -> RobotContainer.END_EFFECTOR.hasGamePiece() || RobotContainer.TRANSPORTER.hasCoral());
+        ).onlyIf(CoralCollectionCommands::hasCoral);
     }
 
     private static Command getAutonomouslyScoreCommand(boolean shouldScoreRight) {
@@ -59,7 +56,8 @@ public class CoralPlacingCommands {
         return new ParallelCommandGroup(
                 getPrepareArmElevatorIfWontHitReef(shouldScoreRight),
                 new SequentialCommandGroup(
-                        getAutonomousDriveToNoHitReefPose(shouldScoreRight).asProxy().onlyWhile(() -> !isPrepareArmAngleAboveCurrentArmAngle()),
+                        getAutonomousDriveToNoHitReefPose(shouldScoreRight).asProxy().until(CoralPlacingCommands::isPrepareArmAngleAboveCurrentArmAngle),
+                        new WaitUntilCommand(CoralPlacingCommands::isPrepareArmAngleAboveCurrentArmAngle),
                         getAutonomousDriveToReef(shouldScoreRight).asProxy()
                 ).unless(() -> REEF_CHOOSER.getScoringLevel() == ScoringLevel.L1)
         );
@@ -132,7 +130,6 @@ public class CoralPlacingCommands {
         for (final Rotation2d targetRotation : reefClockAngles) {
             final Pose2d reefCenterAtTargetRotation = new Pose2d(reefCenterPosition, targetRotation);
 
-
             final Pose2d currentScoringPose = reefCenterAtTargetRotation.transformBy(reefCenterToScoringPose);
             final double distanceFromCurrentScoringPoseMeters = currentScoringPose.getTranslation().getDistance(robotPositionOnField);
             if (distanceFromCurrentScoringPoseMeters < distanceFromClosestScoringPoseMeters) {
@@ -150,8 +147,8 @@ public class CoralPlacingCommands {
         return new FlippablePose2d(closestScoringPose.transformBy(scoringPoseToBranch), false);
     }
 
-    private static boolean isPrepareArmAngleAboveCurrentArmAngle() {
-        ArmElevatorConstants.ArmElevatorState targetState = REEF_CHOOSER.getArmElevatorState();
+    public static boolean isPrepareArmAngleAboveCurrentArmAngle() {
+        final ArmElevatorConstants.ArmElevatorState targetState = REEF_CHOOSER.getArmElevatorState();
         final Rotation2d targetAngle = targetState.prepareState == null
                 ? targetState.targetAngle
                 : targetState.prepareState.targetAngle;
@@ -207,6 +204,25 @@ public class CoralPlacingCommands {
             this.rotationTransform = rotationTransform;
             this.armElevatorState = determineArmElevatorState();
             this.armElevatorAlgaeCollectionState = determineArmElevatorAlgaeCollectionState();
+        }
+
+        /**
+         * Calculates the target placing position using the clock position and the target reef side.
+         * The reef side transform will be flipped depending on operator input.
+         * To make it more intuitive for the operator to input the reef side,
+         * left will always correspond to the physical left side in the driver station,
+         * as opposed to "reef relative" left.
+         *
+         * @param reefClockPosition the desired clock position of the reef
+         * @param reefSide          the desired side of the reef, left or right (as seen from the driver station)
+         * @return the target placing position
+         */
+        public FlippablePose2d calculateTargetPlacingPosition(FieldConstants.ReefClockPosition reefClockPosition, FieldConstants.ReefSide reefSide) {
+            final Pose2d reefCenterPose = new Pose2d(FieldConstants.BLUE_REEF_CENTER_TRANSLATION, reefClockPosition.clockAngle);
+            final double yTransform = reefSide.shouldFlipYTransform(reefClockPosition) ? -positiveYTransformMeters : positiveYTransformMeters;
+            final Transform2d transform = new Transform2d(xTransformMeters, yTransform, rotationTransform);
+
+            return new FlippablePose2d(reefCenterPose.plus(transform), true);
         }
 
 

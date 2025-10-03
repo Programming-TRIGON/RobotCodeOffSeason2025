@@ -349,7 +349,6 @@ public class ArmElevatorConstants {
         COLLECT_ALGAE_LOLLIPOP(Rotation2d.fromDegrees(70), 0.29, null, false, 1),
         COLLECT_ALGAE_FLOOR(Rotation2d.fromDegrees(70), 0.09, null, true, 1);
 
-
         public final Rotation2d targetAngle;
         public final double targetPositionMeters;
         public final ArmElevatorState prepareState;
