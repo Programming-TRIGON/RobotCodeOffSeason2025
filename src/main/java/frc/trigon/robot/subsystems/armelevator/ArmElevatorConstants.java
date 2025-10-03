@@ -19,7 +19,6 @@ import lib.hardware.phoenix6.talonfx.TalonFXMotor;
 import lib.hardware.phoenix6.talonfx.TalonFXSignal;
 import lib.hardware.simulation.ElevatorSimulation;
 import lib.hardware.simulation.SingleJointedArmSimulation;
-import lib.utilities.Conversions;
 import lib.utilities.mechanisms.ElevatorMechanism2d;
 import lib.utilities.mechanisms.SingleJointedArmMechanism2d;
 
@@ -56,7 +55,7 @@ public class ArmElevatorConstants {
             ARM_MOTOR_CURRENT_LIMIT = 50,
             ELEVATOR_MOTOR_CURRENT_LIMIT = 50;
     private static final double ANGLE_ENCODER_GRAVITY_OFFSET = -0.059326171875;
-    static final double ARM_POSITION_OFFSET_FROM_GRAVITY_OFFSET = RobotHardwareStats.isSimulation() ? 0 - Conversions.degreesToRotations(90) : edu.wpi.first.math.util.Units.degreesToRotations(-23.56) - ANGLE_ENCODER_GRAVITY_OFFSET;
+    static final double ARM_POSITION_OFFSET_FROM_GRAVITY_OFFSET = RobotHardwareStats.isSimulation() ? 0 : edu.wpi.first.math.util.Units.degreesToRotations(-23.56) - ANGLE_ENCODER_GRAVITY_OFFSET;
     private static final boolean
             SHOULD_ARM_FOLLOWER_OPPOSE_MASTER = false,
             SHOULD_ELEVATOR_FOLLOWER_OPPOSE_MASTER = false;
@@ -83,8 +82,8 @@ public class ArmElevatorConstants {
     private static final double
             ARM_MASS_KILOGRAMS = 3.5;
     private static final Rotation2d
-            ARM_MINIMUM_ANGLE = Rotation2d.fromDegrees(0),
-            ARM_MAXIMUM_ANGLE = Rotation2d.fromDegrees(360);
+            ARM_MINIMUM_ANGLE = Rotation2d.fromDegrees(-90),
+            ARM_MAXIMUM_ANGLE = Rotation2d.fromDegrees(270);
     private static final boolean SHOULD_ARM_SIMULATE_GRAVITY = true;
     private static final boolean SHOULD_ELEVATOR_SIMULATE_GRAVITY = true;
     private static final SingleJointedArmSimulation ARM_SIMULATION = new SingleJointedArmSimulation(
@@ -164,7 +163,7 @@ public class ArmElevatorConstants {
     /**
      * The highest point of the arms angular zone where the safety logic applies.
      */
-    static final Rotation2d MAXIMUM_ARM_SAFE_ANGLE = Rotation2d.fromDegrees(90);
+    static final Rotation2d MAXIMUM_ARM_SAFE_ANGLE = Rotation2d.fromDegrees(0);
 
     /**
      * The lowest point in the Elevators zone where the safety logic applies.

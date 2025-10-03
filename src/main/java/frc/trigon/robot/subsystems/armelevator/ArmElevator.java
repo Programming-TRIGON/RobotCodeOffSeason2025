@@ -219,12 +219,12 @@ public class ArmElevator extends MotorSubsystem {
         final double cosOfMinimumSafeAngle = MathUtil.clamp(heightFromSafeZone / ArmElevatorConstants.ARM_LENGTH_METERS, 0, 1);
         final double acos = Math.acos(cosOfMinimumSafeAngle);
         return Double.isNaN(acos)
-                ? Rotation2d.fromRadians(0)
-                : Rotation2d.fromRadians(acos);
+                ? Rotation2d.fromDegrees(-90)
+                : Rotation2d.fromRadians(acos).minus(Rotation2d.kCCW_90deg);
     }
 
     private double calculateMinimumSafeElevatorHeightRotations() {
-        final double armCos = RobotContainer.ARM_ELEVATOR.getCurrentArmAngle().getCos();
+        final double armCos = RobotContainer.ARM_ELEVATOR.getCurrentArmAngle().plus(Rotation2d.kCCW_90deg).getCos();
         final double elevatorHeightFromArm = armCos * ArmElevatorConstants.ARM_LENGTH_METERS;
         final double minimumElevatorSafeZone = ArmElevatorConstants.MINIMUM_ELEVATOR_SAFE_ZONE_METERS;
         final double minimumSafeHeightMeters = (RobotContainer.ARM_ELEVATOR.isArmAboveSafeAngle()
@@ -244,7 +244,7 @@ public class ArmElevator extends MotorSubsystem {
     private Pose3d calculateVisualizationPose() {
         final Transform3d armTransform = new Transform3d(
                 new Translation3d(0, 0, getCurrentElevatorPositionMeters()),
-                new Rotation3d(0, getCurrentArmAngle().getRadians(), 0)
+                new Rotation3d(0, getCurrentArmAngle().getRadians() + Math.PI / 2, 0)
         );
         return ArmElevatorConstants.ARM_VISUALIZATION_ORIGIN_POINT.transformBy(armTransform);
     }
