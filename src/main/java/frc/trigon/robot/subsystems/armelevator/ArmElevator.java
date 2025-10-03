@@ -17,7 +17,7 @@ import lib.utilities.Conversions;
 import org.littletonrobotics.junction.Logger;
 
 public class ArmElevator extends MotorSubsystem {
-    private static final boolean SHOULD_CALIBRATE_ELEVATOR = false;
+    private static final boolean SHOULD_CALIBRATE_ELEVATOR = true;
     private final TalonFXMotor
             armMasterMotor = ArmElevatorConstants.ARM_MASTER_MOTOR,
             elevatorMasterMotor = ArmElevatorConstants.ELEVATOR_MASTER_MOTOR;

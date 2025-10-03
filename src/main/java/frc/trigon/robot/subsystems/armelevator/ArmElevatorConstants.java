@@ -64,7 +64,7 @@ public class ArmElevatorConstants {
             ARM_DEFAULT_MAXIMUM_ACCELERATION = RobotHardwareStats.isSimulation() ? 67.2344 : 7,
             ARM_DEFAULT_MAXIMUM_JERK = ARM_DEFAULT_MAXIMUM_ACCELERATION * 10,
             ELEVATOR_DEFAULT_MAXIMUM_VELOCITY = RobotHardwareStats.isSimulation() ? 25.178 : 20,
-            ELEVATOR_DEFAULT_MAXIMUM_ACCELERATION = RobotHardwareStats.isSimulation() ? 80 : 20;
+            ELEVATOR_DEFAULT_MAXIMUM_ACCELERATION = RobotHardwareStats.isSimulation() ? 80 : 50;
     static final boolean FOC_ENABLED = true;
 
     public static final double
@@ -261,13 +261,13 @@ public class ArmElevatorConstants {
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         config.Feedback.SensorToMechanismRatio = ELEVATOR_GEAR_RATIO;
 
-        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 3.5 : 0;
+        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 3.5 : 12;
         config.Slot0.kI = RobotHardwareStats.isSimulation() ? 0 : 0;
-        config.Slot0.kD = RobotHardwareStats.isSimulation() ? 0.4 : 0;
-        config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0.016165 : 0;
-        config.Slot0.kV = RobotHardwareStats.isSimulation() ? 0.4766 : 0;
-        config.Slot0.kA = RobotHardwareStats.isSimulation() ? 0.014239 : 0;
-        config.Slot0.kG = RobotHardwareStats.isSimulation() ? 0.58202 : 0;
+        config.Slot0.kD = RobotHardwareStats.isSimulation() ? 0.4 : 1;
+        config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0.016165 : 0.0546875;
+        config.Slot0.kV = RobotHardwareStats.isSimulation() ? 0.4766 : 0.4;
+        config.Slot0.kA = RobotHardwareStats.isSimulation() ? 0.014239 : 0;//0.036238
+        config.Slot0.kG = RobotHardwareStats.isSimulation() ? 0.58202 : 0.41015625;
 
         config.Slot0.GravityType = GravityTypeValue.Elevator_Static;
         config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
