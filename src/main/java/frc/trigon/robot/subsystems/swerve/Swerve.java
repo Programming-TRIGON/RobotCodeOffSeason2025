@@ -173,21 +173,14 @@ public class Swerve extends MotorSubsystem {
      * Used for PathPlanner because it generates setpoints automatically.
      *
      * @param targetSpeeds the pre generated robot relative target speeds
-     * @param feedforwards the feedforwards to use
      */
-    public void selfRelativeDriveWithoutSetpointGeneration(ChassisSpeeds targetSpeeds, DriveFeedforwards feedforwards) {
+    public void selfRelativeDriveWithoutSetpointGeneration(ChassisSpeeds targetSpeeds) {
 //        if (isStill(targetSpeeds)) {
 //            stop();
 //            return;
 //        }
 
         final SwerveModuleState[] swerveModuleStates = SwerveConstants.KINEMATICS.toSwerveModuleStates(targetSpeeds);
-        final double[] targetForcesNm;
-        if (feedforwards == null)
-            targetForcesNm = new double[]{0, 0, 0, 0};
-        else
-            targetForcesNm = feedforwards.linearForcesNewtons();
-
         setTargetModuleStates(swerveModuleStates);
     }
 
