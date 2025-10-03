@@ -58,7 +58,7 @@ public class SwerveModuleConstants {
         return new SimpleMotorSimulation(STEER_MOTOR_GEARBOX, REAR_STEER_MOTOR_GEAR_RATIO, STEER_MOMENT_OF_INERTIA);
     }
 
-    static TalonFXConfiguration generateDriveMotorConfiguration() {
+    public static TalonFXConfiguration generateDriveMotorConfiguration() {
         final TalonFXConfiguration config = new TalonFXConfiguration();
 
         config.Audio.BeepOnBoot = false;
@@ -77,12 +77,12 @@ public class SwerveModuleConstants {
         config.ClosedLoopRamps.TorqueClosedLoopRampPeriod = 0.1;
         config.OpenLoopRamps.VoltageOpenLoopRampPeriod = 0.1;
 
-        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 50 : 50;
+        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 0 : 50;
         config.Slot0.kI = RobotHardwareStats.isSimulation() ? 0 : 0;
         config.Slot0.kD = RobotHardwareStats.isSimulation() ? 0 : 0;
-        config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0.4708 : 5.25;
-        config.Slot0.kV = RobotHardwareStats.isSimulation() ? 0 : 0;
-        config.Slot0.kA = RobotHardwareStats.isSimulation() ? 0 : DRIVE_MOTOR_GEAR_RATIO / (1 / DCMotor.getKrakenX60Foc(1).KtNMPerAmp);
+        config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0.016046 : 5.25;
+        config.Slot0.kV = RobotHardwareStats.isSimulation() ? 0.8774 : 0;
+        config.Slot0.kA = RobotHardwareStats.isSimulation() ? 0.020691 : 0;
 
         config.Feedback.VelocityFilterTimeConstant = 0;
 
