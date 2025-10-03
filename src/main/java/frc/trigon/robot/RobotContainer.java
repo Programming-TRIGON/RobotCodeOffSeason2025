@@ -23,20 +23,12 @@ import frc.trigon.robot.misc.simulatedfield.SimulationFieldHandler;
 import frc.trigon.robot.poseestimation.poseestimator.PoseEstimator;
 import frc.trigon.robot.subsystems.MotorSubsystem;
 import frc.trigon.robot.subsystems.armelevator.ArmElevator;
-import frc.trigon.robot.subsystems.armelevator.ArmElevatorCommands;
 import frc.trigon.robot.subsystems.climber.Climber;
-import frc.trigon.robot.subsystems.climber.ClimberCommands;
-import frc.trigon.robot.subsystems.climber.ClimberConstants;
 import frc.trigon.robot.subsystems.endeffector.EndEffector;
-import frc.trigon.robot.subsystems.endeffector.EndEffectorCommands;
-import frc.trigon.robot.subsystems.endeffector.EndEffectorConstants;
 import frc.trigon.robot.subsystems.intake.Intake;
-import frc.trigon.robot.subsystems.intake.IntakeCommands;
-import frc.trigon.robot.subsystems.intake.IntakeConstants;
 import frc.trigon.robot.subsystems.swerve.Swerve;
 import frc.trigon.robot.subsystems.transporter.Transporter;
-import frc.trigon.robot.subsystems.transporter.TransporterCommands;
-import frc.trigon.robot.subsystems.transporter.TransporterConstants;
+import lib.commands.WheelRadiusCharacterizationCommand;
 import lib.utilities.flippable.Flippable;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -83,11 +75,12 @@ public class RobotContainer {
 
     private void bindDefaultCommands() {
         SWERVE.setDefaultCommand(GeneralCommands.getFieldRelativeDriveCommand());
-        ARM_ELEVATOR.setDefaultCommand(ArmElevatorCommands.getDefaultCommand());
-        CLIMBER.setDefaultCommand(ClimberCommands.getSetTargetStateCommand(ClimberConstants.ClimberState.REST));
-        END_EFFECTOR.setDefaultCommand(EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.REST));
-        INTAKE.setDefaultCommand(IntakeCommands.getSetTargetStateCommand(IntakeConstants.IntakeState.REST));
-        TRANSPORTER.setDefaultCommand(TransporterCommands.getSetTargetStateCommand(TransporterConstants.TransporterState.REST));
+//        ARM_ELEVATOR.setDefaultCommand(ArmElevatorCommands.getDefaultCommand());
+//        CLIMBER.setDefaultCommand(ClimberCommands.getSetTargetStateCommand(ClimberConstants.ClimberState.REST));
+//        END_EFFECTOR.setDefaultCommand(EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.REST));
+//        INTAKE.setDefaultCommand(IntakeCommands.getSetTargetStateCommand(IntakeConstants.IntakeState.REST));
+//        TRANSPORTER.setDefaultCommand(TransporterCommands.getSetTargetStateCommand(TransporterConstants.TransporterState.REST));
+//        configureSysIDBindings(SWERVE);
     }
 
     /**
@@ -102,6 +95,7 @@ public class RobotContainer {
     }
 
     private void bindControllerCommands() {
+        OperatorConstants.DEBUGGING_TRIGGER.whileTrue(CommandConstants.WHEEL_RADIUS_CHARACTERIZATION_COMMAND);
         OperatorConstants.RESET_HEADING_TRIGGER.onTrue(CommandConstants.RESET_HEADING_COMMAND);
 //        OperatorConstants.DRIVE_FROM_DPAD_TRIGGER.whileTrue(CommandConstants.SELF_RELATIVE_DRIVE_FROM_DPAD_COMMAND);
         OperatorConstants.TOGGLE_BRAKE_TRIGGER.onTrue(GeneralCommands.getToggleBrakeCommand());

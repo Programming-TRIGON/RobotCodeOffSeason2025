@@ -207,7 +207,7 @@ public class IntakeConstants {
         ANGLE_MOTOR.registerSignal(TalonFXSignal.ROTOR_VELOCITY, 100);
         ANGLE_MOTOR.registerSignal(TalonFXSignal.CLOSED_LOOP_REFERENCE, 100);
 
-        OperatorConstants.DEBUGGING_TRIGGER.onTrue(new InstantCommand(() -> ANGLE_MOTOR.setPosition(0)).ignoringDisable(true));
+//        OperatorConstants.DEBUGGING_TRIGGER.onTrue(new InstantCommand(() -> ANGLE_MOTOR.setPosition(0)).ignoringDisable(true));
     }
 
     private static void configureLimitSensor(SimpleSensor limitSensor, DoubleSupplier simulationSupplier, BooleanEvent booleanEvent, Rotation2d resetPosition) {
