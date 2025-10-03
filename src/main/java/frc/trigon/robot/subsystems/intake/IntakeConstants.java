@@ -66,8 +66,8 @@ public class IntakeConstants {
             INTAKE_LENGTH_METERS = 0.365,
             INTAKE_MASS_KILOGRAMS = 3.26;
     private static final Rotation2d
-            MINIMUM_ANGLE = Rotation2d.fromDegrees(0),
-            MAXIMUM_ANGLE = Rotation2d.fromDegrees(-127);
+            MINIMUM_ANGLE = Rotation2d.fromDegrees(-127),
+            MAXIMUM_ANGLE = Rotation2d.fromDegrees(0);
     private static final boolean SHOULD_SIMULATE_GRAVITY = true;
     private static final SimpleMotorSimulation INTAKE_SIMULATION = new SimpleMotorSimulation(
             INTAKE_GEARBOX,
@@ -137,7 +137,7 @@ public class IntakeConstants {
     static {
         configureIntakeMotor();
         configureAngleMotor();
-        configureLimitSensor(REVERSE_LIMIT_SENSOR, REVERSE_LIMIT_SENSOR_SIMULATION_SUPPLIER, REVERSE_LIMIT_SENSOR_BOOLEAN_EVENT, MINIMUM_ANGLE);
+        configureLimitSensor(REVERSE_LIMIT_SENSOR, REVERSE_LIMIT_SENSOR_SIMULATION_SUPPLIER, REVERSE_LIMIT_SENSOR_BOOLEAN_EVENT, MAXIMUM_ANGLE);
         configureLimitSensor(FORWARD_LIMIT_SENSOR, FORWARD_LIMIT_SENSOR_SIMULATION_SUPPLIER, FORWARD_LIMIT_SENSOR_BOOLEAN_EVENT, MAXIMUM_ANGLE);
         configureDistanceSensor();
     }
@@ -221,11 +221,11 @@ public class IntakeConstants {
     }
 
     public enum IntakeState {
-        REST(0, MINIMUM_ANGLE),
-        OPEN_REST(0, MAXIMUM_ANGLE),
-        REST_FOR_CLIMB(0, MAXIMUM_ANGLE),
-        COLLECT(-8, MAXIMUM_ANGLE),
-        EJECT(5, MINIMUM_ANGLE);
+        REST(0, MAXIMUM_ANGLE),
+        OPEN_REST(0, MINIMUM_ANGLE),
+        REST_FOR_CLIMB(0, MINIMUM_ANGLE),
+        COLLECT(-8, MINIMUM_ANGLE),
+        EJECT(5, MAXIMUM_ANGLE);
 
         public final double targetVoltage;
         public final Rotation2d targetAngle;
