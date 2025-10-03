@@ -50,6 +50,7 @@ public class EndEffector extends MotorSubsystem {
         );
     }
 
+    @AutoLogOutput(key = "EndEffector/IsEjecting")
     public boolean isEjecting() {
         return endEffectorMotor.getSignal(TalonFXSignal.MOTOR_VOLTAGE) > 2;
     }

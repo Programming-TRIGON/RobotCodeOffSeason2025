@@ -6,17 +6,16 @@
 package frc.trigon.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.trigon.robot.commands.CommandConstants;
 import frc.trigon.robot.commands.commandfactories.*;
+import frc.trigon.robot.constants.AutonomousConstants;
 import frc.trigon.robot.constants.CameraConstants;
 import frc.trigon.robot.constants.LEDConstants;
 import frc.trigon.robot.constants.OperatorConstants;
-import frc.trigon.robot.constants.PathPlannerConstants;
 import frc.trigon.robot.misc.objectdetectioncamera.ObjectPoseEstimator;
 import frc.trigon.robot.misc.simulatedfield.SimulatedGamePieceConstants;
 import frc.trigon.robot.misc.simulatedfield.SimulationFieldHandler;
@@ -24,6 +23,7 @@ import frc.trigon.robot.poseestimation.poseestimator.PoseEstimator;
 import frc.trigon.robot.subsystems.MotorSubsystem;
 import frc.trigon.robot.subsystems.armelevator.ArmElevator;
 import frc.trigon.robot.subsystems.armelevator.ArmElevatorCommands;
+import frc.trigon.robot.subsystems.armelevator.ArmElevatorConstants;
 import frc.trigon.robot.subsystems.climber.Climber;
 import frc.trigon.robot.subsystems.climber.ClimberCommands;
 import frc.trigon.robot.subsystems.climber.ClimberConstants;
@@ -92,21 +92,25 @@ public class RobotContainer {
     private void initializeGeneralSystems() {
         Flippable.init();
         LEDConstants.init();
-        PathPlannerConstants.init();
+        AutonomousConstants.init();
     }
 
     private void bindControllerCommands() {
         OperatorConstants.RESET_HEADING_TRIGGER.onTrue(CommandConstants.RESET_HEADING_COMMAND);
-        OperatorConstants.DRIVE_FROM_DPAD_TRIGGER.whileTrue(CommandConstants.SELF_RELATIVE_DRIVE_FROM_DPAD_COMMAND);
+//        OperatorConstants.DRIVE_FROM_DPAD_TRIGGER.whileTrue(CommandConstants.SELF_RELATIVE_DRIVE_FROM_DPAD_COMMAND);
         OperatorConstants.TOGGLE_BRAKE_TRIGGER.onTrue(GeneralCommands.getToggleBrakeCommand());
 
-        OperatorConstants.SPAWN_CORAL_TRIGGER.onTrue(new InstantCommand(() -> SimulationFieldHandler.updateCoralSpawning(new Pose3d(ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose()))));
-        OperatorConstants.CORAL_COLLECTION_TRIGGER.whileTrue(CoralCollectionCommands.getCoralCollectionCommand());
+        OperatorConstants.FLOOR_ALGAE_COLLECTION_TRIGGER.toggleOnTrue(AlgaeManipulationCommands.getFloorAlgaeCollectionCommand());
+        OperatorConstants.REEF_ALGAE_COLLECTION_TRIGGER.toggleOnTrue(AlgaeManipulationCommands.getReefAlgaeCollectionCommand());
 
-        OperatorConstants.EJECT_CORAL_TRIGGER.whileTrue(CoralEjectionCommands.getCoralEjectionCommand());
+        OperatorConstants.CORAL_COLLECTION_TRIGGER.whileTrue(CoralCollectionCommands.getCoralCollectionCommand());
         OperatorConstants.SCORE_CORAL_LEFT_TRIGGER.whileTrue(CoralPlacingCommands.getScoreInReefCommand(false));
         OperatorConstants.SCORE_CORAL_RIGHT_TRIGGER.whileTrue(CoralPlacingCommands.getScoreInReefCommand(true));
+        OperatorConstants.EJECT_CORAL_TRIGGER.whileTrue(CoralEjectionCommands.getCoralEjectionCommand());
 
+        OperatorConstants.SPAWN_CORAL_IN_SIMULATION_TRIGGER.onTrue(new InstantCommand(() -> SimulationFieldHandler.updateCoralSpawning(ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose())));
+        OperatorConstants.FLIP_ARM_TRIGGER.onTrue(new InstantCommand(() -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE = !OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE));
+        OperatorConstants.LOLLIPOP_ALGAE_TOGGLE_TRIGGER.onTrue(new InstantCommand(AlgaeManipulationCommands::toggleLollipopCollection));
         OperatorConstants.CLIMB_TRIGGER.toggleOnTrue(ClimbCommands.getClimbCommand());
     }
 
