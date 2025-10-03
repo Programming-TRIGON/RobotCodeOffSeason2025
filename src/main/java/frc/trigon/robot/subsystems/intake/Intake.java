@@ -100,6 +100,7 @@ public class Intake extends MotorSubsystem {
 
     void setTargetState(IntakeConstants.IntakeState targetState) {
         this.targetState = targetState;
+        System.out.println("Setting intake state to " + targetState.name());
         setTargetState(targetState.targetAngle, targetState.targetVoltage);
     }
 
@@ -110,10 +111,13 @@ public class Intake extends MotorSubsystem {
 
     private void setTargetVoltage(double voltage) {
         IntakeConstants.INTAKE_MECHANISM.setTargetVelocity(voltage);
+        System.out.println("Setting intake voltage to " + voltage);
         intakeMotor.setControl(voltageRequest.withOutput(voltage));
     }
 
+
     private void setTargetAngle(Rotation2d targetAngle) {
+        System.out.println("Setting intake angle to " + targetAngle.getDegrees() + " degrees");
         angleMotor.setControl(positionRequest.withPosition(targetAngle.getRotations()));
     }
 

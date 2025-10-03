@@ -50,7 +50,9 @@ public class ArmElevator extends MotorSubsystem {
     @Override
     public void setBrake(boolean brake) {
         armMasterMotor.setBrake(brake);
+        ArmElevatorConstants.ARM_FOLLOWER_MOTOR.setBrake(brake);
         elevatorMasterMotor.setBrake(brake);
+        ArmElevatorConstants.ELEVATOR_FOLLOWER_MOTOR.setBrake(brake);
     }
 
     @Override

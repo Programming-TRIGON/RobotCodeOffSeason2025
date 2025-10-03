@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.trigon.robot.RobotContainer;
+import frc.trigon.robot.commands.commandclasses.IntakeAssistCommand;
 import frc.trigon.robot.constants.OperatorConstants;
 import frc.trigon.robot.subsystems.armelevator.ArmElevatorCommands;
 import frc.trigon.robot.subsystems.armelevator.ArmElevatorConstants;
@@ -19,41 +20,29 @@ public class CoralCollectionCommands {
 
     public static Command getCoralCollectionCommand() {
         return new SequentialCommandGroup(
-                getIntakeSequenceCommand(),
+                getIntakeCoralCommand().until(RobotContainer.TRANSPORTER::hasCoral),
+                getCollectionConfirmationCommand(),
                 new InstantCommand(
                         () -> getLoadCoralCommand().schedule()
                 )
-        );
-        // new IntakeAssistCommand(OperatorConstants.DEFAULT_INTAKE_ASSIST_MODE)
+        ).alongWith(new IntakeAssistCommand(OperatorConstants.DEFAULT_INTAKE_ASSIST_MODE));
     }
 
     public static Command getLoadCoralCommand() {
         return new ParallelCommandGroup(
                 ArmElevatorCommands.getSetTargetStateCommand(ArmElevatorConstants.ArmElevatorState.LOAD_CORAL),
                 EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.LOAD_CORAL)
-        ).until(RobotContainer.END_EFFECTOR::hasGamePiece).onlyWhile(() -> !RobotContainer.END_EFFECTOR.hasGamePiece());
+        ).until(RobotContainer.END_EFFECTOR::hasGamePiece).unless(RobotContainer.END_EFFECTOR::hasGamePiece);
     }
 
-    private static Command getIntakeSequenceCommand() {
-        return new SequentialCommandGroup(
-                getInitiateCollectionCommand().until(RobotContainer.INTAKE::hasCoral),
-                new InstantCommand(() -> getAlignCoralCommand().schedule()).alongWith(getCollectionConfirmationCommand())
-        ).until(RobotContainer.INTAKE::hasCoral);
-    }
 
-    private static Command getInitiateCollectionCommand() {
+    private static Command getIntakeCoralCommand() {
         return new ParallelCommandGroup(
                 IntakeCommands.getSetTargetStateCommand(IntakeConstants.IntakeState.COLLECT),
-                TransporterCommands.getSetTargetStateWithPulsesCommand(TransporterConstants.TransporterState.COLLECT)
+                TransporterCommands.getSetTargetStateCommand(TransporterConstants.TransporterState.COLLECT)
         );
     }
 
-    private static Command getAlignCoralCommand() {
-        return new SequentialCommandGroup(
-                TransporterCommands.getSetTargetStateWithPulsesCommand(TransporterConstants.TransporterState.ALIGN_CORAL).until(RobotContainer.TRANSPORTER::hasCoral),
-                TransporterCommands.getSetTargetStateWithPulsesCommand(TransporterConstants.TransporterState.HOLD_CORAL)
-        );
-    }
 
     private static Command getCollectionConfirmationCommand() {
         return new InstantCommand(() -> OperatorConstants.DRIVER_CONTROLLER.rumble(OperatorConstants.RUMBLE_DURATION_SECONDS, OperatorConstants.RUMBLE_POWER));
