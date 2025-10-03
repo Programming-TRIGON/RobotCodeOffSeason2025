@@ -56,10 +56,29 @@ public class AutonomousCommands {
 
     private static Command getDriveToFindCoralPoseCommand(boolean isRight) {
         return new ConditionalCommand(
-                SwerveCommands.getDriveToPoseCommand(() -> isRight ? AutonomousConstants.AUTO_FIND_CORAL_POSE_RIGHT : AutonomousConstants.AUTO_FIND_CORAL_POSE_LEFT, AutonomousConstants.DRIVE_TO_REEF_CONSTRAINTS, AutonomousConstants.AUTO_FIND_CORAL_END_VELOCITY_METERS_PER_SECOND),
-                SwerveCommands.getDriveToPoseCommand(() -> isRight ? AutonomousConstants.AUTO_FIND_FIRST_CORAL_POSE_RIGHT : AutonomousConstants.AUTO_FIND_FIRST_CORAL_POSE_LEFT, AutonomousConstants.DRIVE_TO_REEF_CONSTRAINTS, AutonomousConstants.AUTO_FIND_CORAL_END_VELOCITY_METERS_PER_SECOND).alongWith(new InstantCommand(() -> IS_FIRST_CORAL = false)),
+                SwerveCommands.getDriveToPoseCommand(
+                        () -> isRight ? AutonomousConstants.AUTO_FIND_CORAL_POSE_RIGHT : AutonomousConstants.AUTO_FIND_CORAL_POSE_LEFT,
+                        AutonomousConstants.DRIVE_TO_REEF_CONSTRAINTS,
+                        AutonomousConstants.AUTO_FIND_CORAL_END_VELOCITY_METERS_PER_SECOND
+                ),
+                getDriveToFirstCoralPoseCommand(isRight),
                 () -> !IS_FIRST_CORAL
         );
+    }
+
+    private static Command getDriveToFirstCoralPoseCommand(boolean isRight) {
+        return new SequentialCommandGroup(
+                SwerveCommands.getDriveToPoseCommand(
+                        () -> isRight ? AutonomousConstants.AUTO_FIND_FIRST_CORAL_FIRST_POSE_RIGHT : AutonomousConstants.AUTO_FIND_FIRST_CORAL_FIRST_POSE_LEFT,
+                        AutonomousConstants.DRIVE_TO_REEF_CONSTRAINTS,
+                        AutonomousConstants.AUTO_FIND_CORAL_END_VELOCITY_METERS_PER_SECOND
+                ),
+                SwerveCommands.getDriveToPoseCommand(
+                        () -> isRight ? AutonomousConstants.AUTO_FIND_FIRST_CORAL_SECOND_POSE_RIGHT : AutonomousConstants.AUTO_FIND_FIRST_CORAL_SECOND_POSE_LEFT,
+                        AutonomousConstants.DRIVE_TO_REEF_CONSTRAINTS,
+                        AutonomousConstants.AUTO_FIND_CORAL_END_VELOCITY_METERS_PER_SECOND
+                )
+        ).alongWith(new InstantCommand(() -> IS_FIRST_CORAL = false));
     }
 
     public static Command getDriveToReefAndScoreCommand() {
