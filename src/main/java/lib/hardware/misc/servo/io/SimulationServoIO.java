@@ -28,6 +28,11 @@ public class SimulationServoIO extends ServoIO {
     }
 
     @Override
+    protected void stop() {
+        this.targetSpeed = 0;
+    }
+
+    @Override
     protected void setTargetAngle(Rotation2d targetAngle) {
         final Rotation2d clampedAngle = clampAngleToServoRange(targetAngle);
         targetScaledPosition = calculateScaledPosition(clampedAngle);

@@ -38,6 +38,10 @@ public class Servo {
      * @param targetSpeed the target speed of the servo, from -1.0 to 1.0.
      */
     public void setTargetSpeed(double targetSpeed) {
+        if (targetSpeed == 0) {
+            stop();
+            return;
+        }
         servoIO.setTargetSpeed(targetSpeed);
     }
 
@@ -51,7 +55,15 @@ public class Servo {
      * @param value the target position/speed of the servo on a scale from 0 to 1
      */
     public void set(double value) {
+        if (value == 0) {
+            stop();
+            return;
+        }
         servoIO.set(value);
+    }
+
+    public void stop() {
+        servoIO.stop();
     }
 
     /**

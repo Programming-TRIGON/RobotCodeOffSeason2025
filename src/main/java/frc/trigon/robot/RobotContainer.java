@@ -27,7 +27,6 @@ import frc.trigon.robot.subsystems.armelevator.ArmElevatorCommands;
 import frc.trigon.robot.subsystems.climber.Climber;
 import frc.trigon.robot.subsystems.endeffector.EndEffector;
 import frc.trigon.robot.subsystems.endeffector.EndEffectorCommands;
-import frc.trigon.robot.subsystems.endeffector.EndEffectorConstants;
 import frc.trigon.robot.subsystems.intake.Intake;
 import frc.trigon.robot.subsystems.intake.IntakeCommands;
 import frc.trigon.robot.subsystems.intake.IntakeConstants;
@@ -35,7 +34,6 @@ import frc.trigon.robot.subsystems.swerve.Swerve;
 import frc.trigon.robot.subsystems.transporter.Transporter;
 import frc.trigon.robot.subsystems.transporter.TransporterCommands;
 import frc.trigon.robot.subsystems.transporter.TransporterConstants;
-import lib.commands.WheelRadiusCharacterizationCommand;
 import lib.utilities.flippable.Flippable;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -43,7 +41,7 @@ import java.util.List;
 
 public class RobotContainer {
     public static final PoseEstimator ROBOT_POSE_ESTIMATOR = new PoseEstimator(
-            CameraConstants.INTAKE_SIDE_REEF_TAG_CAMERA,
+            CameraConstants.FRONT_REEF_TAG_CAMERA,
             CameraConstants.LEFT_REEF_TAG_CAMERA,
             CameraConstants.RIGHT_REEF_TAG_CAMERA
     );
@@ -118,7 +116,10 @@ public class RobotContainer {
         OperatorConstants.FLIP_ARM_TRIGGER.onTrue(new InstantCommand(() -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE = !OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE));
         OperatorConstants.LOLLIPOP_ALGAE_TOGGLE_TRIGGER.onTrue(new InstantCommand(AlgaeManipulationCommands::toggleLollipopCollection));
         OperatorConstants.CLIMB_TRIGGER.toggleOnTrue(ClimbCommands.getClimbCommand());
-        OperatorConstants.DEBUGGING_TRIGGER.whileTrue(ArmElevatorCommands.getDebuggingCommand(false));
+//        OperatorConstants.DEBUGGING_TRIGGER.whileTrue(ArmElevatorCommands.getDebuggingCommand(false));
+
+        OperatorConstants.RESET_ELEVATOR_POSITION_TRIGGER.onTrue(new InstantCommand(ARM_ELEVATOR::resetElevatorPosition).ignoringDisable(true));
+        OperatorConstants.RESET_INTAKE_POSITION_TRIGGER.onTrue(new InstantCommand(INTAKE::resetIntakePosition).ignoringDisable(true));
     }
 
     private void configureSysIDBindings(MotorSubsystem subsystem) {

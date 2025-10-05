@@ -28,7 +28,7 @@ public class Climber extends MotorSubsystem {
     @Override
     public void stop() {
         motor.stopMotor();
-        setServoPowers(0);
+        stopServos();
     }
 
     @Override
@@ -45,7 +45,7 @@ public class Climber extends MotorSubsystem {
     public void updatePeriodically() {
         motor.update();
         rightServo.update();
-        leftServo.update();
+        //   leftServo.update();
     }
 
     @Override
@@ -100,9 +100,14 @@ public class Climber extends MotorSubsystem {
         motor.setControl(voltageRequest.withOutput(targetVoltage));
     }
 
-    private void setServoPowers(double power) {
-//        rightServo.setTargetSpeed(power);
-//        leftServo.setTargetSpeed(-power);
+    public void setServoPowers(double power) {
+        rightServo.setTargetSpeed(power);
+        leftServo.setTargetSpeed(-power);
+    }
+
+    private void stopServos() {
+        rightServo.stop();
+        leftServo.stop();
     }
 
     private Pose3d calculateVisualizationPose() {

@@ -27,6 +27,9 @@ public class ServoIO {
     protected void set(double value) {
     }
 
+    protected void stop() {
+    }
+
     protected void setPWMBoundaries(int maximumPulseWidthMicroseconds, int maximumDeadbandRangeMicroseconds,
                                     int centerPulseMicroseconds, int minimumDeadbandRangeMicroseconds,
                                     int minimumPulseWidthMicroseconds) {
