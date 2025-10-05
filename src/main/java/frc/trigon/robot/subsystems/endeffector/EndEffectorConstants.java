@@ -39,7 +39,7 @@ public class EndEffectorConstants {
             END_EFFECTOR_MOMENT_OF_INERTIA
     );
 
-    private static final DoubleSupplier DISTANCE_SENSOR_SIMULATION_SUPPLIER = () -> (SimulationFieldHandler.isHoldingCoral() && SimulationFieldHandler.isCoralInEndEffector()) || SimulationFieldHandler.isHoldingAlgae() ? 1 : 0;
+    private static final DoubleSupplier DISTANCE_SENSOR_SIMULATION_SUPPLIER = () -> (SimulationFieldHandler.isHoldingCoral() && SimulationFieldHandler.isCoralInEndEffector()) || SimulationFieldHandler.isHoldingAlgae() ? 1 : 10;
 
     static final SpeedMechanism2d END_EFFECTOR_MECHANISM = new SpeedMechanism2d(
             "EndEffectorMechanism",
