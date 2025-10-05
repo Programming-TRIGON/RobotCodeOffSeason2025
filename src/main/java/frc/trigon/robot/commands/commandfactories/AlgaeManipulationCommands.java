@@ -95,7 +95,7 @@ public class AlgaeManipulationCommands {
         return new SelectCommand<>(
                 Map.of(
                         0, getHoldAlgaeCommand(),
-                        1, getScoreInNetCommand(),
+                        1, CoralPlacingCommands.SHOULD_SCORE_AUTONOMOUSLY ? getAtonomouslyScoreInNetCommand() : getScoreInNetCommand(),
                         2, getScoreInProcessorCommand()
                 ),
                 AlgaeManipulationCommands::getAlgaeScoreMethodSelector
@@ -110,6 +110,13 @@ public class AlgaeManipulationCommands {
     }
 
     private static Command getScoreInNetCommand() {
+        return new ParallelRaceGroup(
+                GeneralCommands.getFlippableOverridableArmCommand(ArmElevatorConstants.ArmElevatorState.SCORE_NET, false, AlgaeManipulationCommands::shouldReverseNetScore),
+                GeneralCommands.runWhen(EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.SCORE_ALGAE), OperatorConstants.CONTINUE_TRIGGER)
+        );
+    }
+
+    private static Command getAtonomouslyScoreInNetCommand() {
         return new ParallelRaceGroup(
                 GeneralCommands.getFlippableOverridableArmCommand(ArmElevatorConstants.ArmElevatorState.SCORE_NET, false, AlgaeManipulationCommands::shouldReverseNetScore),
                 GeneralCommands.runWhen(EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.SCORE_ALGAE), OperatorConstants.CONTINUE_TRIGGER),
