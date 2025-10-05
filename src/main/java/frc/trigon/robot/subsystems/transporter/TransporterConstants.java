@@ -63,7 +63,7 @@ public class TransporterConstants {
 
     static final double PULSE_VOLTAGE_APPLIED_TIME_SECONDS = 0.08;
     static final double PULSE_WAIT_TIME_SECONDS = 0.03;
-    private static final double HAS_CORAL_DEBOUNCE_TIME_SECONDS = 0.08;
+    private static final double HAS_CORAL_DEBOUNCE_TIME_SECONDS = 0.2;
     static final BooleanEvent HAS_CORAL_BOOLEAN_EVENT = new BooleanEvent(
             CommandScheduler.getInstance().getActiveButtonLoop(),
             BEAM_BREAK::getBinaryValue

@@ -27,7 +27,7 @@ public class CoralCollectionCommands {
                                 getLoadCoralCommand().schedule();
                         }
                 )
-        ).alongWith(new IntakeAssistCommand(OperatorConstants.DEFAULT_INTAKE_ASSIST_MODE)).unless(CoralCollectionCommands::hasCoral);
+        ).alongWith(new IntakeAssistCommand(OperatorConstants.DEFAULT_INTAKE_ASSIST_MODE));
     }
 
     public static Command getLoadCoralCommand() {
@@ -35,7 +35,10 @@ public class CoralCollectionCommands {
                 ArmElevatorCommands.getSetTargetStateCommand(ArmElevatorConstants.ArmElevatorState.LOAD_CORAL),
                 EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.LOAD_CORAL)
         ).until(RobotContainer.END_EFFECTOR::hasGamePiece).andThen(
-                ArmElevatorCommands.getSetTargetStateCommand(ArmElevatorConstants.ArmElevatorState.REST).until(() -> RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.REST))
+                new ParallelCommandGroup(
+                        ArmElevatorCommands.getSetTargetStateCommand(ArmElevatorConstants.ArmElevatorState.REST_AFTER_LOADING),
+                        EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.HOLD_CORAL)
+                ).until(() -> RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.REST_AFTER_LOADING))
         ).unless(RobotContainer.END_EFFECTOR::hasGamePiece);
     }
 

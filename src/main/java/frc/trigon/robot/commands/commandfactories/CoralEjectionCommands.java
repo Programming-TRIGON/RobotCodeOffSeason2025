@@ -20,7 +20,7 @@ public class CoralEjectionCommands {
                 getEjectCoralFromIntakeCommand(),
                 getEjectCoralFromEndEffectorCommand(),
                 () -> RobotContainer.TRANSPORTER.hasCoral() || RobotContainer.INTAKE.hasCoral()
-        ).onlyIf(SimulationFieldHandler::isHoldingCoral);
+        );
     }
 
     private static Command getEjectCoralFromIntakeCommand() {

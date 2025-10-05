@@ -53,7 +53,7 @@ public class ArmElevatorConstants {
             SHOULD_ELEVATOR_FOLLOWER_OPPOSE_MASTER = false;
     static final double
             ARM_DEFAULT_MAXIMUM_VELOCITY = RobotHardwareStats.isSimulation() ? 2.4614 : 2.5,
-            ARM_DEFAULT_MAXIMUM_ACCELERATION = RobotHardwareStats.isSimulation() ? 67.2344 : 4,
+            ARM_DEFAULT_MAXIMUM_ACCELERATION = RobotHardwareStats.isSimulation() ? 67.2344 : 5,
             ARM_DEFAULT_MAXIMUM_JERK = ARM_DEFAULT_MAXIMUM_ACCELERATION * 10,
             ELEVATOR_DEFAULT_MAXIMUM_VELOCITY = RobotHardwareStats.isSimulation() ? 25.178 : 20,
             ELEVATOR_DEFAULT_MAXIMUM_ACCELERATION = RobotHardwareStats.isSimulation() ? 80 : 50;
@@ -179,7 +179,7 @@ public class ArmElevatorConstants {
         config.Feedback.FeedbackRemoteSensorID = ANGLE_ENCODER.getID();
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
 
-        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 34 : 30;
+        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 34 : 37;
         config.Slot0.kI = RobotHardwareStats.isSimulation() ? 0 : 0;
         config.Slot0.kD = RobotHardwareStats.isSimulation() ? 3 : 0.1;
         config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0.026331 : 0.06;
@@ -317,18 +317,19 @@ public class ArmElevatorConstants {
         PREPARE_SCORE_L1(Rotation2d.fromDegrees(20), 0.3, null, false, 1),
         PREPARE_SCORE_L2(Rotation2d.fromDegrees(10), 0.3, null, false, 1),
         PREPARE_SCORE_L3(Rotation2d.fromDegrees(10), 0.7, null, false, 1),
-        PREPARE_SCORE_L4(Rotation2d.fromDegrees(50), 1.41, null, false, 1),
+        PREPARE_SCORE_L4(Rotation2d.fromDegrees(50), 1.5, null, false, 1),
         REST(Rotation2d.fromDegrees(-90), 0.603, null, false, 0.7),
+        REST_AFTER_LOADING(Rotation2d.fromDegrees(-90), 0.603, null, true, 0.7),
         REST_WITH_CORAL(Rotation2d.fromDegrees(90), 0.603, null, false, 0.6),
         REST_WITH_ALGAE(Rotation2d.fromDegrees(90), 0.603, null, false, 0.3),
         REST_FOR_CLIMB(Rotation2d.fromDegrees(90), 0.603, null, false, 0.7),
-        LOAD_CORAL(Rotation2d.fromDegrees(-90), 0.42, REST, true, 0.7),
+        LOAD_CORAL(Rotation2d.fromDegrees(-90), 0.49, REST, true, 0.7),
         UNLOAD_CORAL(Rotation2d.fromDegrees(-90), 0.603, null, false, 0.7),
         EJECT(Rotation2d.fromDegrees(-30), 0.603, null, false, 0.7),
         SCORE_L1(Rotation2d.fromDegrees(-20), 0.4, null, false, 1),
         SCORE_L2(Rotation2d.fromDegrees(0), 0.3, PREPARE_SCORE_L2, false, 1),
         SCORE_L3(Rotation2d.fromDegrees(0), 0.7, PREPARE_SCORE_L3, false, 1),
-        SCORE_L4(Rotation2d.fromDegrees(25), 1.41, PREPARE_SCORE_L4, false, 1),
+        SCORE_L4(Rotation2d.fromDegrees(20), 1.5, PREPARE_SCORE_L4, false, 1),
         SCORE_NET(Rotation2d.fromDegrees(70), 1.382, null, false, 0.3),
         SCORE_PROCESSOR(Rotation2d.fromDegrees(0), 0.603, null, false, 0.7),
         COLLECT_ALGAE_L2(Rotation2d.fromDegrees(0), 0.603, null, false, 1),

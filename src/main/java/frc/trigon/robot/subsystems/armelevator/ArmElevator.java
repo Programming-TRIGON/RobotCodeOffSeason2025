@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.trigon.robot.RobotContainer;
 import frc.trigon.robot.commands.commandfactories.CoralPlacingCommands;
+import frc.trigon.robot.commands.commandfactories.GeneralCommands;
 import frc.trigon.robot.subsystems.MotorSubsystem;
 import lib.hardware.phoenix6.cancoder.CANcoderEncoder;
 import lib.hardware.phoenix6.cancoder.CANcoderSignal;
@@ -207,6 +208,12 @@ public class ArmElevator extends MotorSubsystem {
     }
 
     void setTargetArmAngle(Rotation2d targetAngle, boolean ignoreConstraints) {
+        final Rotation2d minimumSafeAngle = calculateMinimumArmSafeAngle();
+        final Rotation2d currentAngle = getCurrentArmAngle();
+        if (minimumSafeAngle.getRotations() > Math.max(currentAngle.getRotations(), targetAngle.getRotations())) {
+            armMasterMotor.setControl(armPositionRequest.withPosition(currentAngle.getRotations() - ArmElevatorConstants.ARM_POSITION_OFFSET_FROM_GRAVITY_OFFSET));
+            return;
+        }
         final double targetPosition = ignoreConstraints ? targetAngle.getRotations() : Math.max(targetAngle.getRotations(), calculateMinimumArmSafeAngle().getRotations());
         armMasterMotor.setControl(armPositionRequest.withPosition(targetPosition - ArmElevatorConstants.ARM_POSITION_OFFSET_FROM_GRAVITY_OFFSET));
     }
