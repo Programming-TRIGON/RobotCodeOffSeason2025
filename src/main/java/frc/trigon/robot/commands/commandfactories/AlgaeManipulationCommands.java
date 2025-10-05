@@ -195,7 +195,7 @@ public class AlgaeManipulationCommands {
                         .onlyIf(() -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE)
                         .until(() -> !OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE)
                         .repeatedly()
-        );
+        ).finallyDo(() -> SHOULD_COLLECT_FROM_LOLLIPOP = false);
     }
 
     private static Command getCollectAlgaeFromFloorSequenceCommand() {
