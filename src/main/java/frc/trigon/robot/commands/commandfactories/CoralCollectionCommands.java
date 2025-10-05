@@ -27,7 +27,7 @@ public class CoralCollectionCommands {
                                 getLoadCoralCommand().schedule();
                         }
                 )
-        ).alongWith(new IntakeAssistCommand(OperatorConstants.DEFAULT_INTAKE_ASSIST_MODE));
+        ).alongWith(new IntakeAssistCommand(OperatorConstants.DEFAULT_INTAKE_ASSIST_MODE).asProxy());
     }
 
     public static Command getLoadCoralCommand() {
