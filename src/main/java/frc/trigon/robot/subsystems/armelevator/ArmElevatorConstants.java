@@ -46,14 +46,14 @@ public class ArmElevatorConstants {
     private static final double
             ARM_MOTOR_CURRENT_LIMIT = 50,
             ELEVATOR_MOTOR_CURRENT_LIMIT = 50;
-    private static final double ANGLE_ENCODER_GRAVITY_OFFSET = -0.059326171875;
+    private static final double ANGLE_ENCODER_GRAVITY_OFFSET = -0.0625;
     static final double ARM_POSITION_OFFSET_FROM_GRAVITY_OFFSET = RobotHardwareStats.isSimulation() ? 0 : edu.wpi.first.math.util.Units.degreesToRotations(-23.56) - ANGLE_ENCODER_GRAVITY_OFFSET;
     private static final boolean
             SHOULD_ARM_FOLLOWER_OPPOSE_MASTER = false,
             SHOULD_ELEVATOR_FOLLOWER_OPPOSE_MASTER = false;
     static final double
             ARM_DEFAULT_MAXIMUM_VELOCITY = RobotHardwareStats.isSimulation() ? 2.4614 : 2.5,
-            ARM_DEFAULT_MAXIMUM_ACCELERATION = RobotHardwareStats.isSimulation() ? 67.2344 : 7,
+            ARM_DEFAULT_MAXIMUM_ACCELERATION = RobotHardwareStats.isSimulation() ? 67.2344 : 4,
             ARM_DEFAULT_MAXIMUM_JERK = ARM_DEFAULT_MAXIMUM_ACCELERATION * 10,
             ELEVATOR_DEFAULT_MAXIMUM_VELOCITY = RobotHardwareStats.isSimulation() ? 25.178 : 20,
             ELEVATOR_DEFAULT_MAXIMUM_ACCELERATION = RobotHardwareStats.isSimulation() ? 80 : 50;
@@ -145,7 +145,7 @@ public class ArmElevatorConstants {
     static final double SECOND_ELEVATOR_COMPONENT_EXTENDED_LENGTH_METERS = 0.593;
     static final double DRUM_DIAMETER_METERS = DRUM_RADIUS_METERS * 2;
 
-    static final Rotation2d ANGLE_TOLERANCE = Rotation2d.fromDegrees(5);
+    static final Rotation2d ANGLE_TOLERANCE = Rotation2d.fromDegrees(2);
 
     /**
      * The highest point of the arms angular zone where the safety logic applies.
@@ -177,18 +177,18 @@ public class ArmElevatorConstants {
 
         config.Feedback.RotorToSensorRatio = ARM_GEAR_RATIO;
         config.Feedback.FeedbackRemoteSensorID = ANGLE_ENCODER.getID();
-        config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
+        config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
 
-        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 34 : 70;
+        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 34 : 30;
         config.Slot0.kI = RobotHardwareStats.isSimulation() ? 0 : 0;
-        config.Slot0.kD = RobotHardwareStats.isSimulation() ? 3 : 0;
-        config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0.026331 : 0.02;
-        config.Slot0.kV = RobotHardwareStats.isSimulation() ? 4.8752 : 0;
+        config.Slot0.kD = RobotHardwareStats.isSimulation() ? 3 : 0.1;
+        config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0.026331 : 0.06;
+        config.Slot0.kV = RobotHardwareStats.isSimulation() ? 4.8752 : 2;
         config.Slot0.kA = RobotHardwareStats.isSimulation() ? 0.17848 : 0;
-        config.Slot0.kG = RobotHardwareStats.isSimulation() ? 0.1117 : 0.39;
+        config.Slot0.kG = RobotHardwareStats.isSimulation() ? 0.1117 : 0.35;
 
         config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
-        config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
+        config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
 
 //        config.Feedback.VelocityFilterTimeConstant = 0.2;
 
@@ -278,7 +278,7 @@ public class ArmElevatorConstants {
         ELEVATOR_MASTER_MOTOR.registerSignal(TalonFXSignal.CLOSED_LOOP_REFERENCE, 100);
         ELEVATOR_MASTER_MOTOR.registerSignal(TalonFXSignal.STATOR_CURRENT, 100);
         ELEVATOR_MASTER_MOTOR.registerSignal(TalonFXSignal.ROTOR_VELOCITY, 100);
-        ELEVATOR_MASTER_MOTOR.setPosition(0);
+//        ELEVATOR_MASTER_MOTOR.setPosition(0);
     }
 
     private static void configureElevatorFollowerMotor() {
@@ -317,25 +317,25 @@ public class ArmElevatorConstants {
         PREPARE_SCORE_L1(Rotation2d.fromDegrees(20), 0.3, null, false, 1),
         PREPARE_SCORE_L2(Rotation2d.fromDegrees(10), 0.3, null, false, 1),
         PREPARE_SCORE_L3(Rotation2d.fromDegrees(10), 0.7, null, false, 1),
-        PREPARE_SCORE_L4(Rotation2d.fromDegrees(48), 1.4, null, false, 1),
+        PREPARE_SCORE_L4(Rotation2d.fromDegrees(50), 1.41, null, false, 1),
         REST(Rotation2d.fromDegrees(-90), 0.603, null, false, 0.7),
-        REST_WITH_CORAL(Rotation2d.fromDegrees(90), 0.603, null, false, 0.4),
-        REST_WITH_ALGAE(Rotation2d.fromDegrees(0), 0.603, null, false, 0.4),
+        REST_WITH_CORAL(Rotation2d.fromDegrees(90), 0.603, null, false, 0.6),
+        REST_WITH_ALGAE(Rotation2d.fromDegrees(90), 0.603, null, false, 0.3),
         REST_FOR_CLIMB(Rotation2d.fromDegrees(90), 0.603, null, false, 0.7),
         LOAD_CORAL(Rotation2d.fromDegrees(-90), 0.42, REST, true, 0.7),
-        UNLOAD_CORAL(Rotation2d.fromDegrees(-90), 0.5519, null, false, 0.7),
+        UNLOAD_CORAL(Rotation2d.fromDegrees(-90), 0.603, null, false, 0.7),
         EJECT(Rotation2d.fromDegrees(-30), 0.603, null, false, 0.7),
         SCORE_L1(Rotation2d.fromDegrees(-20), 0.4, null, false, 1),
         SCORE_L2(Rotation2d.fromDegrees(0), 0.3, PREPARE_SCORE_L2, false, 1),
         SCORE_L3(Rotation2d.fromDegrees(0), 0.7, PREPARE_SCORE_L3, false, 1),
-        SCORE_L4(Rotation2d.fromDegrees(40), 1.4, PREPARE_SCORE_L4, false, 1),
+        SCORE_L4(Rotation2d.fromDegrees(25), 1.41, PREPARE_SCORE_L4, false, 1),
         SCORE_NET(Rotation2d.fromDegrees(70), 1.382, null, false, 0.3),
         SCORE_PROCESSOR(Rotation2d.fromDegrees(0), 0.603, null, false, 0.7),
         COLLECT_ALGAE_L2(Rotation2d.fromDegrees(0), 0.603, null, false, 1),
         COLLECT_ALGAE_L3(Rotation2d.fromDegrees(0), 0.953, null, false, 1),
-        PREPARE_COLLECT_ALGAE_FLOOR(Rotation2d.fromDegrees(-30), 0.2, null, false, 1),
-        COLLECT_ALGAE_FLOOR(Rotation2d.fromDegrees(-40), 0.2, PREPARE_COLLECT_ALGAE_FLOOR, true, 1),
-        COLLECT_ALGAE_LOLLIPOP(Rotation2d.fromDegrees(70), 0.29, null, false, 1);
+        PREPARE_COLLECT_ALGAE_FLOOR(Rotation2d.fromDegrees(-30), 0.4, null, false, 1),
+        COLLECT_ALGAE_FLOOR(Rotation2d.fromDegrees(-30), 0.12, PREPARE_COLLECT_ALGAE_FLOOR, true, 1),
+        COLLECT_ALGAE_LOLLIPOP(Rotation2d.fromDegrees(0), 0.29, null, false, 1);
 
 
         public final Rotation2d targetAngle;

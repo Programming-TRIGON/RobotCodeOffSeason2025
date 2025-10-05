@@ -32,10 +32,10 @@ public class TransporterConstants {
             LEFT_MOTOR = new TalonFXMotor(LEFT_MOTOR_ID, LEFT_MOTOR_NAME);
     static final SimpleSensor BEAM_BREAK = SimpleSensor.createDigitalSensor(BEAM_BREAK_CHANNEL, BEAM_BREAK_NAME);
 
-    private static double GEAR_RATIO = 3;
-    static boolean FOC_ENABLED = true;
-    private static int MOTOR_AMOUNT = 1;
-    private static DCMotor GEARBOX = DCMotor.getKrakenX60(MOTOR_AMOUNT);
+    private final static double GEAR_RATIO = 3;
+    static final boolean FOC_ENABLED = true;
+    private final static int MOTOR_AMOUNT = 1;
+    private final static DCMotor GEARBOX = DCMotor.getKrakenX60(MOTOR_AMOUNT);
     private static final double MOMENT_OF_INERTIA = 0.003;
     private static final SimpleMotorSimulation
             RIGHT_MOTOR_SIMULATION = new SimpleMotorSimulation(
@@ -63,7 +63,7 @@ public class TransporterConstants {
 
     static final double PULSE_VOLTAGE_APPLIED_TIME_SECONDS = 0.08;
     static final double PULSE_WAIT_TIME_SECONDS = 0.03;
-    private static final double HAS_CORAL_DEBOUNCE_TIME_SECONDS = 0.2;
+    private static final double HAS_CORAL_DEBOUNCE_TIME_SECONDS = 0.08;
     static final BooleanEvent HAS_CORAL_BOOLEAN_EVENT = new BooleanEvent(
             CommandScheduler.getInstance().getActiveButtonLoop(),
             BEAM_BREAK::getBinaryValue

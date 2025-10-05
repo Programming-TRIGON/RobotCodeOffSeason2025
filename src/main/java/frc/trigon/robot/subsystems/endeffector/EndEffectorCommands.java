@@ -21,7 +21,7 @@ public class EndEffectorCommands {
     public static Command getSetTargetStateCommand(EndEffectorConstants.EndEffectorState targetState) {
         return new StartEndCommand(
                 () -> RobotContainer.END_EFFECTOR.setTargetState(targetState),
-                RobotContainer.END_EFFECTOR::stop,
+                () -> {},
                 RobotContainer.END_EFFECTOR
         );
     }
