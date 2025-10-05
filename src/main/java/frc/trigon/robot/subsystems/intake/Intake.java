@@ -106,7 +106,7 @@ public class Intake extends MotorSubsystem {
     }
 
     public void resetIntakePosition() {
-        intakeMotor.setPosition(0);
+        angleMotor.setPosition(0);
     }
 
     void setTargetState(IntakeConstants.IntakeState targetState) {

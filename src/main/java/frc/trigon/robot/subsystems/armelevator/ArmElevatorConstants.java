@@ -314,9 +314,9 @@ public class ArmElevatorConstants {
     }
 
     public enum ArmElevatorState {
-        PREPARE_SCORE_L1(Rotation2d.fromDegrees(20), 0.3, null, false, 1),
-        PREPARE_SCORE_L2(Rotation2d.fromDegrees(52), 0.17, null, false, 1),
-        PREPARE_SCORE_L3(Rotation2d.fromDegrees(52), 0.6, null, false, 1),
+        PREPARE_SCORE_L1(Rotation2d.fromDegrees(-10), 0.33, null, false, 1),
+        PREPARE_SCORE_L2(Rotation2d.fromDegrees(60), 0.1, null, false, 1),
+        PREPARE_SCORE_L3(Rotation2d.fromDegrees(60), 0.53, null, false, 1),
         PREPARE_SCORE_L4(Rotation2d.fromDegrees(50), 1.5, null, false, 1),
         REST(Rotation2d.fromDegrees(-90), 0.603, null, false, 0.8),
         REST_AFTER_LOADING(Rotation2d.fromDegrees(-90), 0.603, null, true, 0.7),
@@ -326,7 +326,7 @@ public class ArmElevatorConstants {
         LOAD_CORAL(Rotation2d.fromDegrees(-91), 0.51, REST, true, 0.7),
         UNLOAD_CORAL(Rotation2d.fromDegrees(-91), 0.603, null, false, 0.7),
         EJECT(Rotation2d.fromDegrees(-30), 0.603, null, false, 0.7),
-        SCORE_L1(Rotation2d.fromDegrees(-20), 0.4, null, false, 1),
+        SCORE_L1(Rotation2d.fromDegrees(-13), PREPARE_SCORE_L1.targetPositionMeters, null, false, 1),
         SCORE_L2(Rotation2d.fromDegrees(25), PREPARE_SCORE_L2.targetPositionMeters, PREPARE_SCORE_L2, false, 0.8),
         SCORE_L3(Rotation2d.fromDegrees(25), PREPARE_SCORE_L3.targetPositionMeters, PREPARE_SCORE_L3, false, 0.8),
         SCORE_L4(Rotation2d.fromDegrees(-10), 1.5, PREPARE_SCORE_L4, false, 0.8),
@@ -336,7 +336,7 @@ public class ArmElevatorConstants {
         COLLECT_ALGAE_L3(Rotation2d.fromDegrees(0), 0.953, null, false, 1),
         PREPARE_COLLECT_ALGAE_FLOOR(Rotation2d.fromDegrees(-30), 0.4, null, false, 1),
         COLLECT_ALGAE_FLOOR(Rotation2d.fromDegrees(-30), 0.13, PREPARE_COLLECT_ALGAE_FLOOR, true, 1),
-        COLLECT_ALGAE_LOLLIPOP(Rotation2d.fromDegrees(0), 0.20, null, false, 1);
+        COLLECT_ALGAE_LOLLIPOP(Rotation2d.fromDegrees(0), 0.15, null, false, 1);
 
 
         public final Rotation2d targetAngle;

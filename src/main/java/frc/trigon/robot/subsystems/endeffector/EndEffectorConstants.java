@@ -95,7 +95,7 @@ public class EndEffectorConstants {
         LOAD_CORAL(-4),
         UNLOAD_CORAL(4),
         SCORE_CORAL(1.5),
-        COLLECT_ALGAE(-7),
+        COLLECT_ALGAE(-11),
         SCORE_ALGAE(10),
         HOLD_CORAL(-0.5),
         HOLD_ALGAE(-7);
