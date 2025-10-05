@@ -96,7 +96,7 @@ public class AlgaeManipulationCommands {
                 Map.of(
                         0, getHoldAlgaeCommand(),
                         1, CoralPlacingCommands.SHOULD_SCORE_AUTONOMOUSLY ? getAtonomouslyScoreInNetCommand() : getScoreInNetCommand(),
-                        2, getScoreInProcessorCommand()
+                        2, CoralPlacingCommands.SHOULD_SCORE_AUTONOMOUSLY ? getAtonomouslyScoreInProcessorCommand() : getScoreInProcessorCommand()
                 ),
                 AlgaeManipulationCommands::getAlgaeScoreMethodSelector
         ).raceWith(new WaitUntilChangeCommand<>(AlgaeManipulationCommands::isScoreAlgaeButtonPressed)).repeatedly();
@@ -126,7 +126,14 @@ public class AlgaeManipulationCommands {
 
     private static Command getScoreInProcessorCommand() {
         return new ParallelCommandGroup(
-                GeneralCommands.getFlippableOverridableArmCommand(ArmElevatorConstants.ArmElevatorState.SCORE_PROCESSOR, false),
+                ArmElevatorCommands.getSetTargetStateCommand(ArmElevatorConstants.ArmElevatorState.SCORE_PROCESSOR),
+                GeneralCommands.runWhen(EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.SCORE_ALGAE), OperatorConstants.CONTINUE_TRIGGER)
+        ).finallyDo(GeneralCommands.getFieldRelativeDriveCommand()::schedule);
+    }
+
+    private static Command getAtonomouslyScoreInProcessorCommand() {
+        return new ParallelCommandGroup(
+                ArmElevatorCommands.getSetTargetStateCommand(ArmElevatorConstants.ArmElevatorState.SCORE_PROCESSOR),
                 GeneralCommands.runWhen(EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.SCORE_ALGAE), OperatorConstants.CONTINUE_TRIGGER),
                 getDriveToProcessorCommand()
         ).finallyDo(GeneralCommands.getFieldRelativeDriveCommand()::schedule);
