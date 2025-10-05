@@ -80,7 +80,6 @@ public class SwerveModule {
         steerMotor.update();
         steerEncoder.update();
 
-
         latestOdometryDrivePositions = driveMotor.getThreadedSignal(TalonFXSignal.POSITION);
         latestOdometrySteerPositions = steerMotor.getThreadedSignal(TalonFXSignal.POSITION);
     }

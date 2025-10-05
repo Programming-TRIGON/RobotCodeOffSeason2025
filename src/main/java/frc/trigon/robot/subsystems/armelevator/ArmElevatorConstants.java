@@ -9,6 +9,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.trigon.robot.constants.RobotConstants;
 import lib.hardware.RobotHardwareStats;
 import lib.hardware.phoenix6.cancoder.CANcoderEncoder;
 import lib.hardware.phoenix6.cancoder.CANcoderSignal;
@@ -33,11 +34,11 @@ public class ArmElevatorConstants {
             ELEVATOR_MASTER_MOTOR_NAME = "ElevatorMasterMotor",
             ELEVATOR_FOLLOWER_MOTOR_NAME = "ElevatorFollowerMotor";
     static final TalonFXMotor
-            ARM_MASTER_MOTOR = new TalonFXMotor(ARM_MASTER_MOTOR_ID, ARM_MASTER_MOTOR_NAME),
-            ARM_FOLLOWER_MOTOR = new TalonFXMotor(ARM_FOLLOWER_MOTOR_ID, ARM_FOLLOWER_MOTOR_NAME),
-            ELEVATOR_MASTER_MOTOR = new TalonFXMotor(ELEVATOR_MASTER_MOTOR_ID, ELEVATOR_MASTER_MOTOR_NAME),
-            ELEVATOR_FOLLOWER_MOTOR = new TalonFXMotor(ELEVATOR_FOLLOWER_MOTOR_ID, ELEVATOR_FOLLOWER_MOTOR_NAME);
-    static final CANcoderEncoder ANGLE_ENCODER = new CANcoderEncoder(ANGLE_ENCODER_ID, ANGLE_ENCODER_NAME);
+            ARM_MASTER_MOTOR = new TalonFXMotor(ARM_MASTER_MOTOR_ID, ARM_MASTER_MOTOR_NAME, RobotConstants.CANIVORE_NAME),
+            ARM_FOLLOWER_MOTOR = new TalonFXMotor(ARM_FOLLOWER_MOTOR_ID, ARM_FOLLOWER_MOTOR_NAME, RobotConstants.CANIVORE_NAME),
+            ELEVATOR_MASTER_MOTOR = new TalonFXMotor(ELEVATOR_MASTER_MOTOR_ID, ELEVATOR_MASTER_MOTOR_NAME, RobotConstants.CANIVORE_NAME),
+            ELEVATOR_FOLLOWER_MOTOR = new TalonFXMotor(ELEVATOR_FOLLOWER_MOTOR_ID, ELEVATOR_FOLLOWER_MOTOR_NAME, RobotConstants.CANIVORE_NAME);
+    static final CANcoderEncoder ANGLE_ENCODER = new CANcoderEncoder(ANGLE_ENCODER_ID, ANGLE_ENCODER_NAME, RobotConstants.CANIVORE_NAME);
 
     static final double
             ARM_GEAR_RATIO = 42,
@@ -318,8 +319,8 @@ public class ArmElevatorConstants {
         PREPARE_SCORE_L3(Rotation2d.fromDegrees(10), 0.7, null, false, 1),
         PREPARE_SCORE_L4(Rotation2d.fromDegrees(48), 1.4, null, false, 1),
         REST(Rotation2d.fromDegrees(-90), 0.603, null, false, 0.7),
-        REST_WITH_CORAL(Rotation2d.fromDegrees(90), 0.603, null, false, 0.02),
-        REST_WITH_ALGAE(Rotation2d.fromDegrees(0), 0.603, null, false, 0.02),
+        REST_WITH_CORAL(Rotation2d.fromDegrees(90), 0.603, null, false, 0.4),
+        REST_WITH_ALGAE(Rotation2d.fromDegrees(0), 0.603, null, false, 0.4),
         REST_FOR_CLIMB(Rotation2d.fromDegrees(90), 0.603, null, false, 0.7),
         LOAD_CORAL(Rotation2d.fromDegrees(-90), 0.42, REST, true, 0.7),
         UNLOAD_CORAL(Rotation2d.fromDegrees(-90), 0.5519, null, false, 0.7),
