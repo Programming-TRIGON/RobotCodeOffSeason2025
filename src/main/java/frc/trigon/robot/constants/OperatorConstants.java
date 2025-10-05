@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.trigon.robot.commands.commandclasses.IntakeAssistCommand;
 import frc.trigon.robot.commands.commandfactories.AlgaeManipulationCommands;
+import frc.trigon.robot.commands.commandfactories.ClimbCommands;
 import frc.trigon.robot.misc.ReefChooser;
 import lib.hardware.misc.KeyboardController;
 import lib.hardware.misc.XboxController;
@@ -18,7 +19,7 @@ public class OperatorConstants {
             DRIVER_CONTROLLER_PORT = 0,
             REEF_CHOOSER_PORT = 1;
     private static final int
-            DRIVER_CONTROLLER_RIGHT_STICK_EXPONENT = 1,
+            DRIVER_CONTROLLER_RIGHT_STICK_EXPONENT = 2,
             DRIVER_CONTROLLER_LEFT_STICK_EXPONENT = 2;
     public static final XboxController DRIVER_CONTROLLER = new XboxController(
             DRIVER_CONTROLLER_PORT, DRIVER_CONTROLLER_RIGHT_STICK_EXPONENT, DRIVER_CONTROLLER_LEFT_STICK_EXPONENT, DRIVER_CONTROLLER_DEADBAND
@@ -63,7 +64,9 @@ public class OperatorConstants {
             FLIP_ARM_TRIGGER = DRIVER_CONTROLLER.start(),
             LOLLIPOP_ALGAE_TOGGLE_TRIGGER = DRIVER_CONTROLLER.a(),
             CLIMB_TRIGGER = DRIVER_CONTROLLER.back().or(OPERATOR_CONTROLLER.c());
-
+    public static final Trigger
+            RESET_ELEVATOR_POSITION_TRIGGER = OPERATOR_CONTROLLER.m(),
+            RESET_INTAKE_POSITION_TRIGGER = OPERATOR_CONTROLLER.n();
     public static final Trigger
             SET_TARGET_SCORING_REEF_LEVEL_L1_TRIGGER = OPERATOR_CONTROLLER.numpad0().or(DRIVER_CONTROLLER.a().and(() -> !AlgaeManipulationCommands.isHoldingAlgae())),
             SET_TARGET_SCORING_REEF_LEVEL_L2_TRIGGER = OPERATOR_CONTROLLER.numpad1().or(DRIVER_CONTROLLER.b()),
@@ -79,7 +82,7 @@ public class OperatorConstants {
             SET_TARGET_REEF_SCORING_SIDE_RIGHT_TRIGGER = OPERATOR_CONTROLLER.right();
 
     private static Trigger createScoreTrigger(boolean isRight, boolean isAlgaeCommand) {
-        final Trigger scoreTrigger;
+        Trigger scoreTrigger;
 
         if (isRight)
             scoreTrigger = DRIVER_CONTROLLER.rightStick()
@@ -91,6 +94,8 @@ public class OperatorConstants {
                     .and(() -> !IS_RIGHT_SCORE_BUTTON_PRESSED)
                     .onTrue(new InstantCommand(() -> IS_LEFT_SCORE_BUTTON_PRESSED = true))
                     .onFalse(new InstantCommand(() -> IS_LEFT_SCORE_BUTTON_PRESSED = false));
+
+        scoreTrigger = scoreTrigger.and(() -> !ClimbCommands.isClimbing());
 
         if (isAlgaeCommand)
             return scoreTrigger.and(AlgaeManipulationCommands::isHoldingAlgae);

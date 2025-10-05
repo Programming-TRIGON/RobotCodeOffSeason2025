@@ -179,7 +179,7 @@ public class ArmElevatorConstants {
         config.Feedback.FeedbackRemoteSensorID = ANGLE_ENCODER.getID();
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
 
-        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 34 : 37;
+        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 34 : 45;
         config.Slot0.kI = RobotHardwareStats.isSimulation() ? 0 : 0;
         config.Slot0.kD = RobotHardwareStats.isSimulation() ? 3 : 0.1;
         config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0.026331 : 0.06;
@@ -315,28 +315,28 @@ public class ArmElevatorConstants {
 
     public enum ArmElevatorState {
         PREPARE_SCORE_L1(Rotation2d.fromDegrees(20), 0.3, null, false, 1),
-        PREPARE_SCORE_L2(Rotation2d.fromDegrees(10), 0.3, null, false, 1),
-        PREPARE_SCORE_L3(Rotation2d.fromDegrees(10), 0.7, null, false, 1),
+        PREPARE_SCORE_L2(Rotation2d.fromDegrees(52), 0.17, null, false, 1),
+        PREPARE_SCORE_L3(Rotation2d.fromDegrees(52), 0.6, null, false, 1),
         PREPARE_SCORE_L4(Rotation2d.fromDegrees(50), 1.5, null, false, 1),
-        REST(Rotation2d.fromDegrees(-90), 0.603, null, false, 0.7),
+        REST(Rotation2d.fromDegrees(-90), 0.603, null, false, 0.8),
         REST_AFTER_LOADING(Rotation2d.fromDegrees(-90), 0.603, null, true, 0.7),
-        REST_WITH_CORAL(Rotation2d.fromDegrees(90), 0.603, null, false, 0.6),
+        REST_WITH_CORAL(Rotation2d.fromDegrees(90), 0.603, null, false, 0.8),
         REST_WITH_ALGAE(Rotation2d.fromDegrees(90), 0.603, null, false, 0.3),
         REST_FOR_CLIMB(Rotation2d.fromDegrees(90), 0.603, null, false, 0.7),
-        LOAD_CORAL(Rotation2d.fromDegrees(-90), 0.49, REST, true, 0.7),
-        UNLOAD_CORAL(Rotation2d.fromDegrees(-90), 0.603, null, false, 0.7),
+        LOAD_CORAL(Rotation2d.fromDegrees(-91), 0.51, REST, true, 0.7),
+        UNLOAD_CORAL(Rotation2d.fromDegrees(-91), 0.603, null, false, 0.7),
         EJECT(Rotation2d.fromDegrees(-30), 0.603, null, false, 0.7),
         SCORE_L1(Rotation2d.fromDegrees(-20), 0.4, null, false, 1),
-        SCORE_L2(Rotation2d.fromDegrees(0), 0.3, PREPARE_SCORE_L2, false, 1),
-        SCORE_L3(Rotation2d.fromDegrees(0), 0.7, PREPARE_SCORE_L3, false, 1),
-        SCORE_L4(Rotation2d.fromDegrees(20), 1.5, PREPARE_SCORE_L4, false, 1),
-        SCORE_NET(Rotation2d.fromDegrees(70), 1.382, null, false, 0.3),
+        SCORE_L2(Rotation2d.fromDegrees(25), PREPARE_SCORE_L2.targetPositionMeters, PREPARE_SCORE_L2, false, 0.8),
+        SCORE_L3(Rotation2d.fromDegrees(25), PREPARE_SCORE_L3.targetPositionMeters, PREPARE_SCORE_L3, false, 0.8),
+        SCORE_L4(Rotation2d.fromDegrees(-10), 1.5, PREPARE_SCORE_L4, false, 0.8),
+        SCORE_NET(Rotation2d.fromDegrees(70), 1.636, null, false, 0.3),
         SCORE_PROCESSOR(Rotation2d.fromDegrees(0), 0.603, null, false, 0.7),
         COLLECT_ALGAE_L2(Rotation2d.fromDegrees(0), 0.603, null, false, 1),
         COLLECT_ALGAE_L3(Rotation2d.fromDegrees(0), 0.953, null, false, 1),
         PREPARE_COLLECT_ALGAE_FLOOR(Rotation2d.fromDegrees(-30), 0.4, null, false, 1),
-        COLLECT_ALGAE_FLOOR(Rotation2d.fromDegrees(-30), 0.12, PREPARE_COLLECT_ALGAE_FLOOR, true, 1),
-        COLLECT_ALGAE_LOLLIPOP(Rotation2d.fromDegrees(0), 0.29, null, false, 1);
+        COLLECT_ALGAE_FLOOR(Rotation2d.fromDegrees(-30), 0.13, PREPARE_COLLECT_ALGAE_FLOOR, true, 1),
+        COLLECT_ALGAE_LOLLIPOP(Rotation2d.fromDegrees(0), 0.20, null, false, 1);
 
 
         public final Rotation2d targetAngle;

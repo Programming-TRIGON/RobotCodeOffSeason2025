@@ -105,6 +105,10 @@ public class Intake extends MotorSubsystem {
         );
     }
 
+    public void resetIntakePosition() {
+        intakeMotor.setPosition(0);
+    }
+
     void setTargetState(IntakeConstants.IntakeState targetState) {
         this.targetState = targetState;
         System.out.println("Setting intake state to " + targetState.name());

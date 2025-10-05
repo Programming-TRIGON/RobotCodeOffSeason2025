@@ -27,8 +27,8 @@ public class ClimberConstants {
     private static final int
             MOTOR_ID = 18,
             REVERSE_LIMIT_SENSOR_CHANNEL = 8,
-            RIGHT_SERVO_CHANNEL = 7,
-            LEFT_SERVO_CHANNEL = 8,
+            RIGHT_SERVO_CHANNEL = 0,
+            LEFT_SERVO_CHANNEL = 1,
             CAGE_SENSOR_CHANNEL = 2;
     private static final String
             MOTOR_NAME = "ClimberMotor",
@@ -110,7 +110,7 @@ public class ClimberConstants {
     private static void configureMotor() {
         final TalonFXConfiguration config = new TalonFXConfiguration();
 
-        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
         config.Slot0.kP = RobotHardwareStats.isSimulation() ? 22.373 : 0;

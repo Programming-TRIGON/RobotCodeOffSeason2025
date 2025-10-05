@@ -37,6 +37,11 @@ public class RealServoIO extends ServoIO {
     }
 
     @Override
+    protected void stop() {
+        servo.setDisabled();
+    }
+
+    @Override
     protected void setPWMBoundaries(int maximumPulseWidthMicroseconds, int maximumDeadbandRangeMicroseconds,
                                     int centerPulseMicroseconds, int minimumDeadbandRangeMicroseconds,
                                     int minimumPulseWidthMicroseconds) {
