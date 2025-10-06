@@ -18,17 +18,14 @@ import lib.utilities.flippable.FlippablePose2d;
 import lib.utilities.flippable.FlippableTranslation2d;
 
 public class CoralPlacingCommands {
-    public static boolean SHOULD_SCORE_AUTONOMOUSLY = false;
+    public static boolean SHOULD_SCORE_AUTONOMOUSLY = true;
     static final ReefChooser REEF_CHOOSER = OperatorConstants.REEF_CHOOSER;
 
     public static Command getScoreInReefCommand(boolean shouldScoreRight) {
-        return new SequentialCommandGroup(
-                CoralCollectionCommands.getLoadCoralCommand(),
-                new ConditionalCommand(
-                        getAutonomouslyScoreCommand(shouldScoreRight),
-                        getScoreCommand(shouldScoreRight),
-                        () -> SHOULD_SCORE_AUTONOMOUSLY && REEF_CHOOSER.getScoringLevel() != ScoringLevel.L1
-                )
+        return new ConditionalCommand(
+                getAutonomouslyScoreCommand(shouldScoreRight),
+                getScoreCommand(shouldScoreRight),
+                () -> SHOULD_SCORE_AUTONOMOUSLY && REEF_CHOOSER.getScoringLevel() != ScoringLevel.L1
         ).onlyIf(CoralCollectionCommands::hasCoral);
     }
 
@@ -44,6 +41,7 @@ public class CoralPlacingCommands {
 
     private static Command getScoreCommand(boolean shouldScoreRight) {
         return new SequentialCommandGroup(
+                CoralCollectionCommands.getLoadCoralCommand(),
                 getPrepareArmElevatorIfWontHitReef(shouldScoreRight).until(OperatorConstants.CONTINUE_TRIGGER),
                 new ParallelCommandGroup(
                         GeneralCommands.getFlippableOverridableArmCommand(REEF_CHOOSER::getArmElevatorState, false, CoralPlacingCommands::shouldReverseScore),
@@ -54,7 +52,9 @@ public class CoralPlacingCommands {
 
     private static Command getAutonomouslyPrepareScoreCommand(boolean shouldScoreRight) {
         return new ParallelCommandGroup(
-                getPrepareArmElevatorIfWontHitReef(shouldScoreRight),
+                new SequentialCommandGroup(
+                        CoralCollectionCommands.getLoadCoralCommand(),
+                        getPrepareArmElevatorIfWontHitReef(shouldScoreRight)),
                 new SequentialCommandGroup(
                         getAutonomousDriveToNoHitReefPose(shouldScoreRight).asProxy().until(CoralPlacingCommands::isPrepareArmAngleAboveCurrentArmAngle),
                         new WaitUntilCommand(CoralPlacingCommands::isPrepareArmAngleAboveCurrentArmAngle),
