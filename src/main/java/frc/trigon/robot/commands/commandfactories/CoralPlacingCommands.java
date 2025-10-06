@@ -18,7 +18,7 @@ import lib.utilities.flippable.FlippablePose2d;
 import lib.utilities.flippable.FlippableTranslation2d;
 
 public class CoralPlacingCommands {
-    public static boolean SHOULD_SCORE_AUTONOMOUSLY = false;
+    public static boolean SHOULD_SCORE_AUTONOMOUSLY = true;
     static final ReefChooser REEF_CHOOSER = OperatorConstants.REEF_CHOOSER;
 
     public static Command getScoreInReefCommand(boolean shouldScoreRight) {

@@ -77,7 +77,7 @@ public class SwerveModuleConstants {
         config.ClosedLoopRamps.TorqueClosedLoopRampPeriod = 0.1;
         config.OpenLoopRamps.VoltageOpenLoopRampPeriod = 0.1;
 
-        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 0 : 2;
+        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 0 : 1;
         config.Slot0.kI = RobotHardwareStats.isSimulation() ? 0 : 0;
         config.Slot0.kD = RobotHardwareStats.isSimulation() ? 0 : 0;
         config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0.016046 : 0.24025;
@@ -98,14 +98,14 @@ public class SwerveModuleConstants {
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
-        config.CurrentLimits.StatorCurrentLimit = RobotHardwareStats.isSimulation() ? 200 : 30;
+        config.CurrentLimits.StatorCurrentLimit = RobotHardwareStats.isSimulation() ? 200 : 50;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         config.Feedback.RotorToSensorRatio = REAR_STEER_MOTOR_GEAR_RATIO;
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
         config.Feedback.FeedbackRemoteSensorID = feedbackRemoteSensorID;
 
-        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 120 : 65;
+        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 120 : 40;
         config.Slot0.kI = RobotHardwareStats.isSimulation() ? 0 : 0;
         config.Slot0.kD = RobotHardwareStats.isSimulation() ? 0 : 0;
         config.ClosedLoopGeneral.ContinuousWrap = true;

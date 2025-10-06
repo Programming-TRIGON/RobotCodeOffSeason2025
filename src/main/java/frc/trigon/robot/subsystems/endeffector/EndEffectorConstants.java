@@ -46,11 +46,11 @@ public class EndEffectorConstants {
             END_EFFECTOR_MAXIMUM_DISPLAYABLE_VELOCITY
     );
 
-    private static final double COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS = 0.1;
+    private static final double COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS = 0.16;
     private static final double
             DISTANCE_SENSOR_SCALING_SLOPE = 0.0002,
             DISTANCE_SENSOR_SCALING_INTERCEPT_POINT = -200;
-    private static final double COLLECTION_DETECTION_DISTANCE_CENTIMETRES = 6;
+    private static final double COLLECTION_DETECTION_DISTANCE_CENTIMETRES = 5;
     static final BooleanEvent COLLECTION_DETECTION_BOOLEAN_EVENT = new BooleanEvent(
             CommandScheduler.getInstance().getActiveButtonLoop(),
             () -> DISTANCE_SENSOR.getScaledValue() < COLLECTION_DETECTION_DISTANCE_CENTIMETRES
@@ -98,7 +98,7 @@ public class EndEffectorConstants {
         COLLECT_ALGAE(-11),
         SCORE_ALGAE(10),
         HOLD_CORAL(-0.5),
-        HOLD_ALGAE(-7);
+        HOLD_ALGAE(-6);
 
         public final double targetVoltage;
 

@@ -19,7 +19,7 @@ import frc.trigon.robot.subsystems.transporter.TransporterConstants;
 public class CoralCollectionCommands {
     public static Command getCoralCollectionCommand() {
         return new SequentialCommandGroup(
-                getIntakeCoralCommand().until(RobotContainer.TRANSPORTER::hasCoral),
+                getIntakeCoralCommand().until(RobotContainer.TRANSPORTER::hasCoral).unless((RobotContainer.TRANSPORTER::hasCoral)),
                 getCollectionConfirmationCommand(),
                 new InstantCommand(
                         () -> {
@@ -27,14 +27,20 @@ public class CoralCollectionCommands {
                                 getLoadCoralCommand().schedule();
                         }
                 )
-        ).alongWith(new IntakeAssistCommand(OperatorConstants.DEFAULT_INTAKE_ASSIST_MODE).asProxy());
+        ).alongWith(new IntakeAssistCommand(OperatorConstants.DEFAULT_INTAKE_ASSIST_MODE).until(RobotContainer.INTAKE::hasCoral).asProxy());
     }
 
     public static Command getLoadCoralCommand() {
-        return new ParallelCommandGroup(
-                ArmElevatorCommands.getSetTargetStateCommand(ArmElevatorConstants.ArmElevatorState.LOAD_CORAL),
-                EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.LOAD_CORAL)
-        ).until(RobotContainer.END_EFFECTOR::hasGamePiece).andThen(
+        return new SequentialCommandGroup(
+                new ParallelCommandGroup(
+                        getIntakeCoralCommand(),
+                        ArmElevatorCommands.getSetTargetStateCommand(ArmElevatorConstants.ArmElevatorState.REST)
+                ).until(RobotContainer.TRANSPORTER::hasCoral).unless((RobotContainer.TRANSPORTER::hasCoral)),
+                ArmElevatorCommands.getSetTargetStateCommand(ArmElevatorConstants.ArmElevatorState.REST).unless(() -> RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.REST)),
+                new ParallelCommandGroup(
+                        ArmElevatorCommands.getSetTargetStateCommand(ArmElevatorConstants.ArmElevatorState.LOAD_CORAL),
+                        EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.LOAD_CORAL)
+                ).until(RobotContainer.END_EFFECTOR::hasGamePiece),
                 new ParallelCommandGroup(
                         ArmElevatorCommands.getSetTargetStateCommand(ArmElevatorConstants.ArmElevatorState.REST_AFTER_LOADING),
                         EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.HOLD_CORAL)

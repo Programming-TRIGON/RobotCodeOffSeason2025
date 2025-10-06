@@ -305,7 +305,7 @@ public class Swerve extends MotorSubsystem {
     }
 
     private ChassisSpeeds calculateSelfRelativePIDToPoseSpeeds(FlippablePose2d targetPose) {
-        final Pose2d currentPose = RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose();
+        final Pose2d currentPose = RobotContainer.ROBOT_POSE_ESTIMATOR.getPredictedRobotFuturePose(0.2);
         final Pose2d flippedTargetPose = targetPose.get();
         final double xSpeed = SwerveConstants.X_TRANSLATION_PID_CONTROLLER.calculate(currentPose.getX(), flippedTargetPose.getX());
         final double ySpeed = SwerveConstants.Y_TRANSLATION_PID_CONTROLLER.calculate(currentPose.getY(), flippedTargetPose.getY());

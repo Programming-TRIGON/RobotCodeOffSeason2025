@@ -91,10 +91,10 @@ public class AutonomousCommands {
     public static Command getCollectCoralCommand(boolean isRight) {
         return new ParallelCommandGroup(
                 CoralCollectionCommands.getIntakeCoralCommand(),
-                ArmElevatorCommands.getPrepareForStateCommand(() -> ArmElevatorConstants.ArmElevatorState.LOAD_CORAL),
+                ArmElevatorCommands.getSetTargetStateCommand(() -> ArmElevatorConstants.ArmElevatorState.REST),
                 getDriveToCoralCommand(isRight)
         )
-                .until(RobotContainer.INTAKE::hasCoral)
+                .until(() -> RobotContainer.INTAKE.hasCoral() || RobotContainer.TRANSPORTER.hasCoral())
                 .unless(() -> RobotContainer.TRANSPORTER.hasCoral() || RobotContainer.END_EFFECTOR.hasGamePiece());
     }
 

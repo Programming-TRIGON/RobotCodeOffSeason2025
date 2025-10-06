@@ -234,7 +234,7 @@ public class ArmElevator extends MotorSubsystem {
         final double cosOfMinimumSafeAngle = MathUtil.clamp(heightFromSafeZone / ArmElevatorConstants.ARM_LENGTH_METERS, 0, 1);
         final double acos = Math.acos(cosOfMinimumSafeAngle);
         return Double.isNaN(acos)
-                ? Rotation2d.fromDegrees(-90)
+                ? Rotation2d.fromDegrees(-100)
                 : Rotation2d.fromRadians(acos).minus(Rotation2d.kCCW_90deg);
     }
 

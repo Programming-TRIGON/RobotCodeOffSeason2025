@@ -29,7 +29,7 @@ public class ClimberConstants {
             REVERSE_LIMIT_SENSOR_CHANNEL = 8,
             RIGHT_SERVO_CHANNEL = 0,
             LEFT_SERVO_CHANNEL = 1,
-            CAGE_SENSOR_CHANNEL = 2;
+            CAGE_SENSOR_CHANNEL = 4;
     private static final String
             MOTOR_NAME = "ClimberMotor",
             REVERSE_LIMIT_SENSOR_NAME = "ClimberReverseLimitSensor",

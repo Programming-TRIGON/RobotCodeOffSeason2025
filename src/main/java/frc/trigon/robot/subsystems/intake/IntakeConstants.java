@@ -31,7 +31,7 @@ public class IntakeConstants {
     private static final int
             INTAKE_MOTOR_ID = 9,
             ANGLE_MOTOR_ID = 10,
-            DISTANCE_SENSOR_CHANNEL = 5;
+            DISTANCE_SENSOR_CHANNEL = 3;
     private static final String
             INTAKE_MOTOR_NAME = "IntakeMotor",
             ANGLE_MOTOR_NAME = "IntakeAngleMotor",
@@ -40,7 +40,7 @@ public class IntakeConstants {
             INTAKE_MOTOR = new TalonFXMotor(INTAKE_MOTOR_ID, INTAKE_MOTOR_NAME),
             ANGLE_MOTOR = new TalonFXMotor(ANGLE_MOTOR_ID, ANGLE_MOTOR_NAME);
     static final SimpleSensor
-            DISTANCE_SENSOR = SimpleSensor.createDigitalSensor(DISTANCE_SENSOR_CHANNEL, DISTANCE_SENSOR_NAME);
+            DISTANCE_SENSOR = SimpleSensor.createDutyCycleSensor(DISTANCE_SENSOR_CHANNEL, DISTANCE_SENSOR_NAME);
 
     private static final double
             INTAKE_MOTOR_GEAR_RATIO = 4,
@@ -101,11 +101,14 @@ public class IntakeConstants {
     );
 
     static final Rotation2d ANGLE_TOLERANCE = Rotation2d.fromDegrees(1.5);
+    private static final double COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS = 0.04;
     private static final double
-            COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS = 0.2;
+            DISTANCE_SENSOR_SCALING_SLOPE = 0.0002,
+            DISTANCE_SENSOR_SCALING_INTERCEPT_POINT = -200;
+    private static final double COLLECTION_DETECTION_DISTANCE_CENTIMETRES = 35;
     static final BooleanEvent COLLECTION_DETECTION_BOOLEAN_EVENT = new BooleanEvent(
             CommandScheduler.getInstance().getActiveButtonLoop(),
-            DISTANCE_SENSOR::getBinaryValue
+            () -> DISTANCE_SENSOR.getScaledValue() < COLLECTION_DETECTION_DISTANCE_CENTIMETRES
     ).debounce(COLLECTION_DETECTION_DEBOUNCE_TIME_SECONDS);
     public static Pose3d CORAL_COLLECTION_POSE = new Pose3d(
             new Translation3d(0.6827, 0, 0),
@@ -189,6 +192,7 @@ public class IntakeConstants {
 
     private static void configureDistanceSensor() {
 //        DISTANCE_SENSOR.setSimulationSupplier(DISTANCE_SENSOR_SIMULATION_SUPPLIER);
+        DISTANCE_SENSOR.setScalingConstants(DISTANCE_SENSOR_SCALING_SLOPE, DISTANCE_SENSOR_SCALING_INTERCEPT_POINT);
     }
 
     public enum IntakeState {

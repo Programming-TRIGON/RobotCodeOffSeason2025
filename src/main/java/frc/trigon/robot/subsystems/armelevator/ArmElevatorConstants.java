@@ -7,7 +7,11 @@ import com.ctre.phoenix6.signals.*;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.wpilibj.event.BooleanEvent;
 import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.trigon.robot.constants.RobotConstants;
 import lib.hardware.RobotHardwareStats;
@@ -158,12 +162,17 @@ public class ArmElevatorConstants {
     public static final double MINIMUM_ELEVATOR_SAFE_ZONE_METERS = 0.05;
     static final double ELEVATOR_POSITION_TOLERANCE_METERS = 0.02;
 
+    static final Trigger IS_BREAKING_ARM_EVENT = new Trigger(
+            () -> Math.abs(ARM_MASTER_MOTOR.getSignal(TalonFXSignal.STATOR_CURRENT)) > 70
+    ).debounce(0.1);
+
     static {
         configureArmMasterMotor();
         configureArmFollowerMotor();
         configureElevatorMasterMotor();
         configureElevatorFollowerMotor();
         configureAngleEncoder();
+        IS_BREAKING_ARM_EVENT.onTrue(new InstantCommand(ARM_MASTER_MOTOR::stopMotor));
     }
 
     private static void configureArmMasterMotor() {
@@ -314,23 +323,24 @@ public class ArmElevatorConstants {
     }
 
     public enum ArmElevatorState {
-        PREPARE_SCORE_L1(Rotation2d.fromDegrees(-10), 0.33, null, false, 1),
+        PREPARE_SCORE_L1(Rotation2d.fromDegrees(-8), 0.5, null, false, 1),
         PREPARE_SCORE_L2(Rotation2d.fromDegrees(60), 0.1, null, false, 1),
-        PREPARE_SCORE_L3(Rotation2d.fromDegrees(60), 0.53, null, false, 1),
+        PREPARE_SCORE_L3(Rotation2d.fromDegrees(60), 0.6, null, false, 1),
         PREPARE_SCORE_L4(Rotation2d.fromDegrees(50), 1.5, null, false, 1),
-        REST(Rotation2d.fromDegrees(-90), 0.603, null, false, 0.8),
+        PREPARE_REST(Rotation2d.fromDegrees(-90), 0.603, null, false, 0.8),
+        REST(Rotation2d.fromDegrees(-90), 0.534, PREPARE_REST, true, 0.8),
         REST_AFTER_LOADING(Rotation2d.fromDegrees(-90), 0.603, null, true, 0.7),
         REST_WITH_CORAL(Rotation2d.fromDegrees(90), 0.603, null, false, 0.8),
         REST_WITH_ALGAE(Rotation2d.fromDegrees(90), 0.603, null, false, 0.3),
         REST_FOR_CLIMB(Rotation2d.fromDegrees(90), 0.603, null, false, 0.7),
-        LOAD_CORAL(Rotation2d.fromDegrees(-91), 0.51, REST, true, 0.7),
-        UNLOAD_CORAL(Rotation2d.fromDegrees(-91), 0.603, null, false, 0.7),
+        LOAD_CORAL(Rotation2d.fromDegrees(-90), 0.5, null, true, 0.7),
+        UNLOAD_CORAL(Rotation2d.fromDegrees(-90), 0.603, null, false, 0.7),
         EJECT(Rotation2d.fromDegrees(-30), 0.603, null, false, 0.7),
         SCORE_L1(Rotation2d.fromDegrees(-13), PREPARE_SCORE_L1.targetPositionMeters, null, false, 1),
         SCORE_L2(Rotation2d.fromDegrees(25), PREPARE_SCORE_L2.targetPositionMeters, PREPARE_SCORE_L2, false, 0.8),
         SCORE_L3(Rotation2d.fromDegrees(25), PREPARE_SCORE_L3.targetPositionMeters, PREPARE_SCORE_L3, false, 0.8),
         SCORE_L4(Rotation2d.fromDegrees(-10), 1.5, PREPARE_SCORE_L4, false, 0.8),
-        SCORE_NET(Rotation2d.fromDegrees(70), 1.636, null, false, 0.3),
+        SCORE_NET(Rotation2d.fromDegrees(70), 1.644, null, false, 0.3),
         SCORE_PROCESSOR(Rotation2d.fromDegrees(0), 0.603, null, false, 0.7),
         COLLECT_ALGAE_L2(Rotation2d.fromDegrees(0), 0.603, null, false, 1),
         COLLECT_ALGAE_L3(Rotation2d.fromDegrees(0), 0.953, null, false, 1),
