@@ -116,13 +116,12 @@ public class IntakeAssistCommand extends ParallelCommandGroup {
     }
 
     private static Translation2d calculateAlternateAssistTranslationPower(AssistMode assistMode, Translation2d joystickValue, double xPIDOutput, double yPIDOutput) {
-        final double pidScalar = Math.cbrt(joystickValue.getNorm());
         final double
-                xJoystickPower = joystickValue.getX(),
-                yJoystickPower = joystickValue.getY();
+                xJoystickPower = Math.cbrt(joystickValue.getX()),
+                yJoystickPower = Math.cbrt(joystickValue.getY());
         final double
-                xPower = assistMode.shouldAssistX ? calculateAlternateAssistPower(xPIDOutput, pidScalar, Math.cbrt(xJoystickPower)) : xJoystickPower,
-                yPower = assistMode.shouldAssistY ? calculateAlternateAssistPower(yPIDOutput, pidScalar, Math.cbrt(yJoystickPower)) : yJoystickPower;
+                xPower = assistMode.shouldAssistX ? calculateAlternateAssistPower(xPIDOutput, Math.cbrt(joystickValue.getX()), xJoystickPower) : xJoystickPower,
+                yPower = assistMode.shouldAssistY ? calculateAlternateAssistPower(yPIDOutput, Math.cbrt(joystickValue.getY()), yJoystickPower) : yJoystickPower;
 
         return new Translation2d(xPower, yPower);
     }

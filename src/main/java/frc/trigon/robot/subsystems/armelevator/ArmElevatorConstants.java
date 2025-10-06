@@ -68,7 +68,7 @@ public class ArmElevatorConstants {
             ELEVATOR_MASS_KILOGRAMS = 7,
             DRUM_RADIUS_METERS = 0.04,
             MINIMUM_ELEVATOR_HEIGHT_METERS = 0,
-            MAXIMUM_ELEVATOR_HEIGHT_METERS = 1.382;
+            MAXIMUM_ELEVATOR_HEIGHT_METERS = 1.644;
     private static final int
             ARM_MOTOR_AMOUNT = 2,
             ELEVATOR_MOTOR_AMOUNT = 2;

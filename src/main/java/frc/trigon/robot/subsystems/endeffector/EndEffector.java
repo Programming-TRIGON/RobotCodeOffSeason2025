@@ -4,6 +4,7 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import edu.wpi.first.math.geometry.Translation3d;
 import frc.trigon.robot.RobotContainer;
 import frc.trigon.robot.commands.commandfactories.AlgaeManipulationCommands;
+import frc.trigon.robot.commands.commandfactories.CoralPlacingCommands;
 import frc.trigon.robot.misc.simulatedfield.SimulationFieldHandler;
 import frc.trigon.robot.subsystems.MotorSubsystem;
 import lib.hardware.phoenix6.talonfx.TalonFXMotor;
@@ -57,7 +58,7 @@ public class EndEffector extends MotorSubsystem {
 
     @AutoLogOutput(key = "EndEffector/IsEjecting")
     public boolean isEjecting() {
-        return endEffectorMotor.getSignal(TalonFXSignal.MOTOR_VOLTAGE) > 2;
+        return endEffectorMotor.getSignal(TalonFXSignal.MOTOR_VOLTAGE) > 1;
     }
 
     void setTargetState(EndEffectorConstants.EndEffectorState targetState) {

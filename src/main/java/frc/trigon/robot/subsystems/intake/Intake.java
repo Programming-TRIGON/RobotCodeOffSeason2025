@@ -77,13 +77,13 @@ public class Intake extends MotorSubsystem {
         return targetState == this.targetState && atTargetAngle();
     }
 
-    @AutoLogOutput(key = "CoralIntake/AtTargetAngle")
+    @AutoLogOutput(key = "Intake/AtTargetAngle")
     public boolean atTargetAngle() {
         final double angleDifferenceFromTargetAngleDegrees = Math.abs(getCurrentAngle().minus(targetState.targetAngle).getDegrees());
         return angleDifferenceFromTargetAngleDegrees < IntakeConstants.ANGLE_TOLERANCE.getDegrees();
     }
 
-    @AutoLogOutput(key = "CoralIntake/HasCoral")
+    @AutoLogOutput(key = "Intake/HasCoral")
     public boolean hasCoral() {
         return IntakeConstants.COLLECTION_DETECTION_BOOLEAN_EVENT.getAsBoolean();
     }
