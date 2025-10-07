@@ -95,7 +95,7 @@ public class AutonomousCommands {
                 getDriveToCoralCommand(isRight)
         )
                 .until(() -> RobotContainer.INTAKE.hasCoral() || RobotContainer.TRANSPORTER.hasCoral())
-                .unless(() -> RobotContainer.TRANSPORTER.hasCoral() || RobotContainer.END_EFFECTOR.hasGamePiece());
+                .unless(RobotContainer.TRANSPORTER::hasCoral);
     }
 
     public static Command getDriveToReefCommand() {

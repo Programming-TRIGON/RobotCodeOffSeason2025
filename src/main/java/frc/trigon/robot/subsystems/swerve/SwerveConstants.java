@@ -33,10 +33,10 @@ public class SwerveConstants {
             REAR_LEFT_STEER_ENCODER_OFFSET = -0.30517578125,
             REAR_RIGHT_STEER_ENCODER_OFFSET = -0.121826171875;
     private static final double
-            FRONT_LEFT_WHEEL_DIAMETER = 0.038 * 2,
-            FRONT_RIGHT_WHEEL_DIAMETER = 0.038 * 2,
-            REAR_LEFT_WHEEL_DIAMETER = 0.038 * 2,
-            REAR_RIGHT_WHEEL_DIAMETER = 0.038 * 2;
+            FRONT_LEFT_WHEEL_DIAMETER = 0.1016,
+            FRONT_RIGHT_WHEEL_DIAMETER = 0.1016,
+            REAR_LEFT_WHEEL_DIAMETER = 0.1016,
+            REAR_RIGHT_WHEEL_DIAMETER = 0.1016;
     static final SwerveModule[] SWERVE_MODULES = new SwerveModule[]{
             new SwerveModule(FRONT_LEFT_ID, FRONT_LEFT_STEER_ENCODER_OFFSET, FRONT_LEFT_WHEEL_DIAMETER),
             new SwerveModule(FRONT_RIGHT_ID, FRONT_RIGHT_STEER_ENCODER_OFFSET, FRONT_RIGHT_WHEEL_DIAMETER),
@@ -61,7 +61,7 @@ public class SwerveConstants {
     private static final PIDConstants
             TRANSLATION_PID_CONSTANTS = RobotHardwareStats.isSimulation() ?
             new PIDConstants(5, 0, 0) :
-            new PIDConstants(4.5, 0, 0),
+            new PIDConstants(5.5, 0, 0),
             PROFILED_ROTATION_PID_CONSTANTS = RobotHardwareStats.isSimulation() ?
                     new PIDConstants(4, 0, 0) :
                     new PIDConstants(13, 0, 0.25);
@@ -95,6 +95,8 @@ public class SwerveConstants {
         configureGyro();
         SwerveConstants.PROFILED_ROTATION_PID_CONTROLLER.enableContinuousInput(-SwerveConstants.MAXIMUM_PID_ANGLE, SwerveConstants.MAXIMUM_PID_ANGLE);
         SwerveConstants.PROFILED_ROTATION_PID_CONTROLLER.setTolerance(1);
+        SwerveConstants.X_TRANSLATION_PID_CONTROLLER.setTolerance(0.02);
+        SwerveConstants.Y_TRANSLATION_PID_CONTROLLER.setTolerance(0.02);
     }
 
     private static void configureGyro() {

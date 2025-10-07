@@ -43,13 +43,13 @@ public class ArmElevatorConstants {
     static final CANcoderEncoder ANGLE_ENCODER = new CANcoderEncoder(ANGLE_ENCODER_ID, ANGLE_ENCODER_NAME, RobotConstants.CANIVORE_NAME);
 
     static final double
-            ARM_GEAR_RATIO = 42,
+            ARM_GEAR_RATIO = 55.273,
             ELEVATOR_GEAR_RATIO = 4;
     private static final double
             ARM_MOTOR_CURRENT_LIMIT = 50,
             ELEVATOR_MOTOR_CURRENT_LIMIT = 50;
-    private static final double ANGLE_ENCODER_GRAVITY_OFFSET = -0.0625;
-    static final double ARM_POSITION_OFFSET_FROM_GRAVITY_OFFSET = RobotHardwareStats.isSimulation() ? 0 : edu.wpi.first.math.util.Units.degreesToRotations(-23.56) - ANGLE_ENCODER_GRAVITY_OFFSET;
+    private static final double ANGLE_ENCODER_GRAVITY_OFFSET = -0.061279296875;
+    static final double ARM_POSITION_OFFSET_FROM_GRAVITY_OFFSET = RobotHardwareStats.isSimulation() ? 0 : 0.241455078125 - 0.25 - 0.061279296875 - ANGLE_ENCODER_GRAVITY_OFFSET;
     private static final boolean
             SHOULD_ARM_FOLLOWER_OPPOSE_MASTER = false,
             SHOULD_ELEVATOR_FOLLOWER_OPPOSE_MASTER = false;
@@ -186,13 +186,13 @@ public class ArmElevatorConstants {
         config.Feedback.FeedbackRemoteSensorID = ANGLE_ENCODER.getID();
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
 
-        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 34 : 45;
+        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 34 : 60;
         config.Slot0.kI = RobotHardwareStats.isSimulation() ? 0 : 0;
-        config.Slot0.kD = RobotHardwareStats.isSimulation() ? 3 : 0.1;
-        config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0.026331 : 0.06;
-        config.Slot0.kV = RobotHardwareStats.isSimulation() ? 4.8752 : 2;
+        config.Slot0.kD = RobotHardwareStats.isSimulation() ? 3 : 1.2;
+        config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0.026331 : 0.05;
+        config.Slot0.kV = RobotHardwareStats.isSimulation() ? 4.8752 : 5.5;
         config.Slot0.kA = RobotHardwareStats.isSimulation() ? 0.17848 : 0;
-        config.Slot0.kG = RobotHardwareStats.isSimulation() ? 0.1117 : 0.35;
+        config.Slot0.kG = RobotHardwareStats.isSimulation() ? 0.1117 : 0.358;
 
         config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
         config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
@@ -325,8 +325,8 @@ public class ArmElevatorConstants {
         PREPARE_SCORE_L2(Rotation2d.fromDegrees(60), 0.1, null, false, 1),
         PREPARE_SCORE_L3(Rotation2d.fromDegrees(60), 0.6, null, false, 1),
         PREPARE_SCORE_L4(Rotation2d.fromDegrees(50), 1.5, null, false, 1),
-        PREPARE_REST(Rotation2d.fromDegrees(-90), 0.603, null, false, 0.8),
-        REST(Rotation2d.fromDegrees(-90), 0.534, PREPARE_REST, true, 0.8),
+        PREPARE_REST(Rotation2d.fromDegrees(-91), 0.603, null, false, 0.8),
+        REST(Rotation2d.fromDegrees(-91), 0.534, PREPARE_REST, true, 0.8),
         REST_AFTER_LOADING(Rotation2d.fromDegrees(-90), 0.603, null, true, 0.7),
         REST_WITH_CORAL(Rotation2d.fromDegrees(90), 0.603, null, false, 0.8),
         REST_WITH_ALGAE(Rotation2d.fromDegrees(90), 0.603, null, false, 0.3),

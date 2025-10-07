@@ -1,8 +1,5 @@
 package frc.trigon.robot.subsystems.swerve;
 
-import com.pathplanner.lib.util.DriveFeedforwards;
-
-import com.pathplanner.lib.util.swerve.SwerveSetpoint;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -307,8 +304,10 @@ public class Swerve extends MotorSubsystem {
     private ChassisSpeeds calculateSelfRelativePIDToPoseSpeeds(FlippablePose2d targetPose) {
         final Pose2d currentPose = RobotContainer.ROBOT_POSE_ESTIMATOR.getPredictedRobotFuturePose(0.2);
         final Pose2d flippedTargetPose = targetPose.get();
-        final double xSpeed = SwerveConstants.X_TRANSLATION_PID_CONTROLLER.calculate(currentPose.getX(), flippedTargetPose.getX());
-        final double ySpeed = SwerveConstants.Y_TRANSLATION_PID_CONTROLLER.calculate(currentPose.getY(), flippedTargetPose.getY());
+        double xSpeed = SwerveConstants.X_TRANSLATION_PID_CONTROLLER.calculate(currentPose.getX(), flippedTargetPose.getX());
+        xSpeed = SwerveConstants.X_TRANSLATION_PID_CONTROLLER.atSetpoint() ? 0 : xSpeed;
+        double ySpeed = SwerveConstants.Y_TRANSLATION_PID_CONTROLLER.calculate(currentPose.getY(), flippedTargetPose.getY());
+        ySpeed = SwerveConstants.Y_TRANSLATION_PID_CONTROLLER.atSetpoint() ? 0 : ySpeed;
         final int direction = Flippable.isRedAlliance() ? -1 : 1;
         final ChassisSpeeds targetFieldRelativeSpeeds = new ChassisSpeeds(
                 xSpeed * direction,
