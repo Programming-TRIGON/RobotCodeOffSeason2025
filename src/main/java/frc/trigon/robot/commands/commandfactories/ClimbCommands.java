@@ -21,7 +21,7 @@ public class ClimbCommands {
         return new SequentialCommandGroup(
                 new InstantCommand(() -> IS_CLIMBING = true),
                 ClimberCommands.getSetTargetStateCommand(ClimberConstants.ClimberState.PREPARE_FOR_CLIMB)
-                        .until(() -> RobotContainer.CLIMBER.hasCage() || OperatorConstants.CONTINUE_TRIGGER.getAsBoolean()),
+                        .until(OperatorConstants.CONTINUE_TRIGGER),
                 ClimberCommands.getSetTargetStateCommand(ClimberConstants.ClimberState.CLIMB)
                         .until(RobotContainer.CLIMBER::atTargetState),
                 getAdjustClimbManuallyCommand()

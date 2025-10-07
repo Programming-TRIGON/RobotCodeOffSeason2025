@@ -1,6 +1,7 @@
 package frc.trigon.robot.subsystems.climber;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
@@ -28,21 +29,18 @@ public class ClimberConstants {
             MOTOR_ID = 18,
             REVERSE_LIMIT_SENSOR_CHANNEL = 8,
             RIGHT_SERVO_CHANNEL = 0,
-            LEFT_SERVO_CHANNEL = 1,
-            CAGE_SENSOR_CHANNEL = 4;
+            LEFT_SERVO_CHANNEL = 1;
     private static final String
             MOTOR_NAME = "ClimberMotor",
             REVERSE_LIMIT_SENSOR_NAME = "ClimberReverseLimitSensor",
             RIGHT_SERVO_NAME = "ClimberRightServo",
-            LEFT_SERVO_NAME = "ClimberLeftServo",
-            CAGE_SENSOR_NAME = "ClimberCageSensor";
+            LEFT_SERVO_NAME = "ClimberLeftServo";
     static final TalonFXMotor MOTOR = new TalonFXMotor(MOTOR_ID, MOTOR_NAME);
     static final Servo
             RIGHT_SERVO = new Servo(RIGHT_SERVO_CHANNEL, RIGHT_SERVO_NAME),
             LEFT_SERVO = new Servo(LEFT_SERVO_CHANNEL, LEFT_SERVO_NAME);
     private static final SimpleSensor
-            REVERSE_LIMIT_SENSOR = SimpleSensor.createDigitalSensor(REVERSE_LIMIT_SENSOR_CHANNEL, REVERSE_LIMIT_SENSOR_NAME),
-            CAGE_SENSOR = SimpleSensor.createDigitalSensor(CAGE_SENSOR_CHANNEL, CAGE_SENSOR_NAME);
+            REVERSE_LIMIT_SENSOR = SimpleSensor.createDigitalSensor(REVERSE_LIMIT_SENSOR_CHANNEL, REVERSE_LIMIT_SENSOR_NAME);
 
     static final int
             GROUNDED_PID_SLOT = 0,
@@ -90,10 +88,6 @@ public class ClimberConstants {
             HAS_CAGE_DEBOUNCE_TIME_SECONDS = 0.5,
             REVERSE_LIMIT_DEBOUNCE_TIME_SECONDS = 0.1;
     static final BooleanEvent
-            HAS_CAGE_BOOLEAN_EVENT = new BooleanEvent(
-            CommandScheduler.getInstance().getActiveButtonLoop(),
-            CAGE_SENSOR::getBinaryValue
-    ).debounce(HAS_CAGE_DEBOUNCE_TIME_SECONDS),
             REVERSE_LIMIT_SENSOR_BOOLEAN_EVENT = new BooleanEvent(
                     CommandScheduler.getInstance().getActiveButtonLoop(),
                     REVERSE_LIMIT_SENSOR::getBinaryValue
@@ -113,31 +107,27 @@ public class ClimberConstants {
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
-        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 22.373 : 0;
+        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 22.373 : 20;
         config.Slot0.kI = RobotHardwareStats.isSimulation() ? 0 : 0;
         config.Slot0.kD = RobotHardwareStats.isSimulation() ? 0.33014 : 0;
         config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0.016057 : 0;
-        config.Slot0.kV = RobotHardwareStats.isSimulation() ? 4.3932 : 0;
+        config.Slot0.kV = RobotHardwareStats.isSimulation() ? 4.3932 : 0.5;
+        config.Slot0.kG = RobotHardwareStats.isSimulation() ? 0 : 0.2;
         config.Slot0.kA = RobotHardwareStats.isSimulation() ? 0.074561 : 0;
         config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
+        config.Slot0.GravityType = GravityTypeValue.Elevator_Static;
 
         config.Slot1.kP = RobotHardwareStats.isSimulation() ? 22.373 : 0;
         config.Slot1.kI = RobotHardwareStats.isSimulation() ? 0 : 0;
         config.Slot1.kD = RobotHardwareStats.isSimulation() ? 0.33014 : 0;
         config.Slot1.kS = RobotHardwareStats.isSimulation() ? 0.016057 : 0;
         config.Slot1.kV = RobotHardwareStats.isSimulation() ? 4.3932 : 0;
+        config.Slot1.kG = RobotHardwareStats.isSimulation() ? 0 : 0.5;
         config.Slot1.kA = RobotHardwareStats.isSimulation() ? 0.074561 : 0;
-        config.Slot1.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
+        config.Slot1.GravityType = GravityTypeValue.Elevator_Static;
 
         config.MotionMagic.MotionMagicCruiseVelocity = RobotHardwareStats.isSimulation() ? 2 : 2;
-        config.MotionMagic.MotionMagicAcceleration = RobotHardwareStats.isSimulation() ? 10 : 10;
-        config.MotionMagic.MotionMagicJerk = config.MotionMagic.MotionMagicAcceleration * 10;
-
-        config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-        config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = FORWARD_SOFT_LIMIT_POSITION_ROTATIONS;
-
-        config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-        config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = REVERSE_LIMIT_RESET_POSITION_ROTATIONS;
+        config.MotionMagic.MotionMagicAcceleration = RobotHardwareStats.isSimulation() ? 10 : 3;
 
         config.Feedback.SensorToMechanismRatio = GEAR_RATIO;
 
@@ -177,7 +167,7 @@ public class ClimberConstants {
 
     public enum ClimberState {
         REST(0, 0, false),
-        PREPARE_FOR_CLIMB(3, 1, false),
+        PREPARE_FOR_CLIMB(-0.2, 1, false),
         CLIMB(0, 0, true);
 
         public final double targetPositionRotations;

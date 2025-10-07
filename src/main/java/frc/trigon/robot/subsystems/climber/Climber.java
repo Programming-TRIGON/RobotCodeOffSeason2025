@@ -79,10 +79,6 @@ public class Climber extends MotorSubsystem {
         return Math.abs(getPositionRotations() - targetState.targetPositionRotations) < ClimberConstants.CLIMBER_TOLERANCE_ROTATIONS;
     }
 
-    public boolean hasCage() {
-        return ClimberConstants.HAS_CAGE_BOOLEAN_EVENT.getAsBoolean();
-    }
-
     void setTargetState(ClimberConstants.ClimberState targetState) {
         this.targetState = targetState;
         setTargetState(targetState.targetPositionRotations, targetState.targetServoPower, targetState.isAffectedByRobotWeight);

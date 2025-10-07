@@ -43,4 +43,12 @@ public class ClimberCommands {
                 RobotContainer.CLIMBER
         );
     }
+
+    public static Command getDefaultCommand() {
+        return new StartEndCommand(
+                RobotContainer.CLIMBER::stop,
+                () -> {},
+                RobotContainer.CLIMBER
+        );
+    }
 }

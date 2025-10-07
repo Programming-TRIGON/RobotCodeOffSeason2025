@@ -95,8 +95,8 @@ public class AlgaeManipulationCommands {
         return new SelectCommand<>(
                 Map.of(
                         0, getHoldAlgaeCommand(),
-                        1, CoralPlacingCommands.SHOULD_SCORE_AUTONOMOUSLY ? getAtonomouslyScoreInNetCommand() : getScoreInNetCommand(),
-                        2, CoralPlacingCommands.SHOULD_SCORE_AUTONOMOUSLY ? getAtonomouslyScoreInProcessorCommand() : getScoreInProcessorCommand()
+                        1, getScoreInNetCommand(),
+                        2, getScoreInProcessorCommand()
                 ),
                 AlgaeManipulationCommands::getAlgaeScoreMethodSelector
         ).raceWith(new WaitUntilChangeCommand<>(AlgaeManipulationCommands::isScoreAlgaeButtonPressed)).repeatedly();
