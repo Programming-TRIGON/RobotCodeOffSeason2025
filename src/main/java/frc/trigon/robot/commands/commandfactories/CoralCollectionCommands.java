@@ -46,7 +46,7 @@ public class CoralCollectionCommands {
                         EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.HOLD_CORAL)
                 ).until(() -> RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.REST_AFTER_LOADING))
         ).unless(() -> RobotContainer.END_EFFECTOR.hasGamePiece()
-                && (RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.LOAD_CORAL)
+                && !(RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.LOAD_CORAL)
                 || RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.REST)
                 || RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.PREPARE_REST)));
     }
