@@ -121,10 +121,10 @@ public class RobotContainer {
         OperatorConstants.SHOULD_COLLECT_CORAL_ATONOMOUSLY_TRIGGER.onTrue(GeneralCommands.getToggleShouldCollectCoralAtonomouslyCommand());
         OperatorConstants.SHOULD_SCORE_CORAL_ATONOMOUSLY_TRIGGER.onTrue(GeneralCommands.getToggleShouldScoreCoralAtonomouslyCommand());
         OperatorConstants.CLIMB_TRIGGER.toggleOnTrue(ClimbCommands.getClimbCommand());
-//        OperatorConstants.DEBUGGING_TRIGGER.whileTrue(ArmElevatorCommands.getDebuggingCommand(false));
-
-        OperatorConstants.RESET_ELEVATOR_POSITION_TRIGGER.onTrue(new InstantCommand(ARM_ELEVATOR::resetElevatorPosition).ignoringDisable(true));
-        OperatorConstants.RESET_INTAKE_POSITION_TRIGGER.onTrue(new InstantCommand(INTAKE::resetIntakePosition).ignoringDisable(true));
+//        OperatorConstants.DEBUGGING_TRIGGER.whileTrue(ArmElevatorCommands.getDebuggingCommand(false));\
+        OperatorConstants.RESET_CLIMBER_POSITION_TRIGGER.toggleOnTrue(ClimberCommands.resetClimberPositionCommand());
+        OperatorConstants.RESET_INTAKE_POSITION_TRIGGER.toggleOnTrue(IntakeCommands.resetIntakePositionCommand());
+        OperatorConstants.RESET_ELEVATOR_POSITION_TRIGGER.toggleOnTrue(ArmElevatorCommands.resetElevatorPositionCommand());
     }
 
     private void configureSysIDBindings(MotorSubsystem subsystem) {

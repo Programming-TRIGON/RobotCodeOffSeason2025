@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.trigon.robot.RobotContainer;
 import frc.trigon.robot.commands.commandfactories.CoralPlacingCommands;
+import frc.trigon.robot.constants.OperatorConstants;
 import frc.trigon.robot.subsystems.MotorSubsystem;
 import lib.hardware.phoenix6.cancoder.CANcoderEncoder;
 import lib.hardware.phoenix6.cancoder.CANcoderSignal;
@@ -278,6 +279,10 @@ public class ArmElevator extends MotorSubsystem {
         elevatorPositionRequest.Velocity = ArmElevatorConstants.ELEVATOR_DEFAULT_MAXIMUM_VELOCITY * speedScalar;
         elevatorPositionRequest.Acceleration = ArmElevatorConstants.ELEVATOR_DEFAULT_MAXIMUM_ACCELERATION * speedScalar;
         elevatorPositionRequest.Jerk = elevatorPositionRequest.Acceleration * 10;
+    }
+
+    void setElevatorVoltage(double voltage) {
+        elevatorMasterMotor.setControl(voltageRequest.withOutput(voltage));
     }
 
     private Pose3d getFirstStageComponentPose() {

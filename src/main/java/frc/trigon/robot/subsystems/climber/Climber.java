@@ -96,6 +96,10 @@ public class Climber extends MotorSubsystem {
         motor.setControl(voltageRequest.withOutput(targetVoltage));
     }
 
+    void resetClimberPosition() {
+        motor.setPosition(0);
+    }
+
     public void setServoPowers(double power) {
         rightServo.setTargetSpeed(power);
         leftServo.setTargetSpeed(-power);

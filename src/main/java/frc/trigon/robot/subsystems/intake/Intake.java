@@ -119,7 +119,9 @@ public class Intake extends MotorSubsystem {
         setTargetVoltage(targetVoltage);
         setTargetAngle(targetAngle);
     }
-
+    void setAngleMotorVoltage(double voltage) {
+        angleMotor.setControl(voltageRequest.withOutput(voltage));
+    }
     private void setTargetVoltage(double voltage) {
         IntakeConstants.INTAKE_MECHANISM.setTargetVelocity(voltage);
         intakeMotor.setControl(voltageRequest.withOutput(voltage));
