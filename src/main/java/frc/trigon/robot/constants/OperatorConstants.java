@@ -37,7 +37,7 @@ public class OperatorConstants {
             ROTATION_STICK_SPEED_DIVIDER = 1;
 
     public static final double INTAKE_ASSIST_SCALAR = 1;
-    public static final IntakeAssistCommand.AssistMode DEFAULT_INTAKE_ASSIST_MODE = IntakeAssistCommand.AssistMode.ALTERNATE_ASSIST;
+    public static final IntakeAssistCommand.AssistMode DEFAULT_INTAKE_ASSIST_MODE = IntakeAssistCommand.AssistMode.ALTERNATE_ALIGN;
 
     public static final Trigger
             RESET_HEADING_TRIGGER = DRIVER_CONTROLLER.povUp(),
@@ -59,7 +59,10 @@ public class OperatorConstants {
             SCORE_CORAL_RIGHT_TRIGGER = createScoreTrigger(true, false),
             SCORE_CORAL_LEFT_TRIGGER = createScoreTrigger(false, false),
             EJECT_CORAL_TRIGGER = OPERATOR_CONTROLLER.e(),
-            SHOULD_LOAD_CORAL_TOGGLE_TRIGGER = DRIVER_CONTROLLER.povDown();
+            SHOULD_LOAD_CORAL_TOGGLE_TRIGGER = DRIVER_CONTROLLER.povDown(),
+            SHOULD_MANIPULATE_CORAL_ATONOMOUSLY_TRIGGER = DRIVER_CONTROLLER.povRight(),
+            SHOULD_COLLECT_CORAL_ATONOMOUSLY_TRIGGER = OPERATOR_CONTROLLER.y(),
+            SHOULD_SCORE_CORAL_ATONOMOUSLY_TRIGGER = OPERATOR_CONTROLLER.t();
     public static final Trigger
             SPAWN_CORAL_IN_SIMULATION_TRIGGER = OPERATOR_CONTROLLER.equals(),
             FLIP_ARM_TRIGGER = DRIVER_CONTROLLER.start(),

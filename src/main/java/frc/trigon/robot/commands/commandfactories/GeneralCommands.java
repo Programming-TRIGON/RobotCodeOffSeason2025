@@ -39,6 +39,33 @@ public class GeneralCommands {
         );
     }
 
+    public static Command getToggleShouldManipulateCoralAtonomouslyCommand() {
+        return new InstantCommand(() -> {
+            if (CoralCollectionCommands.SHOULD_USE_INTAKE_ASSIST || CoralPlacingCommands.SHOULD_SCORE_AUTONOMOUSLY) {
+                CoralCollectionCommands.SHOULD_USE_INTAKE_ASSIST = false;
+                CoralPlacingCommands.SHOULD_SCORE_AUTONOMOUSLY = false;
+            } else {
+                CoralCollectionCommands.SHOULD_USE_INTAKE_ASSIST = true;
+                CoralPlacingCommands.SHOULD_SCORE_AUTONOMOUSLY = true;
+            }
+        }
+        );
+    }
+
+    public static Command getToggleShouldCollectCoralAtonomouslyCommand() {
+        return new InstantCommand(() -> {
+            CoralCollectionCommands.SHOULD_USE_INTAKE_ASSIST = !CoralCollectionCommands.SHOULD_USE_INTAKE_ASSIST;
+        }
+        );
+    }
+
+    public static Command getToggleShouldScoreCoralAtonomouslyCommand() {
+        return new InstantCommand(() -> {
+            CoralPlacingCommands.SHOULD_SCORE_AUTONOMOUSLY = !CoralPlacingCommands.SHOULD_SCORE_AUTONOMOUSLY;
+        }
+        );
+    }
+
     public static Command getDelayedCommand(double delaySeconds, Runnable toRun) {
         return new WaitCommand(delaySeconds).andThen(toRun).ignoringDisable(true);
     }

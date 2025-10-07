@@ -213,6 +213,10 @@ public class ArmElevator extends MotorSubsystem {
     void setTargetArmAngle(Rotation2d targetAngle, boolean ignoreConstraints) {
         final Rotation2d minimumSafeAngle = calculateMinimumArmSafeAngle();
         final Rotation2d currentAngle = getCurrentArmAngle();
+        if (getElevatorPositionRotations() < metersToRotations(ArmElevatorConstants.ArmElevatorState.REST.targetPositionMeters) && currentAngle.getDegrees() < -80) {
+            armMasterMotor.setControl(armPositionRequest.withPosition(-0.25 - ArmElevatorConstants.ARM_POSITION_OFFSET_FROM_GRAVITY_OFFSET));
+            return;
+        }
         if (!targetState.ignoreConstraints && minimumSafeAngle.getRotations() > Math.max(currentAngle.getRotations(), targetAngle.getRotations())) {
             armMasterMotor.setControl(armPositionRequest.withPosition(currentAngle.getRotations() - ArmElevatorConstants.ARM_POSITION_OFFSET_FROM_GRAVITY_OFFSET));
             return;

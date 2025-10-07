@@ -18,6 +18,7 @@ import frc.trigon.robot.subsystems.transporter.TransporterConstants;
 
 public class CoralCollectionCommands {
     public static boolean SHOULD_LOAD_CORAL = true;
+    public static boolean SHOULD_USE_INTAKE_ASSIST = true;
 
     public static Command getCoralCollectionCommand() {
         return new SequentialCommandGroup(
@@ -29,7 +30,7 @@ public class CoralCollectionCommands {
                                 getLoadCoralCommand().schedule();
                         }
                 )
-        ).alongWith(new IntakeAssistCommand(OperatorConstants.DEFAULT_INTAKE_ASSIST_MODE).until(RobotContainer.INTAKE::hasCoral).asProxy()
+        ).alongWith(new IntakeAssistCommand(OperatorConstants.DEFAULT_INTAKE_ASSIST_MODE).until(RobotContainer.INTAKE::hasCoral).asProxy().onlyIf(() -> CoralCollectionCommands.SHOULD_USE_INTAKE_ASSIST)
         ).finallyDo(() -> SHOULD_LOAD_CORAL = true);
     }
 

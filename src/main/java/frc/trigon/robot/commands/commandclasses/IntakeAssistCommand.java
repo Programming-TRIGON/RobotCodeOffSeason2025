@@ -117,11 +117,11 @@ public class IntakeAssistCommand extends ParallelCommandGroup {
 
     private static Translation2d calculateAlternateAssistTranslationPower(AssistMode assistMode, Translation2d joystickValue, double xPIDOutput, double yPIDOutput) {
         final double
-                xJoystickPower = Math.cbrt(joystickValue.getX()),
-                yJoystickPower = Math.cbrt(joystickValue.getY());
+                xJoystickPower = joystickValue.getX(),
+                yJoystickPower = joystickValue.getY();
         final double
-                xPower = assistMode.shouldAssistX ? calculateAlternateAssistPower(xPIDOutput, Math.cbrt(joystickValue.getX()), xJoystickPower) : xJoystickPower,
-                yPower = assistMode.shouldAssistY ? calculateAlternateAssistPower(yPIDOutput, Math.cbrt(joystickValue.getY()), yJoystickPower) : yJoystickPower;
+                xPower = assistMode.shouldAssistX ? calculateAlternateAssistPower(xPIDOutput, xJoystickPower) : xJoystickPower,
+                yPower = assistMode.shouldAssistY ? calculateAlternateAssistPower(yPIDOutput, yJoystickPower) : yJoystickPower;
 
         return new Translation2d(xPower, yPower);
     }
@@ -143,7 +143,7 @@ public class IntakeAssistCommand extends ParallelCommandGroup {
                 joystickValue = OperatorConstants.DRIVER_CONTROLLER.getRightX();
 
         if (assistMode.isAlternate)
-            return calculateAlternateAssistPower(pidOutput, joystickValue, joystickValue);
+            return calculateAlternateAssistPower(pidOutput, joystickValue);
         return calculateNormalAssistPower(pidOutput, joystickValue, intakeAssistScalar);
     }
 
@@ -151,8 +151,8 @@ public class IntakeAssistCommand extends ParallelCommandGroup {
         return MathUtil.clamp(value, -1, 1);
     }
 
-    private static double calculateAlternateAssistPower(double pidOutput, double pidScalar, double joystickPower) {
-        return pidOutput * (1 - Math.abs(pidScalar)) + joystickPower;
+    private static double calculateAlternateAssistPower(double pidOutput, double joystickPower) {
+        return pidOutput * (1 - Math.abs(joystickPower)) + joystickPower;
     }
 
     private static double calculateNormalAssistPower(double pidOutput, double joystickPower, double scalar) {
