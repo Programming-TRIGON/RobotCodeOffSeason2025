@@ -147,7 +147,7 @@ public class ArmElevatorConstants {
     static final double SECOND_ELEVATOR_COMPONENT_EXTENDED_LENGTH_METERS = 0.593;
     static final double DRUM_DIAMETER_METERS = DRUM_RADIUS_METERS * 2;
 
-    static final Rotation2d ANGLE_TOLERANCE = Rotation2d.fromDegrees(2);
+    static final Rotation2d ANGLE_TOLERANCE = Rotation2d.fromDegrees(1.2);
 
     /**
      * The highest point of the arms angular zone where the safety logic applies.
