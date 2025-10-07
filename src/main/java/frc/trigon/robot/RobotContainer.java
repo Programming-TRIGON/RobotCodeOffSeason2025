@@ -116,6 +116,7 @@ public class RobotContainer {
         OperatorConstants.SPAWN_CORAL_IN_SIMULATION_TRIGGER.onTrue(new InstantCommand(() -> SimulationFieldHandler.updateCoralSpawning(ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose())));
         OperatorConstants.FLIP_ARM_TRIGGER.onTrue(new InstantCommand(() -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE = !OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE));
         OperatorConstants.LOLLIPOP_ALGAE_TOGGLE_TRIGGER.onTrue(new InstantCommand(AlgaeManipulationCommands::toggleLollipopCollection));
+        OperatorConstants.SHOULD_LOAD_CORAL_TOGGLE_TRIGGER.onTrue(GeneralCommands.getToggleShouldLoadCoralCommand());
         OperatorConstants.CLIMB_TRIGGER.toggleOnTrue(ClimbCommands.getClimbCommand());
 //        OperatorConstants.DEBUGGING_TRIGGER.whileTrue(ArmElevatorCommands.getDebuggingCommand(false));
 

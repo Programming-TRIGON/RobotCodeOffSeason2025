@@ -32,6 +32,13 @@ public class GeneralCommands {
         }).ignoringDisable(true);
     }
 
+    public static Command getToggleShouldLoadCoralCommand() {
+        return new InstantCommand(() -> {
+            CoralCollectionCommands.SHOULD_LOAD_CORAL = !CoralCollectionCommands.SHOULD_LOAD_CORAL;
+        }
+        );
+    }
+
     public static Command getDelayedCommand(double delaySeconds, Runnable toRun) {
         return new WaitCommand(delaySeconds).andThen(toRun).ignoringDisable(true);
     }

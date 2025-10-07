@@ -58,7 +58,8 @@ public class OperatorConstants {
             CORAL_COLLECTION_TRIGGER = DRIVER_CONTROLLER.leftTrigger().or(OPERATOR_CONTROLLER.c()),
             SCORE_CORAL_RIGHT_TRIGGER = createScoreTrigger(true, false),
             SCORE_CORAL_LEFT_TRIGGER = createScoreTrigger(false, false),
-            EJECT_CORAL_TRIGGER = OPERATOR_CONTROLLER.e();
+            EJECT_CORAL_TRIGGER = OPERATOR_CONTROLLER.e(),
+            SHOULD_LOAD_CORAL_TOGGLE_TRIGGER = DRIVER_CONTROLLER.povDown();
     public static final Trigger
             SPAWN_CORAL_IN_SIMULATION_TRIGGER = OPERATOR_CONTROLLER.equals(),
             FLIP_ARM_TRIGGER = DRIVER_CONTROLLER.start(),

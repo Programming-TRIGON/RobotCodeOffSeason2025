@@ -17,17 +17,20 @@ import frc.trigon.robot.subsystems.transporter.TransporterCommands;
 import frc.trigon.robot.subsystems.transporter.TransporterConstants;
 
 public class CoralCollectionCommands {
+    public static boolean SHOULD_LOAD_CORAL = true;
+
     public static Command getCoralCollectionCommand() {
         return new SequentialCommandGroup(
                 getIntakeCoralCommand().until(RobotContainer.TRANSPORTER::hasCoral).unless((RobotContainer.TRANSPORTER::hasCoral)),
                 getCollectionConfirmationCommand(),
                 new InstantCommand(
                         () -> {
-                            if (!AlgaeManipulationCommands.isHoldingAlgae())
+                            if (!AlgaeManipulationCommands.isHoldingAlgae() && SHOULD_LOAD_CORAL)
                                 getLoadCoralCommand().schedule();
                         }
                 )
-        ).alongWith(new IntakeAssistCommand(OperatorConstants.DEFAULT_INTAKE_ASSIST_MODE).until(RobotContainer.INTAKE::hasCoral).asProxy());
+        ).alongWith(new IntakeAssistCommand(OperatorConstants.DEFAULT_INTAKE_ASSIST_MODE).until(RobotContainer.INTAKE::hasCoral).asProxy()
+        ).finallyDo(() -> SHOULD_LOAD_CORAL = true);
     }
 
     public static Command getLoadCoralCommand() {
