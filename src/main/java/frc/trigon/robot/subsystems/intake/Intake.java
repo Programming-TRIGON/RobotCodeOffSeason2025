@@ -69,7 +69,7 @@ public class Intake extends MotorSubsystem {
     @Override
     public void stop() {
         IntakeConstants.INTAKE_MECHANISM.setTargetVelocity(0);
-        intakeMotor.stopMotor();
+//        intakeMotor.stopMotor();
         angleMotor.stopMotor();
     }
 

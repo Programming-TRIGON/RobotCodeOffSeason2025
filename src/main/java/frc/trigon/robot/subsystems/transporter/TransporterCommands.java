@@ -30,7 +30,7 @@ public class TransporterCommands {
     public static Command getSetTargetStateCommand(TransporterConstants.TransporterState targetState) {
         return new StartEndCommand(
                 () -> RobotContainer.TRANSPORTER.setTargetState(targetState),
-                RobotContainer.TRANSPORTER::stop,
+                () -> {},
                 RobotContainer.TRANSPORTER
         );
     }
@@ -38,7 +38,7 @@ public class TransporterCommands {
     public static Command getSetTargetStateCommand(double rightMotorVoltage, double leftMotorVoltage) {
         return new StartEndCommand(
                 () -> RobotContainer.TRANSPORTER.setTargetState(rightMotorVoltage, leftMotorVoltage),
-                RobotContainer.TRANSPORTER::stop,
+                () -> {},
                 RobotContainer.TRANSPORTER
         );
     }
