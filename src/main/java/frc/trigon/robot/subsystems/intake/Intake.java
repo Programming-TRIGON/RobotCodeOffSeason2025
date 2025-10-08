@@ -141,6 +141,7 @@ public class Intake extends MotorSubsystem {
         return IntakeConstants.INTAKE_VISUALIZATION_ORIGIN_POINT.transformBy(transform);
     }
 
+    @AutoLogOutput(key = "Intake/IntakeAngle")
     private Rotation2d getCurrentAngle() {
         return Rotation2d.fromRotations(angleMotor.getSignal(TalonFXSignal.POSITION));
     }

@@ -10,6 +10,8 @@ import frc.trigon.robot.subsystems.MotorSubsystem;
 import lib.hardware.misc.servo.Servo;
 import lib.hardware.phoenix6.talonfx.TalonFXMotor;
 import lib.hardware.phoenix6.talonfx.TalonFXSignal;
+import org.littletonrobotics.junction.AutoLog;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Climber extends MotorSubsystem {
@@ -118,7 +120,7 @@ public class Climber extends MotorSubsystem {
 
         return ClimberConstants.CLIMBER_VISUALIZATION_ORIGIN_POINT.transformBy(climberTransform);
     }
-
+    @AutoLogOutput(key = "Climber/ClimberPosition")
     private double getPositionRotations() {
         return motor.getSignal(TalonFXSignal.POSITION);
     }
