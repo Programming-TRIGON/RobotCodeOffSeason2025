@@ -54,8 +54,8 @@ public class ArmElevatorConstants {
             SHOULD_ARM_FOLLOWER_OPPOSE_MASTER = false,
             SHOULD_ELEVATOR_FOLLOWER_OPPOSE_MASTER = false;
     static final double
-            ARM_DEFAULT_MAXIMUM_VELOCITY = RobotHardwareStats.isSimulation() ? 2.4614 : 2.5,
-            ARM_DEFAULT_MAXIMUM_ACCELERATION = RobotHardwareStats.isSimulation() ? 67.2344 : 4,
+            ARM_DEFAULT_MAXIMUM_VELOCITY = RobotHardwareStats.isSimulation() ? 2.4614 : 2,
+            ARM_DEFAULT_MAXIMUM_ACCELERATION = RobotHardwareStats.isSimulation() ? 67.2344 : 3.5,
             ARM_DEFAULT_MAXIMUM_JERK = ARM_DEFAULT_MAXIMUM_ACCELERATION * 10,
             ELEVATOR_DEFAULT_MAXIMUM_VELOCITY = RobotHardwareStats.isSimulation() ? 25.178 : 21,
             ELEVATOR_DEFAULT_MAXIMUM_ACCELERATION = RobotHardwareStats.isSimulation() ? 80 : 55;
@@ -186,11 +186,11 @@ public class ArmElevatorConstants {
         config.Feedback.FeedbackRemoteSensorID = ANGLE_ENCODER.getID();
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
 
-        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 34 : 50;
+        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 34 : 60;
         config.Slot0.kI = RobotHardwareStats.isSimulation() ? 0 : 0;
         config.Slot0.kD = RobotHardwareStats.isSimulation() ? 3 : 1.2;
-        config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0.026331 : 0.04;
-        config.Slot0.kV = RobotHardwareStats.isSimulation() ? 4.8752 : 5.5;
+        config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0.026331 : 0.06;
+        config.Slot0.kV = RobotHardwareStats.isSimulation() ? 4.8752 : 5.6;
         config.Slot0.kA = RobotHardwareStats.isSimulation() ? 0.17848 : 0;
         config.Slot0.kG = RobotHardwareStats.isSimulation() ? 0.1117 : 0.358;
 
@@ -330,7 +330,9 @@ public class ArmElevatorConstants {
         REST_AFTER_LOADING(Rotation2d.fromDegrees(-90), 0.603, null, true, 0.7),
         REST_WITH_CORAL(Rotation2d.fromDegrees(90), 0.603, null, false, 0.8),
         REST_WITH_ALGAE(Rotation2d.fromDegrees(90), 0.603, null, false, 0.3),
-        REST_FOR_CLIMB(Rotation2d.fromDegrees(90), 0.603, null, false, 0.7),
+        PREPARE_FOR_REST_FOR_CLIMB(Rotation2d.fromDegrees(-29), 0.6, null, false, 0.7),
+        REST_FOR_CLIMB(Rotation2d.fromDegrees(-29), 0, PREPARE_FOR_REST_FOR_CLIMB, true, 0.7),
+        ZERO_ELEVATOR(Rotation2d.fromDegrees(90), 0.65, null, false, 0.7),
         LOAD_CORAL(Rotation2d.fromDegrees(-90), 0.485, null, true, 0.7),
         UNLOAD_CORAL(Rotation2d.fromDegrees(-90), 0.603, null, false, 0.7),
         EJECT(Rotation2d.fromDegrees(-30), 0.603, null, false, 0.7),

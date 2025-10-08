@@ -139,9 +139,9 @@ public class ClimberConstants {
 
     public enum ClimberState {
         REST(0, 0, false),
-        BREAK_ZIP_TIE(-0.32, 0, false),
+        BREAK_ZIP_TIE(-0.35, 0, false),
         PREPARE_FOR_CLIMB(0, 1, false),
-        CLIMB(-1.6, 0, true);
+        CLIMB(-1.3, 0, true);
 
         public final double targetPositionRotations;
         public final double targetServoPower;

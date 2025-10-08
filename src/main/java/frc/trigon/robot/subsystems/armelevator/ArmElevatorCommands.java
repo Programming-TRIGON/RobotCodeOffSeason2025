@@ -40,13 +40,15 @@ public class ArmElevatorCommands {
     public static Command resetElevatorPositionCommand() {
         return new SequentialCommandGroup(
                 new ExecuteEndCommand(
-                        () -> RobotContainer.ARM_ELEVATOR.setTargetArmAngle(Rotation2d.kCCW_90deg, false),
-                        RobotContainer.ARM_ELEVATOR::stop),
+                        () -> RobotContainer.ARM_ELEVATOR.setTargetState(ArmElevatorConstants.ArmElevatorState.ZERO_ELEVATOR),
+                        RobotContainer.ARM_ELEVATOR::stop,
+                        RobotContainer.ARM_ELEVATOR
+                ).until(() -> RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.ZERO_ELEVATOR)),
                 new ExecuteEndCommand(
                         () -> RobotContainer.ARM_ELEVATOR.setElevatorVoltage(-OperatorConstants.DRIVER_CONTROLLER.getRightX() * 2),
-                        RobotContainer.ARM_ELEVATOR::resetElevatorPosition,
+                        () -> {},
                         RobotContainer.ARM_ELEVATOR
-                )).alongWith(SwerveCommands.getOpenLoopFieldRelativeDriveCommand(() -> 0, () -> 0, () -> 0));
+                )).alongWith(SwerveCommands.getOpenLoopFieldRelativeDriveCommand(() -> 0, () -> 0, () -> 0)).finallyDo(RobotContainer.ARM_ELEVATOR::resetElevatorPosition);
     }
 
     public static Command getSetTargetStateCommand(ArmElevatorConstants.ArmElevatorState targetState) {

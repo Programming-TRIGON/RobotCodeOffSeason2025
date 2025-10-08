@@ -20,7 +20,7 @@ import org.littletonrobotics.junction.AutoLogOutput;
 
 public class CoralCollectionCommands {
     public static boolean SHOULD_LOAD_CORAL = true;
-    public static boolean SHOULD_USE_INTAKE_ASSIST = true;
+    public static boolean SHOULD_USE_INTAKE_ASSIST = false;
 
     public static Command getCoralCollectionCommand() {
         return new SequentialCommandGroup(

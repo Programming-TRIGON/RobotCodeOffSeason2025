@@ -36,7 +36,7 @@ public class GeneralCommands {
         return new InstantCommand(() -> {
             CoralCollectionCommands.SHOULD_LOAD_CORAL = !CoralCollectionCommands.SHOULD_LOAD_CORAL;
         }
-        );
+        ).ignoringDisable(true);
     }
 
     public static Command getToggleShouldManipulateCoralAutonomouslyCommand() {
@@ -48,21 +48,21 @@ public class GeneralCommands {
                 CoralCollectionCommands.SHOULD_USE_INTAKE_ASSIST = true;
                 CoralPlacingCommands.SHOULD_SCORE_AUTONOMOUSLY = true;
             }
-        });
+        }).ignoringDisable(true);
     }
 
     public static Command getToggleShouldCollectCoralAtonomouslyCommand() {
         return new InstantCommand(() -> {
             CoralCollectionCommands.SHOULD_USE_INTAKE_ASSIST = !CoralCollectionCommands.SHOULD_USE_INTAKE_ASSIST;
         }
-        );
+        ).ignoringDisable(true);
     }
 
     public static Command getToggleShouldScoreCoralAtonomouslyCommand() {
         return new InstantCommand(() -> {
             CoralPlacingCommands.SHOULD_SCORE_AUTONOMOUSLY = !CoralPlacingCommands.SHOULD_SCORE_AUTONOMOUSLY;
         }
-        );
+        ).ignoringDisable(true);
     }
 
     public static Command getDelayedCommand(double delaySeconds, Runnable toRun) {
