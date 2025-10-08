@@ -2,8 +2,6 @@ package frc.trigon.robot.subsystems.armelevator;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.trigon.robot.RobotContainer;
 import frc.trigon.robot.commands.commandfactories.GeneralCommands;
@@ -14,7 +12,6 @@ import lib.commands.GearRatioCalculationCommand;
 import lib.commands.NetworkTablesCommand;
 
 import java.util.Set;
-import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 public class ArmElevatorCommands {
@@ -42,7 +39,9 @@ public class ArmElevatorCommands {
 
     public static Command resetElevatorPositionCommand() {
         return new SequentialCommandGroup(
-                new InstantCommand(() -> RobotContainer.ARM_ELEVATOR.setTargetArmAngle(Rotation2d.kCCW_90deg, false)),
+                new ExecuteEndCommand(
+                        () -> RobotContainer.ARM_ELEVATOR.setTargetArmAngle(Rotation2d.kCCW_90deg, false),
+                        RobotContainer.ARM_ELEVATOR::stop),
                 new ExecuteEndCommand(
                         () -> RobotContainer.ARM_ELEVATOR.setElevatorVoltage(-OperatorConstants.DRIVER_CONTROLLER.getRightX() * 2),
                         RobotContainer.ARM_ELEVATOR::resetElevatorPosition,
