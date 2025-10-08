@@ -13,10 +13,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.trigon.robot.commands.CommandConstants;
 import frc.trigon.robot.commands.commandfactories.*;
-import frc.trigon.robot.constants.AutonomousConstants;
-import frc.trigon.robot.constants.CameraConstants;
-import frc.trigon.robot.constants.LEDConstants;
-import frc.trigon.robot.constants.OperatorConstants;
+import frc.trigon.robot.constants.*;
 import frc.trigon.robot.misc.objectdetectioncamera.ObjectPoseEstimator;
 import frc.trigon.robot.misc.simulatedfield.SimulatedGamePieceConstants;
 import frc.trigon.robot.misc.simulatedfield.SimulationFieldHandler;
@@ -167,7 +164,11 @@ public class RobotContainer {
 
         addCommandsToChooser(
                 AutonomousCommands.getFloorAutonomousCommand(true),
-                AutonomousCommands.getFloorAutonomousCommand(false)
+                AutonomousCommands.getFloorAutonomousCommand(false),
+                AutonomousCommands.getFloorAutonomousCommand(true, FieldConstants.ReefClockPosition.REEF_2_OCLOCK, FieldConstants.ReefClockPosition.REEF_4_OCLOCK),
+                AutonomousCommands.getFloorAutonomousCommand(false, FieldConstants.ReefClockPosition.REEF_8_OCLOCK, FieldConstants.ReefClockPosition.REEF_10_OCLOCK),
+                AutonomousCommands.getFloorAutonomousCommand(true, FieldConstants.ReefClockPosition.REEF_2_OCLOCK, FieldConstants.ReefClockPosition.REEF_4_OCLOCK, FieldConstants.ReefClockPosition.REEF_6_OCLOCK),
+                AutonomousCommands.getFloorAutonomousCommand(false, FieldConstants.ReefClockPosition.REEF_8_OCLOCK, FieldConstants.ReefClockPosition.REEF_10_OCLOCK, FieldConstants.ReefClockPosition.REEF_6_OCLOCK)
         );
     }
 
