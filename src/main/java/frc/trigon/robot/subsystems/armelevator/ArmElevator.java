@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.trigon.robot.RobotContainer;
 import frc.trigon.robot.commands.commandfactories.CoralPlacingCommands;
-import frc.trigon.robot.constants.OperatorConstants;
 import frc.trigon.robot.subsystems.MotorSubsystem;
 import lib.hardware.phoenix6.cancoder.CANcoderEncoder;
 import lib.hardware.phoenix6.cancoder.CANcoderSignal;
@@ -215,15 +214,19 @@ public class ArmElevator extends MotorSubsystem {
         final Rotation2d minimumSafeAngle = calculateMinimumArmSafeAngle();
         final Rotation2d currentAngle = getCurrentArmAngle();
         if (getElevatorPositionRotations() < metersToRotations(ArmElevatorConstants.ArmElevatorState.REST.targetPositionMeters) && currentAngle.getDegrees() < -80) {
-            armMasterMotor.setControl(armPositionRequest.withPosition(-0.25 - ArmElevatorConstants.ARM_POSITION_OFFSET_FROM_GRAVITY_OFFSET));
+            sendControlToArm(-0.25);
             return;
         }
         if (!targetState.ignoreConstraints && minimumSafeAngle.getRotations() > Math.max(currentAngle.getRotations(), targetAngle.getRotations())) {
-            armMasterMotor.setControl(armPositionRequest.withPosition(currentAngle.getRotations() - ArmElevatorConstants.ARM_POSITION_OFFSET_FROM_GRAVITY_OFFSET));
+            sendControlToArm(currentAngle.getRotations());
             return;
         }
         final double targetPosition = ignoreConstraints ? targetAngle.getRotations() : Math.max(targetAngle.getRotations(), calculateMinimumArmSafeAngle().getRotations());
-        armMasterMotor.setControl(armPositionRequest.withPosition(targetPosition - ArmElevatorConstants.ARM_POSITION_OFFSET_FROM_GRAVITY_OFFSET));
+        sendControlToArm(targetPosition);
+    }
+
+    void sendControlToArm(double targetRotation) {
+        armMasterMotor.setControl(armPositionRequest.withPosition(targetRotation - ArmElevatorConstants.ARM_POSITION_OFFSET_FROM_GRAVITY_OFFSET));
     }
 
     void setTargetElevatorPositionMeters(double targetPositionMeters, boolean ignoreConstraints) {

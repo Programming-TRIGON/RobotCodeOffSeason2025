@@ -10,44 +10,33 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
-import edu.wpi.first.wpilibj.event.BooleanEvent;
 import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import lib.hardware.RobotHardwareStats;
 import lib.hardware.misc.servo.Servo;
-import lib.hardware.misc.simplesensor.SimpleSensor;
 import lib.hardware.phoenix6.talonfx.TalonFXMotor;
 import lib.hardware.phoenix6.talonfx.TalonFXSignal;
 import lib.hardware.simulation.SimpleMotorSimulation;
 import lib.utilities.mechanisms.SingleJointedArmMechanism2d;
 
-import java.util.function.DoubleSupplier;
-
 public class ClimberConstants {
     private static final int
             MOTOR_ID = 18,
-            REVERSE_LIMIT_SENSOR_CHANNEL = 8,
             RIGHT_SERVO_CHANNEL = 0,
             LEFT_SERVO_CHANNEL = 1;
     private static final String
             MOTOR_NAME = "ClimberMotor",
-            REVERSE_LIMIT_SENSOR_NAME = "ClimberReverseLimitSensor",
             RIGHT_SERVO_NAME = "ClimberRightServo",
             LEFT_SERVO_NAME = "ClimberLeftServo";
     static final TalonFXMotor MOTOR = new TalonFXMotor(MOTOR_ID, MOTOR_NAME);
     static final Servo
             RIGHT_SERVO = new Servo(RIGHT_SERVO_CHANNEL, RIGHT_SERVO_NAME),
             LEFT_SERVO = new Servo(LEFT_SERVO_CHANNEL, LEFT_SERVO_NAME);
-    private static final SimpleSensor
-            REVERSE_LIMIT_SENSOR = SimpleSensor.createDigitalSensor(REVERSE_LIMIT_SENSOR_CHANNEL, REVERSE_LIMIT_SENSOR_NAME);
 
     static final int
             GROUNDED_PID_SLOT = 0,
             ON_CAGE_PID_SLOT = 1;
     private static final double GEAR_RATIO = 37.5;
-    private static final double REVERSE_LIMIT_RESET_POSITION_ROTATIONS = 0;
-    private static final double FORWARD_SOFT_LIMIT_POSITION_ROTATIONS = 3;
 //    private static final int
 //            SERVO_PULSE_WIDTH_MICROSECONDS = 20000,
 //            SERVO_MAXIMUM_DEADBAND_RANGE_MICROSECONDS = 0,
@@ -84,49 +73,39 @@ public class ClimberConstants {
     );
 
     static final double MAXIMUM_MANUAL_CONTROL_VOLTAGE = 4;
-    private static final double
-            HAS_CAGE_DEBOUNCE_TIME_SECONDS = 0.5,
-            REVERSE_LIMIT_DEBOUNCE_TIME_SECONDS = 0.1;
-    static final BooleanEvent
-            REVERSE_LIMIT_SENSOR_BOOLEAN_EVENT = new BooleanEvent(
-                    CommandScheduler.getInstance().getActiveButtonLoop(),
-                    REVERSE_LIMIT_SENSOR::getBinaryValue
-            ).debounce(REVERSE_LIMIT_DEBOUNCE_TIME_SECONDS);
-    private static final DoubleSupplier REVERSE_LIMIT_SENSORS_SIMULATION_SUPPLIER = () -> 0;
-    static final double CLIMBER_TOLERANCE_ROTATIONS = 0.01;
+    static final double CLIMBER_TOLERANCE_ROTATIONS = 0.02;
 
     static {
         configureMotor();
         configureServos();
-        configureReverseLimitSensor();
     }
 
     private static void configureMotor() {
         final TalonFXConfiguration config = new TalonFXConfiguration();
 
-        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
-        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 22.373 : 20;
+        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 22.373 : 70;
         config.Slot0.kI = RobotHardwareStats.isSimulation() ? 0 : 0;
         config.Slot0.kD = RobotHardwareStats.isSimulation() ? 0.33014 : 0;
         config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0.016057 : 0;
-        config.Slot0.kV = RobotHardwareStats.isSimulation() ? 4.3932 : 0.5;
-        config.Slot0.kG = RobotHardwareStats.isSimulation() ? 0 : 0.2;
+        config.Slot0.kV = RobotHardwareStats.isSimulation() ? 4.3932 : 2.2;
+        config.Slot0.kG = RobotHardwareStats.isSimulation() ? 0 : -0.2001953125;
         config.Slot0.kA = RobotHardwareStats.isSimulation() ? 0.074561 : 0;
         config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
         config.Slot0.GravityType = GravityTypeValue.Elevator_Static;
 
-        config.Slot1.kP = RobotHardwareStats.isSimulation() ? 22.373 : 0;
+        config.Slot1.kP = RobotHardwareStats.isSimulation() ? 22.373 : 80;
         config.Slot1.kI = RobotHardwareStats.isSimulation() ? 0 : 0;
         config.Slot1.kD = RobotHardwareStats.isSimulation() ? 0.33014 : 0;
         config.Slot1.kS = RobotHardwareStats.isSimulation() ? 0.016057 : 0;
-        config.Slot1.kV = RobotHardwareStats.isSimulation() ? 4.3932 : 0;
-        config.Slot1.kG = RobotHardwareStats.isSimulation() ? 0 : 0.5;
+        config.Slot1.kV = RobotHardwareStats.isSimulation() ? 4.3932 : 2.2;
+        config.Slot1.kG = RobotHardwareStats.isSimulation() ? 0 : -1;
         config.Slot1.kA = RobotHardwareStats.isSimulation() ? 0.074561 : 0;
         config.Slot1.GravityType = GravityTypeValue.Elevator_Static;
 
-        config.MotionMagic.MotionMagicCruiseVelocity = RobotHardwareStats.isSimulation() ? 2 : 2;
+        config.MotionMagic.MotionMagicCruiseVelocity = RobotHardwareStats.isSimulation() ? 2 : 1.5;
         config.MotionMagic.MotionMagicAcceleration = RobotHardwareStats.isSimulation() ? 10 : 3;
 
         config.Feedback.SensorToMechanismRatio = GEAR_RATIO;
@@ -139,8 +118,6 @@ public class ClimberConstants {
         MOTOR.registerSignal(TalonFXSignal.CLOSED_LOOP_REFERENCE, 100);
         MOTOR.registerSignal(TalonFXSignal.STATOR_CURRENT, 100);
         MOTOR.registerSignal(TalonFXSignal.MOTOR_VOLTAGE, 100);
-        MOTOR.registerSignal(TalonFXSignal.REVERSE_LIMIT, 100);
-        MOTOR.registerSignal(TalonFXSignal.FORWARD_LIMIT, 100);
     }
 
     private static void configureServos() {
@@ -160,15 +137,11 @@ public class ClimberConstants {
 //        );
     }
 
-    private static void configureReverseLimitSensor() {
-        REVERSE_LIMIT_SENSOR.setSimulationSupplier(REVERSE_LIMIT_SENSORS_SIMULATION_SUPPLIER);
-        REVERSE_LIMIT_SENSOR_BOOLEAN_EVENT.ifHigh(() -> MOTOR.setPosition(REVERSE_LIMIT_RESET_POSITION_ROTATIONS));
-    }
-
     public enum ClimberState {
         REST(0, 0, false),
-        PREPARE_FOR_CLIMB(-0.2, 1, false),
-        CLIMB(0, 0, true);
+        BREAK_ZIP_TIE(-0.32, 0, false),
+        PREPARE_FOR_CLIMB(0, 1, false),
+        CLIMB(-1.6, 0, true);
 
         public final double targetPositionRotations;
         public final double targetServoPower;

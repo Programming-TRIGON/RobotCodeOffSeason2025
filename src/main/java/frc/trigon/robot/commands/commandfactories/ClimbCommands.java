@@ -20,6 +20,8 @@ public class ClimbCommands {
     public static Command getClimbCommand() {
         return new SequentialCommandGroup(
                 new InstantCommand(() -> IS_CLIMBING = true),
+                ClimberCommands.getSetTargetStateCommand(ClimberConstants.ClimberState.BREAK_ZIP_TIE)
+                        .until(() -> RobotContainer.CLIMBER.atState(ClimberConstants.ClimberState.BREAK_ZIP_TIE)),
                 ClimberCommands.getSetTargetStateCommand(ClimberConstants.ClimberState.PREPARE_FOR_CLIMB)
                         .until(OperatorConstants.CONTINUE_TRIGGER),
                 ClimberCommands.getSetTargetStateCommand(ClimberConstants.ClimberState.CLIMB)
@@ -41,7 +43,7 @@ public class ClimbCommands {
                         () -> 0,
                         () -> 0,
                         () -> 0
-                )
+                ).asProxy()
         );
     }
 

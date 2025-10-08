@@ -24,7 +24,7 @@ public class ClimberCommands {
 
     public static Command resetClimberPositionCommand() {
         return new ExecuteEndCommand(
-                () -> RobotContainer.CLIMBER.setTargetVoltage(-OperatorConstants.DRIVER_CONTROLLER.getRightX() * 2),
+                () -> RobotContainer.CLIMBER.setTargetVoltage(-OperatorConstants.DRIVER_CONTROLLER.getRightX() * 3),
                 RobotContainer.CLIMBER::resetClimberPosition,
                 RobotContainer.CLIMBER
         ).alongWith(SwerveCommands.getOpenLoopFieldRelativeDriveCommand(() -> 0, () -> 0, () -> 0));

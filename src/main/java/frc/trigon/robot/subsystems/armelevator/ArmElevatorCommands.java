@@ -42,7 +42,7 @@ public class ArmElevatorCommands {
 
     public static Command resetElevatorPositionCommand() {
         return new SequentialCommandGroup(
-                new InstantCommand(() -> RobotContainer.ARM_ELEVATOR.setTargetArmAngle(Rotation2d.kCCW_90deg, true)),
+                new InstantCommand(() -> RobotContainer.ARM_ELEVATOR.setTargetArmAngle(Rotation2d.kCCW_90deg, false)),
                 new ExecuteEndCommand(
                         () -> RobotContainer.ARM_ELEVATOR.setElevatorVoltage(-OperatorConstants.DRIVER_CONTROLLER.getRightX() * 2),
                         RobotContainer.ARM_ELEVATOR::resetElevatorPosition,

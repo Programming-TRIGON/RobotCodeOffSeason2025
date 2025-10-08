@@ -121,10 +121,10 @@ public class RobotContainer {
         OperatorConstants.SHOULD_COLLECT_CORAL_ATONOMOUSLY_TRIGGER.onTrue(GeneralCommands.getToggleShouldCollectCoralAtonomouslyCommand());
         OperatorConstants.SHOULD_SCORE_CORAL_ATONOMOUSLY_TRIGGER.onTrue(GeneralCommands.getToggleShouldScoreCoralAtonomouslyCommand());
         OperatorConstants.CLIMB_TRIGGER.toggleOnTrue(ClimbCommands.getClimbCommand());
-//        OperatorConstants.DEBUGGING_TRIGGER.whileTrue(ArmElevatorCommands.getDebuggingCommand(false));\
-        OperatorConstants.RESET_CLIMBER_POSITION_TRIGGER.toggleOnTrue(ClimberCommands.resetClimberPositionCommand());
-        OperatorConstants.RESET_INTAKE_POSITION_TRIGGER.toggleOnTrue(IntakeCommands.resetIntakePositionCommand());
-        OperatorConstants.RESET_ELEVATOR_POSITION_TRIGGER.toggleOnTrue(ArmElevatorCommands.resetElevatorPositionCommand());
+//        OperatorConstants.DEBUGGING_TRIGGER.whileTrue(ClimberCommands.getDebuggingCommand());
+        OperatorConstants.RESET_CLIMBER_POSITION_TRIGGER.toggleOnTrue(ClimberCommands.resetClimberPositionCommand().ignoringDisable(true));
+        OperatorConstants.RESET_INTAKE_POSITION_TRIGGER.toggleOnTrue(IntakeCommands.resetIntakePositionCommand().ignoringDisable(true));
+        OperatorConstants.RESET_ELEVATOR_POSITION_TRIGGER.toggleOnTrue(ArmElevatorCommands.resetElevatorPositionCommand().ignoringDisable(true));
     }
 
     private void configureSysIDBindings(MotorSubsystem subsystem) {
