@@ -15,9 +15,13 @@ import frc.trigon.robot.subsystems.intake.IntakeCommands;
 import frc.trigon.robot.subsystems.intake.IntakeConstants;
 import frc.trigon.robot.subsystems.transporter.TransporterCommands;
 import frc.trigon.robot.subsystems.transporter.TransporterConstants;
+import org.littletonrobotics.junction.AutoLog;
+import org.littletonrobotics.junction.AutoLogOutput;
 
 public class CoralCollectionCommands {
+    @AutoLogOutput(key = "Autonomous/ShouldLoadCoral")
     public static boolean SHOULD_LOAD_CORAL = true;
+    @AutoLogOutput(key = "Autonomous/ShouldAssistIntake")
     public static boolean SHOULD_USE_INTAKE_ASSIST = true;
 
     public static Command getCoralCollectionCommand() {
