@@ -19,7 +19,6 @@ import lib.utilities.flippable.FlippableTranslation2d;
 import org.littletonrobotics.junction.AutoLogOutput;
 
 public class CoralPlacingCommands {
-    @AutoLogOutput(key = "Autonomous/ShouldScoreAutonomously")
     public static boolean SHOULD_SCORE_AUTONOMOUSLY = true;
     static final ReefChooser REEF_CHOOSER = OperatorConstants.REEF_CHOOSER;
 

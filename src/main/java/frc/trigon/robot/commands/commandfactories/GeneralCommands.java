@@ -39,7 +39,7 @@ public class GeneralCommands {
         );
     }
 
-    public static Command getToggleShouldManipulateCoralAtonomouslyCommand() {
+    public static Command getToggleShouldManipulateCoralAutonomouslyCommand() {
         return new InstantCommand(() -> {
             if (CoralCollectionCommands.SHOULD_USE_INTAKE_ASSIST || CoralPlacingCommands.SHOULD_SCORE_AUTONOMOUSLY) {
                 CoralCollectionCommands.SHOULD_USE_INTAKE_ASSIST = false;
@@ -48,8 +48,7 @@ public class GeneralCommands {
                 CoralCollectionCommands.SHOULD_USE_INTAKE_ASSIST = true;
                 CoralPlacingCommands.SHOULD_SCORE_AUTONOMOUSLY = true;
             }
-        }
-        );
+        });
     }
 
     public static Command getToggleShouldCollectCoralAtonomouslyCommand() {
@@ -70,7 +69,8 @@ public class GeneralCommands {
         return new WaitCommand(delaySeconds).andThen(toRun).ignoringDisable(true);
     }
 
-    public static Command getContinuousConditionalCommand(Command onTrue, Command onFalse, BooleanSupplier condition) {
+    public static Command getContinuousConditionalCommand(Command onTrue, Command onFalse, BooleanSupplier
+            condition) {
         return new ConditionalCommand(
                 onTrue.onlyWhile(condition),
                 onFalse.until(condition),
@@ -110,19 +110,23 @@ public class GeneralCommands {
         return new InstantCommand(() -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE = false);
     }
 
-    public static Command getFlippableOverridableArmCommand(ArmElevatorConstants.ArmElevatorState targetState, boolean isPrepareState, BooleanSupplier shouldStartFlipped) {
+    public static Command getFlippableOverridableArmCommand(ArmElevatorConstants.ArmElevatorState targetState,
+                                                            boolean isPrepareState, BooleanSupplier shouldStartFlipped) {
         return isPrepareState ?
                 ArmElevatorCommands.getPrepareForStateCommand(() -> targetState, () -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE ^ shouldStartFlipped.getAsBoolean()) :
                 ArmElevatorCommands.getSetTargetStateCommand(() -> targetState, () -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE ^ shouldStartFlipped.getAsBoolean());
     }
 
-    public static Command getFlippableOverridableArmCommand(Supplier<ArmElevatorConstants.ArmElevatorState> targetState, boolean isPrepareState, BooleanSupplier shouldStartFlipped) {
+    public static Command getFlippableOverridableArmCommand
+            (Supplier<ArmElevatorConstants.ArmElevatorState> targetState, boolean isPrepareState, BooleanSupplier
+                    shouldStartFlipped) {
         return isPrepareState ?
                 ArmElevatorCommands.getPrepareForStateCommand(targetState, () -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE ^ shouldStartFlipped.getAsBoolean()) :
                 ArmElevatorCommands.getSetTargetStateCommand(targetState, () -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE ^ shouldStartFlipped.getAsBoolean());
     }
 
-    public static Command getFlippableOverridableArmCommand(ArmElevatorConstants.ArmElevatorState targetState, boolean isPrepareState) {
+    public static Command getFlippableOverridableArmCommand(ArmElevatorConstants.ArmElevatorState targetState,
+                                                            boolean isPrepareState) {
         return isPrepareState ?
                 ArmElevatorCommands.getPrepareForStateCommand(() -> targetState, () -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE) :
                 ArmElevatorCommands.getSetTargetStateCommand(() -> targetState, () -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE);

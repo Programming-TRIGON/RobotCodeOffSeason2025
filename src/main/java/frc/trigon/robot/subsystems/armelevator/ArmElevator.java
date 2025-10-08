@@ -8,6 +8,7 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.trigon.robot.RobotContainer;
+import frc.trigon.robot.commands.commandfactories.CoralCollectionCommands;
 import frc.trigon.robot.commands.commandfactories.CoralPlacingCommands;
 import frc.trigon.robot.subsystems.MotorSubsystem;
 import lib.hardware.phoenix6.cancoder.CANcoderEncoder;
@@ -98,9 +99,11 @@ public class ArmElevator extends MotorSubsystem {
         armMasterMotor.update();
         angleEncoder.update();
         elevatorMasterMotor.update();
-        Logger.recordOutput("Elevator/CurrentPositionMeters", getCurrentElevatorPositionMeters());
-        Logger.recordOutput("Arm/CurrentPositionDegrees", getCurrentArmAngle().getDegrees());
+        Logger.recordOutput("Elevator/ElevatorPositionMeters", getCurrentElevatorPositionMeters());
+        Logger.recordOutput("Arm/ArmPositionDegrees", getCurrentArmAngle().getDegrees());
         Logger.recordOutput("Arm/isPrepareArmAngleAboveCurrentArmAngle", CoralPlacingCommands.isPrepareArmAngleAboveCurrentArmAngle());
+        Logger.recordOutput("AutonomousScoring", CoralPlacingCommands.SHOULD_SCORE_AUTONOMOUSLY);
+        Logger.recordOutput("ShouldLoadCoral", CoralCollectionCommands.SHOULD_LOAD_CORAL);
     }
 
     @Override

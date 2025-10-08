@@ -114,7 +114,7 @@ public class RobotContainer {
         OperatorConstants.FLIP_ARM_TRIGGER.onTrue(new InstantCommand(() -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE = !OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE));
         OperatorConstants.LOLLIPOP_ALGAE_TOGGLE_TRIGGER.onTrue(new InstantCommand(AlgaeManipulationCommands::toggleLollipopCollection));
         OperatorConstants.SHOULD_LOAD_CORAL_TOGGLE_TRIGGER.onTrue(GeneralCommands.getToggleShouldLoadCoralCommand());
-        OperatorConstants.SHOULD_MANIPULATE_CORAL_ATONOMOUSLY_TRIGGER.onTrue(GeneralCommands.getToggleShouldManipulateCoralAtonomouslyCommand());
+        OperatorConstants.SHOULD_MANIPULATE_CORAL_ATONOMOUSLY_TRIGGER.onTrue(GeneralCommands.getToggleShouldManipulateCoralAutonomouslyCommand());
         OperatorConstants.SHOULD_COLLECT_CORAL_ATONOMOUSLY_TRIGGER.onTrue(GeneralCommands.getToggleShouldCollectCoralAtonomouslyCommand());
         OperatorConstants.SHOULD_SCORE_CORAL_ATONOMOUSLY_TRIGGER.onTrue(GeneralCommands.getToggleShouldScoreCoralAtonomouslyCommand());
         OperatorConstants.CLIMB_TRIGGER.toggleOnTrue(ClimbCommands.getClimbCommand());

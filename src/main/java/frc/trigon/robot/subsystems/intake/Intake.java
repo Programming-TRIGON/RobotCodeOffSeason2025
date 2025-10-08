@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.trigon.robot.commands.commandfactories.CoralCollectionCommands;
 import frc.trigon.robot.subsystems.MotorSubsystem;
 import lib.hardware.phoenix6.talonfx.TalonFXMotor;
 import lib.hardware.phoenix6.talonfx.TalonFXSignal;
@@ -52,7 +53,9 @@ public class Intake extends MotorSubsystem {
         intakeMotor.update();
         angleMotor.update();
         IntakeConstants.DISTANCE_SENSOR.updateSensor();
-        Logger.recordOutput("Intake/distanceSensorCM", IntakeConstants.DISTANCE_SENSOR.getScaledValue());
+        Logger.recordOutput("Intake/IntakeSensorCM", IntakeConstants.DISTANCE_SENSOR.getScaledValue());
+        Logger.recordOutput("Intake/IntakeAngle", getCurrentAngle().getDegrees());
+        Logger.recordOutput("AutonomousIntake", CoralCollectionCommands.SHOULD_USE_INTAKE_ASSIST);
     }
 
     @Override
@@ -83,7 +86,7 @@ public class Intake extends MotorSubsystem {
         return angleDifferenceFromTargetAngleDegrees < IntakeConstants.ANGLE_TOLERANCE.getDegrees();
     }
 
-    @AutoLogOutput(key = "Intake/HasCoral")
+    @AutoLogOutput(key = "Intake/IntakeHasCoral")
     public boolean hasCoral() {
         return IntakeConstants.COLLECTION_DETECTION_BOOLEAN_EVENT.getAsBoolean();
     }
@@ -141,7 +144,6 @@ public class Intake extends MotorSubsystem {
         return IntakeConstants.INTAKE_VISUALIZATION_ORIGIN_POINT.transformBy(transform);
     }
 
-    @AutoLogOutput(key = "Intake/IntakeAngle")
     private Rotation2d getCurrentAngle() {
         return Rotation2d.fromRotations(angleMotor.getSignal(TalonFXSignal.POSITION));
     }

@@ -19,9 +19,7 @@ import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.AutoLogOutput;
 
 public class CoralCollectionCommands {
-    @AutoLogOutput(key = "Autonomous/ShouldLoadCoral")
     public static boolean SHOULD_LOAD_CORAL = true;
-    @AutoLogOutput(key = "Autonomous/ShouldAssistIntake")
     public static boolean SHOULD_USE_INTAKE_ASSIST = true;
 
     public static Command getCoralCollectionCommand() {

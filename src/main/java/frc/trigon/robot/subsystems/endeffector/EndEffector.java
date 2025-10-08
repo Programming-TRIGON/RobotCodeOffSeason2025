@@ -4,7 +4,6 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import edu.wpi.first.math.geometry.Translation3d;
 import frc.trigon.robot.RobotContainer;
 import frc.trigon.robot.commands.commandfactories.AlgaeManipulationCommands;
-import frc.trigon.robot.commands.commandfactories.CoralPlacingCommands;
 import frc.trigon.robot.misc.simulatedfield.SimulationFieldHandler;
 import frc.trigon.robot.subsystems.MotorSubsystem;
 import lib.hardware.phoenix6.talonfx.TalonFXMotor;
@@ -32,10 +31,10 @@ public class EndEffector extends MotorSubsystem {
         EndEffectorConstants.DISTANCE_SENSOR.updateSensor();
 
         Logger.recordOutput("EndEffector/isHoldingAlgae", AlgaeManipulationCommands.isHoldingAlgae());
-        Logger.recordOutput("EndEffector/distanceSensorCM", EndEffectorConstants.DISTANCE_SENSOR.getScaledValue());
+        Logger.recordOutput("EndEffector/EndEffectorSensorCM", EndEffectorConstants.DISTANCE_SENSOR.getScaledValue());
     }
 
-    @AutoLogOutput(key = "EndEffector/HasCoral")
+    @AutoLogOutput(key = "EndEffector/EndEffectorHasCoral")
     public boolean hasGamePiece() {
         return EndEffectorConstants.COLLECTION_DETECTION_BOOLEAN_EVENT.getAsBoolean();
     }
