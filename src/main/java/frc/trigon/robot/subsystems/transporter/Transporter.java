@@ -47,7 +47,7 @@ public class Transporter extends MotorSubsystem {
         return TransporterConstants.HAS_CORAL_BOOLEAN_EVENT.getAsBoolean();
     }
 
-    void setTargetState(TransporterConstants.TransporterState targetState) {
+    public void setTargetState(TransporterConstants.TransporterState targetState) {
         this.targetState = targetState;
         setTargetState(targetState.targetRightMotorVoltage, targetState.targetLeftMotorVoltage);
     }

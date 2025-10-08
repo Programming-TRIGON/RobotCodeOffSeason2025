@@ -41,7 +41,7 @@ public class CoralCollectionCommands {
                 new ParallelCommandGroup(
                         getIntakeCoralCommand(),
                         ArmElevatorCommands.getSetTargetStateCommand(ArmElevatorConstants.ArmElevatorState.REST)
-                ).until(RobotContainer.TRANSPORTER::hasCoral).unless((RobotContainer.TRANSPORTER::hasCoral)).unless(RobotContainer.END_EFFECTOR::hasGamePiece),
+                ).until(RobotContainer.TRANSPORTER::hasCoral).unless(RobotContainer.TRANSPORTER::hasCoral).unless(RobotContainer.END_EFFECTOR::hasGamePiece).finallyDo(() -> {RobotContainer.TRANSPORTER.stop(); RobotContainer.INTAKE.setTargetState(IntakeConstants.IntakeState.REST);}),
                 ArmElevatorCommands.getSetTargetStateCommand(ArmElevatorConstants.ArmElevatorState.REST).unless(() -> RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.REST)).until(() -> RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.REST)),
                 new ParallelCommandGroup(
                         ArmElevatorCommands.getSetTargetStateCommand(ArmElevatorConstants.ArmElevatorState.LOAD_CORAL),
