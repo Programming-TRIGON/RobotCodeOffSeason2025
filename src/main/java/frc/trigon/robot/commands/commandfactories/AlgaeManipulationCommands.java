@@ -49,7 +49,7 @@ public class AlgaeManipulationCommands {
         return new SequentialCommandGroup(
                 GeneralCommands.getResetFlipArmOverrideCommand(),
                 CoralCollectionCommands.getUnloadCoralCommand().onlyIf(RobotContainer.END_EFFECTOR::hasGamePiece),
-                getInitiateFloorAlgaeCollectionCommand().raceWith(new WaitUntilCommand(RobotContainer.END_EFFECTOR::hasGamePiece).andThen(new WaitCommand(0.1))),
+                getInitiateFloorAlgaeCollectionCommand().raceWith(new WaitUntilCommand(RobotContainer.END_EFFECTOR::hasGamePiece).andThen(new WaitCommand(0.15))),
                 new InstantCommand(() -> {
                     IS_HOLDING_ALGAE = true;
                     SHOULD_COLLECT_FROM_LOLLIPOP = false;
@@ -64,7 +64,7 @@ public class AlgaeManipulationCommands {
         return new SequentialCommandGroup(
                 GeneralCommands.getResetFlipArmOverrideCommand(),
                 CoralCollectionCommands.getUnloadCoralCommand().onlyIf(RobotContainer.END_EFFECTOR::hasGamePiece),
-                getInitiateReefAlgaeCollectionCommand().until(RobotContainer.END_EFFECTOR::hasGamePiece),
+                getInitiateReefAlgaeCollectionCommand().raceWith(new WaitUntilCommand(RobotContainer.END_EFFECTOR::hasGamePiece).andThen(new WaitCommand(0.1))),
                 new InstantCommand(() -> IS_HOLDING_ALGAE = true),
                 GeneralCommands.getResetFlipArmOverrideCommand(),
                 getScoreAlgaeCommand().alongWith(getAlgaeCollectionConfirmationCommand())

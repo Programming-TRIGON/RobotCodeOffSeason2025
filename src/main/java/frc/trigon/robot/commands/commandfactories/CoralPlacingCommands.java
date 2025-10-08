@@ -153,11 +153,11 @@ public class CoralPlacingCommands {
         final Rotation2d targetAngle = targetState.prepareState == null
                 ? targetState.targetAngle
                 : targetState.prepareState.targetAngle;
-        return RobotContainer.ARM_ELEVATOR.armAboveAngle(targetAngle) || RobotContainer.ARM_ELEVATOR.armAtAngle(targetAngle);
+        return RobotContainer.ARM_ELEVATOR.armAboveAngle(targetAngle);
     }
 
     private static boolean isReadyToScore(boolean shouldScoreRight) {
-        return RobotContainer.ARM_ELEVATOR.atState(REEF_CHOOSER.getArmElevatorState().prepareState, shouldReverseScore())
+        return RobotContainer.ARM_ELEVATOR.atState(REEF_CHOOSER.getArmElevatorState().prepareState, shouldReverseScore(), 4)
                 && RobotContainer.SWERVE.atPose(calculateClosestScoringPose(shouldScoreRight));
     }
 

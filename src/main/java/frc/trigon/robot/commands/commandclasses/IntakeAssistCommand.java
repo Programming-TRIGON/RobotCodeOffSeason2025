@@ -23,10 +23,10 @@ public class IntakeAssistCommand extends ParallelCommandGroup {
     static final ProfiledPIDController
             X_PID_CONTROLLER = RobotHardwareStats.isSimulation() ?
             new ProfiledPIDController(0.5, 0, 0, new TrapezoidProfile.Constraints(2.8, 5)) :
-            new ProfiledPIDController(0.5, 0, 0, new TrapezoidProfile.Constraints(2.65, 5.5)),
+            new ProfiledPIDController(0.6, 0, 0, new TrapezoidProfile.Constraints(2.65, 5.5)),
             Y_PID_CONTROLLER = RobotHardwareStats.isSimulation() ?
                     new ProfiledPIDController(0.5, 0, 0, new TrapezoidProfile.Constraints(2.8, 5)) :
-                    new ProfiledPIDController(0.2, 0, 0.03, new TrapezoidProfile.Constraints(2.65, 4)),
+                    new ProfiledPIDController(0.25, 0, 0.03, new TrapezoidProfile.Constraints(2.65, 4)),
             THETA_PID_CONTROLLER = RobotHardwareStats.isSimulation() ?
                     new ProfiledPIDController(0.4, 0, 0, new TrapezoidProfile.Constraints(2.8, 5)) :
                     new ProfiledPIDController(0.2, 0, 0, new TrapezoidProfile.Constraints(2.65, 5.5));

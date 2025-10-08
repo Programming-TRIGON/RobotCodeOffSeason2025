@@ -1,5 +1,6 @@
 package frc.trigon.robot.subsystems.endeffector;
 
+import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import edu.wpi.first.math.geometry.Translation3d;
 import frc.trigon.robot.RobotContainer;
@@ -61,11 +62,19 @@ public class EndEffector extends MotorSubsystem {
     }
 
     void setTargetState(EndEffectorConstants.EndEffectorState targetState) {
-        setEndEffectorTargetVoltage(targetState.targetVoltage);
+        if (targetState == EndEffectorConstants.EndEffectorState.HOLD_ALGAE) {
+            setCur(targetState.targetVoltage);
+        } else {
+            setEndEffectorTargetVoltage(targetState.targetVoltage);
+        }
     }
 
     void setTargetState(double targetVoltage) {
         setEndEffectorTargetVoltage(targetVoltage);
+    }
+
+    private void setCur(double cur) {
+        endEffectorMotor.setControl(new TorqueCurrentFOC(cur).withMaxAbsDutyCycle(0.6));
     }
 
     private void setEndEffectorTargetVoltage(double targetVoltage) {

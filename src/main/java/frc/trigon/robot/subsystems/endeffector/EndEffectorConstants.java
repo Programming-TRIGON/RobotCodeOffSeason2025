@@ -98,7 +98,7 @@ public class EndEffectorConstants {
         COLLECT_ALGAE(-11),
         SCORE_ALGAE(10),
         HOLD_CORAL(-0.5),
-        HOLD_ALGAE(-7.5);
+        HOLD_ALGAE(-50);
 
         public final double targetVoltage;
 

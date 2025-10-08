@@ -45,7 +45,7 @@ public class ArmElevatorCommands {
                         RobotContainer.ARM_ELEVATOR
                 ).until(() -> RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.ZERO_ELEVATOR)),
                 new ExecuteEndCommand(
-                        () -> RobotContainer.ARM_ELEVATOR.setElevatorVoltage(-OperatorConstants.DRIVER_CONTROLLER.getRightX() * 2),
+                        () -> RobotContainer.ARM_ELEVATOR.setElevatorVoltage(-OperatorConstants.DRIVER_CONTROLLER.getRightY() * 2),
                         () -> {},
                         RobotContainer.ARM_ELEVATOR
                 )).alongWith(SwerveCommands.getOpenLoopFieldRelativeDriveCommand(() -> 0, () -> 0, () -> 0)).finallyDo(RobotContainer.ARM_ELEVATOR::resetElevatorPosition);
