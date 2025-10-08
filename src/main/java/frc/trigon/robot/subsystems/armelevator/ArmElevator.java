@@ -102,8 +102,8 @@ public class ArmElevator extends MotorSubsystem {
         Logger.recordOutput("Elevator/ElevatorPositionMeters", getCurrentElevatorPositionMeters());
         Logger.recordOutput("Arm/ArmPositionDegrees", getCurrentArmAngle().getDegrees());
         Logger.recordOutput("Arm/isPrepareArmAngleAboveCurrentArmAngle", CoralPlacingCommands.isPrepareArmAngleAboveCurrentArmAngle());
-        Logger.recordOutput("AutonomousScoring", CoralPlacingCommands.SHOULD_SCORE_AUTONOMOUSLY);
-        Logger.recordOutput("ShouldLoadCoral", CoralCollectionCommands.SHOULD_LOAD_CORAL);
+        Logger.recordOutput("Arm/AutonomousScoring", CoralPlacingCommands.SHOULD_SCORE_AUTONOMOUSLY);
+        Logger.recordOutput("Arm/ShouldLoadCoral", CoralCollectionCommands.SHOULD_LOAD_CORAL);
     }
 
     @Override

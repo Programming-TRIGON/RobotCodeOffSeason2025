@@ -55,7 +55,7 @@ public class Intake extends MotorSubsystem {
         IntakeConstants.DISTANCE_SENSOR.updateSensor();
         Logger.recordOutput("Intake/IntakeSensorCM", IntakeConstants.DISTANCE_SENSOR.getScaledValue());
         Logger.recordOutput("Intake/IntakeAngle", getCurrentAngle().getDegrees());
-        Logger.recordOutput("AutonomousIntake", CoralCollectionCommands.SHOULD_USE_INTAKE_ASSIST);
+        Logger.recordOutput("Intake/AutonomousIntake", CoralCollectionCommands.SHOULD_USE_INTAKE_ASSIST);
     }
 
     @Override
