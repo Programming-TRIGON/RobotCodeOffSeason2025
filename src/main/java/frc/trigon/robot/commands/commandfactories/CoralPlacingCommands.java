@@ -25,7 +25,7 @@ public class CoralPlacingCommands {
     public static Command getScoreInReefCommand(boolean shouldScoreRight) {
         return new ConditionalCommand(
                 getAutonomouslyScoreCommand(shouldScoreRight),
-                getScoreCommand(shouldScoreRight),
+                getScoreCommand(),
                 () -> SHOULD_SCORE_AUTONOMOUSLY && REEF_CHOOSER.getScoringLevel() != ScoringLevel.L1
         ).onlyIf(CoralCollectionCommands::hasCoral);
     }
@@ -40,7 +40,7 @@ public class CoralPlacingCommands {
         );
     }
 
-    private static Command getScoreCommand(boolean shouldScoreRight) {
+    private static Command getScoreCommand() {
         return new SequentialCommandGroup(
                 CoralCollectionCommands.getLoadCoralCommand(),
                 GeneralCommands.getFlippableOverridableArmCommand(REEF_CHOOSER::getArmElevatorState, true, CoralPlacingCommands::shouldReverseScore).until(OperatorConstants.CONTINUE_TRIGGER),

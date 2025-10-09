@@ -55,7 +55,7 @@ public class ArmElevatorConstants {
             SHOULD_ELEVATOR_FOLLOWER_OPPOSE_MASTER = false;
     static final double
             ARM_DEFAULT_MAXIMUM_VELOCITY = RobotHardwareStats.isSimulation() ? 2.4614 : 2,
-            ARM_DEFAULT_MAXIMUM_ACCELERATION = RobotHardwareStats.isSimulation() ? 67.2344 : 3.5,
+            ARM_DEFAULT_MAXIMUM_ACCELERATION = RobotHardwareStats.isSimulation() ? 67.2344 : 3.2,
             ARM_DEFAULT_MAXIMUM_JERK = ARM_DEFAULT_MAXIMUM_ACCELERATION * 10,
             ELEVATOR_DEFAULT_MAXIMUM_VELOCITY = RobotHardwareStats.isSimulation() ? 25.178 : 21,
             ELEVATOR_DEFAULT_MAXIMUM_ACCELERATION = RobotHardwareStats.isSimulation() ? 80 : 55;
@@ -344,8 +344,8 @@ public class ArmElevatorConstants {
         SCORE_PROCESSOR(Rotation2d.fromDegrees(0), 0.1, null, false, 0.4),
         COLLECT_ALGAE_L2(Rotation2d.fromDegrees(0), 0.603, null, false, 1),
         COLLECT_ALGAE_L3(Rotation2d.fromDegrees(0), 1.15, null, false, 1),
-        PREPARE_COLLECT_ALGAE_FLOOR(Rotation2d.fromDegrees(-32), 0.3, null, false, 1),
-        COLLECT_ALGAE_FLOOR(Rotation2d.fromDegrees(-32), 0.18, PREPARE_COLLECT_ALGAE_FLOOR, true, 1),
+        PREPARE_COLLECT_ALGAE_FLOOR(Rotation2d.fromDegrees(-32), 0.35, null, false, 1),
+        COLLECT_ALGAE_FLOOR(Rotation2d.fromDegrees(-32), 0.22, PREPARE_COLLECT_ALGAE_FLOOR, true, 1),
         COLLECT_ALGAE_LOLLIPOP(Rotation2d.fromDegrees(0), 0.15, null, false, 1);
 
 
