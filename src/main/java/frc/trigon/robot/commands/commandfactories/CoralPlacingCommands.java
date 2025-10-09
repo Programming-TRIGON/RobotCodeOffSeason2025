@@ -43,7 +43,7 @@ public class CoralPlacingCommands {
     private static Command getScoreCommand(boolean shouldScoreRight) {
         return new SequentialCommandGroup(
                 CoralCollectionCommands.getLoadCoralCommand(),
-                getPrepareArmElevatorIfWontHitReef(shouldScoreRight).until(OperatorConstants.CONTINUE_TRIGGER),
+                GeneralCommands.getFlippableOverridableArmCommand(REEF_CHOOSER::getArmElevatorState, true, CoralPlacingCommands::shouldReverseScore).until(OperatorConstants.CONTINUE_TRIGGER),
                 new ParallelCommandGroup(
                         GeneralCommands.getFlippableOverridableArmCommand(REEF_CHOOSER::getArmElevatorState, false, CoralPlacingCommands::shouldReverseScore),
                         EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.SCORE_CORAL)
