@@ -61,7 +61,7 @@ public class EndEffector extends MotorSubsystem {
         return endEffectorMotor.getSignal(TalonFXSignal.MOTOR_VOLTAGE) > 1;
     }
 
-    void setTargetState(EndEffectorConstants.EndEffectorState targetState) {
+    public void setTargetState(EndEffectorConstants.EndEffectorState targetState) {
         if (targetState == EndEffectorConstants.EndEffectorState.HOLD_ALGAE) {
             setCur(targetState.targetVoltage);
         } else {

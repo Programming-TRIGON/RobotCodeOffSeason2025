@@ -2,6 +2,7 @@ package frc.trigon.robot.subsystems.armelevator;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.trigon.robot.RobotContainer;
 import frc.trigon.robot.commands.commandfactories.GeneralCommands;
@@ -40,18 +41,19 @@ public class ArmElevatorCommands {
     }
 
     public static Command resetElevatorPositionCommand() {
-        return new SequentialCommandGroup(
+        return new ParallelCommandGroup(
                 new ExecuteEndCommand(
-                        () -> RobotContainer.ARM_ELEVATOR.setTargetState(ArmElevatorConstants.ArmElevatorState.ZERO_ELEVATOR),
-                        RobotContainer.ARM_ELEVATOR::stop,
-                        RobotContainer.ARM_ELEVATOR
+                        () -> RobotContainer.ARM_ELEVATOR.setTargetArmState(ArmElevatorConstants.ArmElevatorState.ZERO_ELEVATOR, false),
+                        () -> {}
                 ).until(() -> RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.ZERO_ELEVATOR)),
                 new ExecuteEndCommand(
                         () -> RobotContainer.ARM_ELEVATOR.setElevatorVoltage(OperatorConstants.DRIVER_CONTROLLER.getRightY() * 2),
                         () -> {},
                         RobotContainer.ARM_ELEVATOR
-                )
-        ).alongWith(SwerveCommands.getOpenLoopFieldRelativeDriveCommand(() -> 0, () -> 0, () -> 0), EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.EJECT)).finallyDo(RobotContainer.ARM_ELEVATOR::resetElevatorPosition);
+                ),
+                SwerveCommands.getOpenLoopFieldRelativeDriveCommand(() -> 0, () -> 0, () -> 0),
+                EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.EJECT)
+        ).finallyDo(() -> {RobotContainer.ARM_ELEVATOR.resetElevatorPosition(); RobotContainer.END_EFFECTOR.setTargetState(EndEffectorConstants.EndEffectorState.REST);});
     }
 
     public static Command getSetTargetStateCommand(ArmElevatorConstants.ArmElevatorState targetState) {

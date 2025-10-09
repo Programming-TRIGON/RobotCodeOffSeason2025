@@ -252,7 +252,7 @@ public class ArmElevatorConstants {
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         config.Feedback.SensorToMechanismRatio = ELEVATOR_GEAR_RATIO;
 
-        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 3.5 : 17;
+        config.Slot0.kP = RobotHardwareStats.isSimulation() ? 3.5 : 22;
         config.Slot0.kI = RobotHardwareStats.isSimulation() ? 0 : 0;
         config.Slot0.kD = RobotHardwareStats.isSimulation() ? 0.4 : 1;
         config.Slot0.kS = RobotHardwareStats.isSimulation() ? 0.016165 : 0.0546875;
@@ -339,13 +339,13 @@ public class ArmElevatorConstants {
         SCORE_L1(Rotation2d.fromDegrees(-13), PREPARE_SCORE_L1.targetPositionMeters, null, false, 1),
         SCORE_L2(Rotation2d.fromDegrees(25), PREPARE_SCORE_L2.targetPositionMeters, PREPARE_SCORE_L2, false, 0.8),
         SCORE_L3(Rotation2d.fromDegrees(25), PREPARE_SCORE_L3.targetPositionMeters, PREPARE_SCORE_L3, false, 0.8),
-        SCORE_L4(Rotation2d.fromDegrees(-10), 1.5, PREPARE_SCORE_L4, false, 0.8),
+        SCORE_L4(Rotation2d.fromDegrees(-5), 1.5, PREPARE_SCORE_L4, false, 0.8),
         SCORE_NET(Rotation2d.fromDegrees(70), 1.61, null, false, 0.3),
-        SCORE_PROCESSOR(Rotation2d.fromDegrees(0), 0.1, null, false, 0.6),
+        SCORE_PROCESSOR(Rotation2d.fromDegrees(0), 0.1, null, false, 0.4),
         COLLECT_ALGAE_L2(Rotation2d.fromDegrees(0), 0.603, null, false, 1),
         COLLECT_ALGAE_L3(Rotation2d.fromDegrees(0), 1.15, null, false, 1),
-        PREPARE_COLLECT_ALGAE_FLOOR(Rotation2d.fromDegrees(-30), 0.3, null, false, 1),
-        COLLECT_ALGAE_FLOOR(Rotation2d.fromDegrees(-32), 0.16, PREPARE_COLLECT_ALGAE_FLOOR, true, 1),
+        PREPARE_COLLECT_ALGAE_FLOOR(Rotation2d.fromDegrees(-32), 0.3, null, false, 1),
+        COLLECT_ALGAE_FLOOR(Rotation2d.fromDegrees(-32), 0.18, PREPARE_COLLECT_ALGAE_FLOOR, true, 1),
         COLLECT_ALGAE_LOLLIPOP(Rotation2d.fromDegrees(0), 0.15, null, false, 1);
 
 
