@@ -50,7 +50,7 @@ public class EndEffectorConstants {
     private static final double
             DISTANCE_SENSOR_SCALING_SLOPE = 0.0002,
             DISTANCE_SENSOR_SCALING_INTERCEPT_POINT = -200;
-    private static final double COLLECTION_DETECTION_DISTANCE_CENTIMETRES = 5;
+    private static final double COLLECTION_DETECTION_DISTANCE_CENTIMETRES = 4;
     static final BooleanEvent COLLECTION_DETECTION_BOOLEAN_EVENT = new BooleanEvent(
             CommandScheduler.getInstance().getActiveButtonLoop(),
             () -> DISTANCE_SENSOR.getScaledValue() < COLLECTION_DETECTION_DISTANCE_CENTIMETRES

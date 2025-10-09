@@ -26,7 +26,7 @@ public class IntakeCommands {
 
     public static Command resetIntakePositionCommand() {
         return new ExecuteEndCommand(
-                () -> RobotContainer.INTAKE.setAngleMotorVoltage(-OperatorConstants.DRIVER_CONTROLLER.getRightY() * 2),
+                () -> RobotContainer.INTAKE.setAngleMotorVoltage(OperatorConstants.DRIVER_CONTROLLER.getRightY() * 2),
                 RobotContainer.INTAKE::resetIntakePosition,
                 RobotContainer.INTAKE
         ).alongWith(SwerveCommands.getOpenLoopFieldRelativeDriveCommand(() -> 0, () -> 0, () -> 0));

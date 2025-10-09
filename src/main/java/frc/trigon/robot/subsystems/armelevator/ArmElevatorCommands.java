@@ -6,6 +6,8 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.trigon.robot.RobotContainer;
 import frc.trigon.robot.commands.commandfactories.GeneralCommands;
 import frc.trigon.robot.constants.OperatorConstants;
+import frc.trigon.robot.subsystems.endeffector.EndEffectorCommands;
+import frc.trigon.robot.subsystems.endeffector.EndEffectorConstants;
 import frc.trigon.robot.subsystems.swerve.SwerveCommands;
 import lib.commands.ExecuteEndCommand;
 import lib.commands.GearRatioCalculationCommand;
@@ -45,10 +47,11 @@ public class ArmElevatorCommands {
                         RobotContainer.ARM_ELEVATOR
                 ).until(() -> RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.ZERO_ELEVATOR)),
                 new ExecuteEndCommand(
-                        () -> RobotContainer.ARM_ELEVATOR.setElevatorVoltage(-OperatorConstants.DRIVER_CONTROLLER.getRightY() * 2),
+                        () -> RobotContainer.ARM_ELEVATOR.setElevatorVoltage(OperatorConstants.DRIVER_CONTROLLER.getRightY() * 2),
                         () -> {},
                         RobotContainer.ARM_ELEVATOR
-                )).alongWith(SwerveCommands.getOpenLoopFieldRelativeDriveCommand(() -> 0, () -> 0, () -> 0)).finallyDo(RobotContainer.ARM_ELEVATOR::resetElevatorPosition);
+                )
+        ).alongWith(SwerveCommands.getOpenLoopFieldRelativeDriveCommand(() -> 0, () -> 0, () -> 0), EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.EJECT)).finallyDo(RobotContainer.ARM_ELEVATOR::resetElevatorPosition);
     }
 
     public static Command getSetTargetStateCommand(ArmElevatorConstants.ArmElevatorState targetState) {

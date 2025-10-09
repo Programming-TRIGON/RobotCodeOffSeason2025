@@ -51,7 +51,7 @@ public class AutonomousCommands {
                 SwerveCommands.getClosedLoopSelfRelativeDriveCommand(
                         () -> 0,
                         () -> 0,
-                        () -> AutonomousConstants.AUTO_FIND_CORAL_ROTATION_POWER
+                        () -> 0
                 )
         );
     }
