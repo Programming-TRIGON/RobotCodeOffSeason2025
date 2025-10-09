@@ -44,16 +44,21 @@ public class ArmElevatorCommands {
         return new ParallelCommandGroup(
                 new ExecuteEndCommand(
                         () -> RobotContainer.ARM_ELEVATOR.setTargetArmState(ArmElevatorConstants.ArmElevatorState.ZERO_ELEVATOR, false),
-                        () -> {}
+                        () -> {
+                        }
                 ).until(() -> RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.ZERO_ELEVATOR)),
                 new ExecuteEndCommand(
                         () -> RobotContainer.ARM_ELEVATOR.setElevatorVoltage(OperatorConstants.DRIVER_CONTROLLER.getRightY() * 2),
-                        () -> {},
+                        () -> {
+                        },
                         RobotContainer.ARM_ELEVATOR
                 ),
                 SwerveCommands.getOpenLoopFieldRelativeDriveCommand(() -> 0, () -> 0, () -> 0),
                 EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.EJECT)
-        ).finallyDo(() -> {RobotContainer.ARM_ELEVATOR.resetElevatorPosition(); RobotContainer.END_EFFECTOR.setTargetState(EndEffectorConstants.EndEffectorState.REST);});
+        ).finallyDo(() -> {
+            RobotContainer.ARM_ELEVATOR.resetElevatorPosition();
+            RobotContainer.END_EFFECTOR.setTargetState(EndEffectorConstants.EndEffectorState.REST);
+        });
     }
 
     public static Command getSetTargetStateCommand(ArmElevatorConstants.ArmElevatorState targetState) {
@@ -74,6 +79,17 @@ public class ArmElevatorCommands {
                         RobotContainer.ARM_ELEVATOR::stop,
                         RobotContainer.ARM_ELEVATOR
                 )
+        );
+    }
+
+    public static Command getStayInPlaceCommand() {
+        return new ExecuteEndCommand(
+                () -> {
+                    RobotContainer.ARM_ELEVATOR.setTargetArmAngle(RobotContainer.ARM_ELEVATOR.getCurrentArmAngle(), true);
+                    RobotContainer.ARM_ELEVATOR.setTargetElevatorPositionMeters(RobotContainer.ARM_ELEVATOR.getCurrentElevatorPositionMeters(), true);
+                },
+                RobotContainer.ARM_ELEVATOR::stop,
+                RobotContainer.ARM_ELEVATOR
         );
     }
 

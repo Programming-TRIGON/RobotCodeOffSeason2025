@@ -10,13 +10,13 @@ import frc.trigon.robot.constants.AutonomousConstants;
 import frc.trigon.robot.constants.FieldConstants;
 import frc.trigon.robot.constants.OperatorConstants;
 import frc.trigon.robot.misc.ReefChooser;
+import frc.trigon.robot.subsystems.armelevator.ArmElevatorCommands;
 import frc.trigon.robot.subsystems.armelevator.ArmElevatorConstants;
 import frc.trigon.robot.subsystems.endeffector.EndEffectorCommands;
 import frc.trigon.robot.subsystems.endeffector.EndEffectorConstants;
 import frc.trigon.robot.subsystems.swerve.SwerveCommands;
 import lib.utilities.flippable.FlippablePose2d;
 import lib.utilities.flippable.FlippableTranslation2d;
-import org.littletonrobotics.junction.AutoLogOutput;
 
 public class CoralPlacingCommands {
     public static boolean SHOULD_SCORE_AUTONOMOUSLY = true;
@@ -79,8 +79,9 @@ public class CoralPlacingCommands {
     }
 
     private static Command getPrepareArmElevatorIfWontHitReef(boolean shouldScoreRight) {
-        return GeneralCommands.runWhen(
+        return GeneralCommands.getContinuousConditionalCommand(
                 GeneralCommands.getFlippableOverridableArmCommand(REEF_CHOOSER::getArmElevatorState, true, CoralPlacingCommands::shouldReverseScore),
+                ArmElevatorCommands.getStayInPlaceCommand(),
                 () -> CoralPlacingCommands.isPrepareArmAngleAboveCurrentArmAngle() || calculateDistanceToTargetScoringPose(shouldScoreRight) > FieldConstants.SAFE_DISTANCE_FROM_SCORING_POSE_METERS
         );
     }
