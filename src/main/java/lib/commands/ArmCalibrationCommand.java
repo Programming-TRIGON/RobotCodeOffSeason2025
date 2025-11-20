@@ -13,27 +13,29 @@ import java.util.HashMap;
 public class ArmCalibrationCommand extends Command {
     //Find the gravity offset, kG, and kS
     private final TalonFXMotor motor;
+    private static final double VOLTAGE_INCREMENT = 0.001;
     private Rotation2d gravityOffset;
     private double kG, kS, currentVoltage, minimumVoltage, maximumVoltage;
-    private boolean isCalculationFinished;
+    private boolean isCalculationFinished = false;
     private double previousVelocity;
     HashMap<Double, Rotation2d> name = new HashMap<>();
 
 
     public ArmCalibrationCommand(TalonFXMotor motor, SubsystemBase... requirements) {
         this.motor = motor;
-
         addRequirements(requirements);
     }
 
     @Override
     public void initialize() {
-
     }
+
 
     @Override
     public void execute() {
         runCalculateGravityOffset();
+        System.out.println(isVelocityIncreasing() + "\ncurrent velocity: " + motor.getSignal(TalonFXSignal.VELOCITY) + " \nprevious velocity: " + previousVelocity);
+        System.out.println("\nmaximumPosition: " + gravityOffset.getRotations() + "\nminimumPosition: " +  name.get(minimumVoltage).getRotations());
     }
 
     @Override
@@ -43,6 +45,7 @@ public class ArmCalibrationCommand extends Command {
 
     @Override
     public void end(boolean interrupted) {
+        System.out.println(interrupted);
         calculateKG();
         calculateKS();
         logValues();
@@ -59,16 +62,18 @@ public class ArmCalibrationCommand extends Command {
         System.out.println("GravityOffset: " + gravityOffset);
         System.out.println("kG: " + kG);
         System.out.println("kS: " + kS);
+        System.out.println("Maximum Voltage: " + maximumVoltage);
+        System.out.println("Minimum Voltage: " + minimumVoltage);
     }
 
     private void runCalculateGravityOffset() {
         if (isArmStoppedMoving()) {
-            currentVoltage += 0.01;
+            currentVoltage += VOLTAGE_INCREMENT;
             motor.setControl(new VoltageOut(currentVoltage));
             logMotorSignalsToHashmap();
         }
         if (isVelocityIncreasing()) {
-            maximumVoltage = currentVoltage - 0.01;
+            maximumVoltage = currentVoltage - VOLTAGE_INCREMENT;
             gravityOffset = name.get(maximumVoltage);
             getMinimumVoltage();
             isCalculationFinished = true;
@@ -77,13 +82,13 @@ public class ArmCalibrationCommand extends Command {
 
     private void getMinimumVoltage() {
         minimumVoltage = maximumVoltage;
-        while (!(Math.abs(gravityOffset.getRotations() - name.get(minimumVoltage).getRotations()) > 0.001)) {
-            minimumVoltage -= 0.01;
+        while ((Math.abs(gravityOffset.getRotations() - name.get(minimumVoltage).getRotations()) > 0.0001)) {
+            minimumVoltage -= VOLTAGE_INCREMENT;
         }
     }
 
     private boolean isVelocityIncreasing() {
-        return motor.getSignal(TalonFXSignal.VELOCITY) > previousVelocity;
+        return Math.abs(motor.getSignal(TalonFXSignal.VELOCITY) - previousVelocity) > 0.001;
     }
 
     private boolean isArmStoppedMoving() {

@@ -10,6 +10,7 @@ import frc.trigon.robot.constants.OperatorConstants;
 import frc.trigon.robot.subsystems.endeffector.EndEffectorCommands;
 import frc.trigon.robot.subsystems.endeffector.EndEffectorConstants;
 import frc.trigon.robot.subsystems.swerve.SwerveCommands;
+import lib.commands.ArmCalibrationCommand;
 import lib.commands.ExecuteEndCommand;
 import lib.commands.GearRatioCalculationCommand;
 import lib.commands.NetworkTablesCommand;
@@ -28,6 +29,13 @@ public class ArmElevatorCommands {
                 Set.of(RobotContainer.ARM_ELEVATOR),
                 "Debugging/ArmTargetPositionDegrees",
                 "Debugging/ElevatorTargetPositionMeters"
+        );
+    }
+
+    public static Command getArmCalibrationCommand() {
+        return new ArmCalibrationCommand(
+                ArmElevatorConstants.ARM_MASTER_MOTOR,
+                RobotContainer.ARM_ELEVATOR
         );
     }
 
