@@ -1,5 +1,6 @@
 package frc.trigon.robot.subsystems.armelevator;
 
+import com.ctre.phoenix6.controls.VoltageOut;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -34,7 +35,8 @@ public class ArmElevatorCommands {
 
     public static Command getArmCalibrationCommand() {
         return new ArmCalibrationCommand(
-                ArmElevatorConstants.ARM_MASTER_MOTOR,
+                () -> RobotContainer.ARM_ELEVATOR.getCurrentArmAngle().getRotations(),
+                voltage -> ArmElevatorConstants.ARM_MASTER_MOTOR.setControl(new VoltageOut(voltage).withEnableFOC(true)),
                 RobotContainer.ARM_ELEVATOR
         );
     }

@@ -1,110 +1,108 @@
 package lib.commands;
 
-import com.ctre.phoenix6.controls.VoltageOut;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import lib.hardware.phoenix6.talonfx.TalonFXMotor;
-import lib.hardware.phoenix6.talonfx.TalonFXSignal;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import org.littletonrobotics.junction.Logger;
 
-import java.util.HashMap;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class ArmCalibrationCommand extends Command {
-    //Find the gravity offset, kG, and kS
-    private final TalonFXMotor motor;
-    private static final double VOLTAGE_INCREMENT = 0.001;
-    private Rotation2d gravityOffset;
-    private double kG, kS, currentVoltage, minimumVoltage, maximumVoltage;
-    private boolean isCalculationFinished = false;
-    private double previousVelocity;
-    HashMap<Double, Rotation2d> name = new HashMap<>();
+    private static final double
+            STARTING_VOLTAGE = 0.002,
+            VOLTAGE_INCREMENT = 0.0001,
+            POSITION_DEADBAND_ROTATIONS = 0.00000000001;
+    private final Supplier<Double> positionSupplier;
+    private final Consumer<Double> voltageConsumer;
+    private double
+            currentVoltage,
+            provisionalKGMinimum,
+            kGMinimum,
+            kGMaximum;
+    private Rotation2d
+            previousPosition,
+            gravityOffset;
+    private boolean isStationary = true;
 
-
-    public ArmCalibrationCommand(TalonFXMotor motor, SubsystemBase... requirements) {
-        this.motor = motor;
-        addRequirements(requirements);
+    public ArmCalibrationCommand(Supplier<Double> positionSupplier, Consumer<Double> voltageConsumer, Subsystem Requirement) {
+        addRequirements(Requirement);
+        this.positionSupplier = positionSupplier;
+        this.voltageConsumer = voltageConsumer;
+        this.currentVoltage = STARTING_VOLTAGE;
+        this.provisionalKGMinimum = 0;
+        this.kGMinimum = 0;
+        this.kGMaximum = 0;
+        this.previousPosition = Rotation2d.fromRotations(positionSupplier.get());
+        this.gravityOffset = Rotation2d.fromRotations(positionSupplier.get());
     }
 
     @Override
     public void initialize() {
+        voltageConsumer.accept(STARTING_VOLTAGE);
     }
-
 
     @Override
     public void execute() {
-        runCalculateGravityOffset();
-        System.out.println(isVelocityIncreasing() + "\ncurrent velocity: " + motor.getSignal(TalonFXSignal.VELOCITY) + " \nprevious velocity: " + previousVelocity);
-        System.out.println("\nmaximumPosition: " + gravityOffset.getRotations() + "\nminimumPosition: " +  name.get(minimumVoltage).getRotations());
-    }
-
-    @Override
-    public boolean isFinished() {
-        return isCalculationFinished;
+        if (!isMoving() && !isStationary) {
+            provisionalKGMinimum = currentVoltage;
+            System.out.println(provisionalKGMinimum + " provisionalKGMinimum");
+            increaseVoltage();
+            isStationary = true;
+            gravityOffset = Rotation2d.fromRotations(positionSupplier.get());
+        } else if (!isMoving()) {
+            kGMaximum = currentVoltage;
+            kGMinimum = provisionalKGMinimum;
+            System.out.println(kGMaximum + " kGMaximum");
+            increaseVoltage();
+        } else {
+            System.out.println(isMoving());
+            isStationary = false;
+        }
+        previousPosition = Rotation2d.fromRotations(positionSupplier.get());
     }
 
     @Override
     public void end(boolean interrupted) {
-        System.out.println(interrupted);
-        calculateKG();
-        calculateKS();
-        logValues();
-        printResults();
+        final double kG = calculateKG();
+        final double kS = calculateKS();
+        printResults(kG, kS);
+        logResults(kG, kS);
     }
 
-    private void logValues() {
-        Logger.recordOutput("/SmartDashboard/ArmCalibrationCommand/GravityOffset", gravityOffset);
-        Logger.recordOutput("/SmartDashboard/ArmCalibrationCommand/kG", kG);
-        Logger.recordOutput("/SmartDashboard/ArmCalibrationCommand/kS", kS);
+    @Override
+    public boolean isFinished() {
+        return Math.abs(positionSupplier.get() - gravityOffset.getRotations()) > Rotation2d.k180deg.getRotations();
     }
 
-    private void printResults() {
-        System.out.println("GravityOffset: " + gravityOffset);
+    private void increaseVoltage() {
+        currentVoltage += VOLTAGE_INCREMENT;
+        voltageConsumer.accept(currentVoltage);
+    }
+
+    private boolean isMoving() {
+        return Math.abs(previousPosition.getRotations() - positionSupplier.get()) > POSITION_DEADBAND_ROTATIONS;
+    }
+
+    private double calculateKG() {
+        return (kGMinimum + kGMaximum) / 2;
+    }
+
+    private double calculateKS() {
+        return (kGMaximum - kGMinimum) / 2;
+    }
+
+    private void printResults(double kG, double kS) {
+        System.out.println("Gravity Offset (rotations): " + gravityOffset.getRotations());
+        System.out.println("Minimum kG: " + kGMinimum);
+        System.out.println("Maximum kG: " + kGMaximum);
         System.out.println("kG: " + kG);
         System.out.println("kS: " + kS);
-        System.out.println("Maximum Voltage: " + maximumVoltage);
-        System.out.println("Minimum Voltage: " + minimumVoltage);
     }
 
-    private void runCalculateGravityOffset() {
-        if (isArmStoppedMoving()) {
-            currentVoltage += VOLTAGE_INCREMENT;
-            motor.setControl(new VoltageOut(currentVoltage));
-            logMotorSignalsToHashmap();
-        }
-        if (isVelocityIncreasing()) {
-            maximumVoltage = currentVoltage - VOLTAGE_INCREMENT;
-            gravityOffset = name.get(maximumVoltage);
-            getMinimumVoltage();
-            isCalculationFinished = true;
-        }
-    }
-
-    private void getMinimumVoltage() {
-        minimumVoltage = maximumVoltage;
-        while ((Math.abs(gravityOffset.getRotations() - name.get(minimumVoltage).getRotations()) > 0.0001)) {
-            minimumVoltage -= VOLTAGE_INCREMENT;
-        }
-    }
-
-    private boolean isVelocityIncreasing() {
-        return Math.abs(motor.getSignal(TalonFXSignal.VELOCITY) - previousVelocity) > 0.001;
-    }
-
-    private boolean isArmStoppedMoving() {
-        return Math.abs(motor.getSignal(TalonFXSignal.VELOCITY)) < 0.01;
-    }
-
-    private void logMotorSignalsToHashmap() {
-        name.put(motor.getSignal(TalonFXSignal.MOTOR_VOLTAGE), Rotation2d.fromRotations(motor.getSignal(TalonFXSignal.POSITION)));
-        previousVelocity = motor.getSignal(TalonFXSignal.VELOCITY);
-    }
-
-    private void calculateKG() {
-        kG = (maximumVoltage + minimumVoltage) / 2;
-    }
-
-    private void calculateKS() {
-        kS = (maximumVoltage - minimumVoltage) / 2;
+    private void logResults(double kG, double kS) {
+        Logger.recordOutput("ArmCalibrationV2Command/GravityOffset", gravityOffset);
+        Logger.recordOutput("ArmCalibrationV2Command/kG", kG);
+        Logger.recordOutput("ArmCalibrationV2Command/kS", kS);
     }
 }
