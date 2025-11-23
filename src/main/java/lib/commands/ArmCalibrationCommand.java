@@ -4,13 +4,14 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class ArmCalibrationCommand extends Command {
+    private static final LoggedNetworkNumber STARTING_VOLTAGE = new LoggedNetworkNumber("ArmCalibrationV2Command/ArmCalibrationStartingVoltage", 0.01);
     private static final double
-            STARTING_VOLTAGE = 0.002,
             VOLTAGE_INCREMENT = 0.0001,
             POSITION_DEADBAND_ROTATIONS = 0.00000000001;
     private final Supplier<Double> positionSupplier;
@@ -19,40 +20,49 @@ public class ArmCalibrationCommand extends Command {
             currentVoltage,
             provisionalKGMinimum,
             kGMinimum,
-            kGMaximum;
+            kGMaximum,
+            bestKGMinimum,
+            bestKGMaximum;
     private Rotation2d
             previousPosition,
-            gravityOffset;
-    private boolean isStationary = true;
+            bestGravityOffset;
+    private boolean
+            startedMoving = false,
+            isStationary = true;
 
-    public ArmCalibrationCommand(Supplier<Double> positionSupplier, Consumer<Double> voltageConsumer, Subsystem Requirement) {
-        addRequirements(Requirement);
+    public ArmCalibrationCommand(Supplier<Double> positionSupplier, Consumer<Double> voltageConsumer, Subsystem requirement) {
         this.positionSupplier = positionSupplier;
         this.voltageConsumer = voltageConsumer;
-        this.currentVoltage = STARTING_VOLTAGE;
-        this.provisionalKGMinimum = 0;
-        this.kGMinimum = 0;
-        this.kGMaximum = 0;
-        this.previousPosition = Rotation2d.fromRotations(positionSupplier.get());
-        this.gravityOffset = Rotation2d.fromRotations(positionSupplier.get());
+
+        addRequirements(requirement);
     }
 
     @Override
     public void initialize() {
-        voltageConsumer.accept(STARTING_VOLTAGE);
+        this.currentVoltage = STARTING_VOLTAGE.get();
+        this.provisionalKGMinimum = 0;
+        this.kGMinimum = 0;
+        this.kGMaximum = 0;
+        this.bestKGMaximum = 0;
+        this.bestKGMinimum = 0;
+        this.previousPosition = Rotation2d.fromRotations(positionSupplier.get());
+        this.bestGravityOffset = Rotation2d.fromRotations(positionSupplier.get());
+
+        voltageConsumer.accept(STARTING_VOLTAGE.get());
     }
 
     @Override
     public void execute() {
+        if (!startedMoving && isMoving())
+            startedMoving = true;
         if (!isMoving() && !isStationary) {
             provisionalKGMinimum = currentVoltage;
             System.out.println(provisionalKGMinimum + " provisionalKGMinimum");
             increaseVoltage();
             isStationary = true;
-            gravityOffset = Rotation2d.fromRotations(positionSupplier.get());
         } else if (!isMoving()) {
-            kGMaximum = currentVoltage;
-            kGMinimum = provisionalKGMinimum;
+            if (startedMoving)
+                setKGValues();
             System.out.println(kGMaximum + " kGMaximum");
             increaseVoltage();
         } else {
@@ -72,7 +82,18 @@ public class ArmCalibrationCommand extends Command {
 
     @Override
     public boolean isFinished() {
-        return Math.abs(positionSupplier.get() - gravityOffset.getRotations()) > Rotation2d.k180deg.getRotations();
+        return Math.abs(positionSupplier.get() - bestGravityOffset.getRotations()) > Rotation2d.k180deg.getRotations();
+    }
+
+    private void setKGValues() {
+        kGMaximum = currentVoltage;
+        kGMinimum = provisionalKGMinimum;
+
+        if (kGMaximum - kGMinimum > bestKGMaximum - bestKGMinimum) {
+            bestKGMaximum = kGMaximum;
+            bestKGMinimum = kGMinimum;
+            bestGravityOffset = Rotation2d.fromRotations(positionSupplier.get());
+        }
     }
 
     private void increaseVoltage() {
@@ -85,23 +106,23 @@ public class ArmCalibrationCommand extends Command {
     }
 
     private double calculateKG() {
-        return (kGMinimum + kGMaximum) / 2;
+        return (bestKGMinimum + bestKGMaximum) / 2;
     }
 
     private double calculateKS() {
-        return (kGMaximum - kGMinimum) / 2;
+        return (bestKGMaximum - bestKGMinimum) / 2;
     }
 
     private void printResults(double kG, double kS) {
-        System.out.println("Gravity Offset (rotations): " + gravityOffset.getRotations());
-        System.out.println("Minimum kG: " + kGMinimum);
-        System.out.println("Maximum kG: " + kGMaximum);
+        System.out.println("Gravity Offset (rotations): " + bestGravityOffset.getRotations());
+        System.out.println("Minimum kG: " + bestKGMinimum);
+        System.out.println("Maximum kG: " + bestKGMaximum);
         System.out.println("kG: " + kG);
         System.out.println("kS: " + kS);
     }
 
     private void logResults(double kG, double kS) {
-        Logger.recordOutput("ArmCalibrationV2Command/GravityOffset", gravityOffset);
+        Logger.recordOutput("ArmCalibrationV2Command/GravityOffset", bestGravityOffset);
         Logger.recordOutput("ArmCalibrationV2Command/kG", kG);
         Logger.recordOutput("ArmCalibrationV2Command/kS", kS);
     }

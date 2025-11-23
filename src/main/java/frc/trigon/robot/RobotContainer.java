@@ -98,6 +98,8 @@ public class RobotContainer {
     }
 
     private void bindControllerCommands() {
+        OperatorConstants.OPERATOR_CONTROLLER.t().whileTrue(ArmElevatorCommands.getArmCalibrationCommand());
+
         OperatorConstants.RESET_HEADING_TRIGGER.onTrue(CommandConstants.RESET_HEADING_COMMAND);
 //        OperatorConstants.DRIVE_FROM_DPAD_TRIGGER.whileTrue(CommandConstants.SELF_RELATIVE_DRIVE_FROM_DPAD_COMMAND);
         OperatorConstants.TOGGLE_BRAKE_TRIGGER.onTrue(GeneralCommands.getToggleBrakeCommand());
