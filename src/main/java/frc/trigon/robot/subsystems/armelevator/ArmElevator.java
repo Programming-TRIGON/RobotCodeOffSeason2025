@@ -19,6 +19,7 @@ import lib.utilities.Conversions;
 import org.littletonrobotics.junction.Logger;
 
 public class ArmElevator extends MotorSubsystem {
+    private static final boolean SHOULD_CALIBRATE_ELEVATOR = false;
     private final TalonFXMotor
             armMasterMotor = ArmElevatorConstants.ARM_MASTER_MOTOR,
             elevatorMasterMotor = ArmElevatorConstants.ELEVATOR_MASTER_MOTOR;
@@ -30,7 +31,7 @@ public class ArmElevator extends MotorSubsystem {
             ArmElevatorConstants.ARM_DEFAULT_MAXIMUM_ACCELERATION,
             ArmElevatorConstants.ARM_DEFAULT_MAXIMUM_JERK
     ).withEnableFOC(ArmElevatorConstants.FOC_ENABLED);
-    private final DynamicMotionMagicVoltage positionRequest = new DynamicMotionMagicVoltage(
+    private final DynamicMotionMagicVoltage elevatorPositionRequest = new DynamicMotionMagicVoltage(
             0,
             ArmElevatorConstants.ELEVATOR_DEFAULT_MAXIMUM_VELOCITY,
             ArmElevatorConstants.ELEVATOR_DEFAULT_MAXIMUM_ACCELERATION,
@@ -45,14 +46,15 @@ public class ArmElevator extends MotorSubsystem {
 
     @Override
     public SysIdRoutine.Config getSysIDConfig() {
-        return ArmElevatorConstants.ARM_SYSID_CONFIG;
-        //return ArmElevatorConstants.ELEVATOR_SYSID_CONFIG;
+        return SHOULD_CALIBRATE_ELEVATOR ? ArmElevatorConstants.ELEVATOR_SYSID_CONFIG : ArmElevatorConstants.ARM_SYSID_CONFIG;
     }
 
     @Override
     public void setBrake(boolean brake) {
         armMasterMotor.setBrake(brake);
+        ArmElevatorConstants.ARM_FOLLOWER_MOTOR.setBrake(brake);
         elevatorMasterMotor.setBrake(brake);
+        ArmElevatorConstants.ELEVATOR_FOLLOWER_MOTOR.setBrake(brake);
     }
 
     @Override
@@ -63,21 +65,24 @@ public class ArmElevator extends MotorSubsystem {
 
     @Override
     public void updateLog(SysIdRoutineLog log) {
+        if (SHOULD_CALIBRATE_ELEVATOR) {
+            log.motor("Elevator")
+                    .linearPosition(Units.Meters.of(getElevatorPositionRotations()))
+                    .linearVelocity(Units.MetersPerSecond.of(elevatorMasterMotor.getSignal(TalonFXSignal.ROTOR_VELOCITY) / ArmElevatorConstants.ELEVATOR_GEAR_RATIO))
+                    .voltage(Units.Volts.of(elevatorMasterMotor.getSignal(TalonFXSignal.MOTOR_VOLTAGE)));
+            return;
+        }
         log.motor("Arm")
-                .angularPosition(Units.Rotations.of(getCurrentArmAngle().getRotations()))
-                .angularVelocity(Units.RotationsPerSecond.of(armMasterMotor.getSignal(TalonFXSignal.VELOCITY)))
+                .angularPosition(Units.Rotations.of(armMasterMotor.getSignal(TalonFXSignal.POSITION)))
+                .angularVelocity(Units.RotationsPerSecond.of(armMasterMotor.getSignal(TalonFXSignal.ROTOR_VELOCITY) / ArmElevatorConstants.ARM_GEAR_RATIO))
                 .voltage(Units.Volts.of(armMasterMotor.getSignal(TalonFXSignal.MOTOR_VOLTAGE)));
-//        log.motor("Elevator")
-//                .linearPosition(Units.Meters.of(getPositionRotations()))
-//                .linearVelocity(Units.MetersPerSecond.of(masterMotor.getSignal(TalonFXSignal.VELOCITY)))
-//                .voltage(Units.Volts.of(masterMotor.getSignal(TalonFXSignal.MOTOR_VOLTAGE)));
     }
 
     @Override
     public void updateMechanism() {
         ArmElevatorConstants.ARM_MECHANISM.update(
-                Rotation2d.fromRotations(getCurrentArmAngle().getRotations() + ArmElevatorConstants.POSITION_OFFSET_FROM_GRAVITY_OFFSET),
-                Rotation2d.fromRotations(armMasterMotor.getSignal(TalonFXSignal.CLOSED_LOOP_REFERENCE) + ArmElevatorConstants.POSITION_OFFSET_FROM_GRAVITY_OFFSET)
+                Rotation2d.fromRotations(getCurrentArmAngle().getRotations()),
+                Rotation2d.fromRotations(armMasterMotor.getSignal(TalonFXSignal.CLOSED_LOOP_REFERENCE) + ArmElevatorConstants.ARM_POSITION_OFFSET_FROM_GRAVITY_OFFSET)
         );
         ArmElevatorConstants.ELEVATOR_MECHANISM.update(
                 getCurrentElevatorPositionMeters(),
@@ -94,15 +99,24 @@ public class ArmElevator extends MotorSubsystem {
         armMasterMotor.update();
         angleEncoder.update();
         elevatorMasterMotor.update();
-        Logger.recordOutput("Elevator/CurrentPositionMeters", getCurrentElevatorPositionMeters());
-        Logger.recordOutput("Arm/CurrentPositionDegrees", getCurrentArmAngle().getDegrees());
+        Logger.recordOutput("Elevator/ElevatorPositionMeters", getCurrentElevatorPositionMeters());
+        Logger.recordOutput("Arm/ArmPositionDegrees", getCurrentArmAngle().getDegrees());
         Logger.recordOutput("Arm/isPrepareArmAngleAboveCurrentArmAngle", CoralPlacingCommands.isPrepareArmAngleAboveCurrentArmAngle());
+        Logger.recordOutput("Arm/AutonomousScoring", CoralPlacingCommands.SHOULD_SCORE_AUTONOMOUSLY);
+        Logger.recordOutput("Arm/ShouldLoadCoral", CoralCollectionCommands.SHOULD_LOAD_CORAL);
     }
 
     @Override
     public void sysIDDrive(double targetVoltage) {
+        if (SHOULD_CALIBRATE_ELEVATOR) {
+            elevatorMasterMotor.setControl(voltageRequest.withOutput(targetVoltage));
+            return;
+        }
         armMasterMotor.setControl(voltageRequest.withOutput(targetVoltage));
-//        elevatorMasterMotor.setControl(voltageRequest.withOutput(targetVoltage));
+    }
+
+    public void resetElevatorPosition() {
+        elevatorMasterMotor.setPosition(0);
     }
 
     public Pose3d calculateGamePieceCollectionPose() {
@@ -125,7 +139,14 @@ public class ArmElevator extends MotorSubsystem {
     public boolean atState(ArmElevatorConstants.ArmElevatorState targetState, boolean isStateReversed) {
         if (targetState == null)
             return false;
-        return armAtAngle(isStateReversed ? subtractFrom360Degrees(targetState.targetAngle) : targetState.targetAngle)
+        return armAtAngle(isStateReversed ? subtractFrom180Degrees(targetState.targetAngle) : targetState.targetAngle)
+                && elevatorAtPosition(targetState.targetPositionMeters);
+    }
+
+    public boolean atState(ArmElevatorConstants.ArmElevatorState targetState, boolean isStateReversed, double tol) {
+        if (targetState == null)
+            return false;
+        return armAtAngle(isStateReversed ? subtractFrom180Degrees(targetState.targetAngle) : targetState.targetAngle, tol)
                 && elevatorAtPosition(targetState.targetPositionMeters);
     }
 
@@ -134,8 +155,13 @@ public class ArmElevator extends MotorSubsystem {
         return currentToTargetAngleDifferenceDegrees < ArmElevatorConstants.ANGLE_TOLERANCE.getDegrees();
     }
 
+    public boolean armAtAngle(Rotation2d targetAngle, double tol) {
+        final double currentToTargetAngleDifferenceDegrees = Math.abs(targetAngle.minus(getCurrentArmAngle()).getDegrees());
+        return currentToTargetAngleDifferenceDegrees < tol;
+    }
+
     public boolean armAboveAngle(Rotation2d targetAngle) {
-        return targetAngle.getDegrees() < getCurrentArmAngle().getDegrees();
+        return targetAngle.getDegrees() - getCurrentArmAngle().getDegrees() < 4;
     }
 
     public boolean elevatorAtPosition(double positionMeters) {
@@ -144,7 +170,7 @@ public class ArmElevator extends MotorSubsystem {
     }
 
     public Rotation2d getCurrentArmAngle() {
-        return Rotation2d.fromRotations(angleEncoder.getSignal(CANcoderSignal.POSITION));
+        return Rotation2d.fromRotations(angleEncoder.getSignal(CANcoderSignal.POSITION) + ArmElevatorConstants.ARM_POSITION_OFFSET_FROM_GRAVITY_OFFSET);
     }
 
     public double getCurrentElevatorPositionMeters() {
@@ -186,8 +212,9 @@ public class ArmElevator extends MotorSubsystem {
     }
 
     void setTargetArmState(ArmElevatorConstants.ArmElevatorState targetState, boolean isStateReversed) {
-        if (isStateReversed) {
-            setTargetArmAngle(subtractFrom360Degrees(targetState.targetAngle), targetState.ignoreConstraints);
+        scaleArmPositionRequestSpeed(targetState.speedScalar);
+        if (isStateReversed && !(targetState == ArmElevatorConstants.ArmElevatorState.SCORE_L1 || targetState == ArmElevatorConstants.ArmElevatorState.PREPARE_SCORE_L1)) {
+            setTargetArmAngle(subtractFrom180Degrees(targetState.targetAngle), targetState.ignoreConstraints);
             return;
         }
         setTargetArmAngle(targetState.targetAngle, targetState.ignoreConstraints);
@@ -199,7 +226,22 @@ public class ArmElevator extends MotorSubsystem {
     }
 
     void setTargetArmAngle(Rotation2d targetAngle, boolean ignoreConstraints) {
-        armMasterMotor.setControl(armPositionRequest.withPosition(ignoreConstraints ? targetAngle.getRotations() : Math.max(targetAngle.getRotations(), calculateMinimumArmSafeAngle().getRotations())));
+        final Rotation2d minimumSafeAngle = calculateMinimumArmSafeAngle();
+        final Rotation2d currentAngle = getCurrentArmAngle();
+        if (getElevatorPositionRotations() < metersToRotations(ArmElevatorConstants.ArmElevatorState.REST.targetPositionMeters) && currentAngle.getDegrees() < -80) {
+            sendControlToArm(-0.25);
+            return;
+        }
+        if (!targetState.ignoreConstraints && minimumSafeAngle.getRotations() > Math.max(currentAngle.getRotations(), targetAngle.getRotations())) {
+            sendControlToArm(currentAngle.getRotations());
+            return;
+        }
+        final double targetPosition = ignoreConstraints ? targetAngle.getRotations() : Math.max(targetAngle.getRotations(), calculateMinimumArmSafeAngle().getRotations());
+        sendControlToArm(targetPosition);
+    }
+
+    void sendControlToArm(double targetRotation) {
+        armMasterMotor.setControl(armPositionRequest.withPosition(targetRotation - ArmElevatorConstants.ARM_POSITION_OFFSET_FROM_GRAVITY_OFFSET));
     }
 
     void setTargetElevatorPositionMeters(double targetPositionMeters, boolean ignoreConstraints) {
@@ -207,7 +249,7 @@ public class ArmElevator extends MotorSubsystem {
     }
 
     void setTargetElevatorPositionRotations(double targetPositionRotations, boolean ignoreConstraints) {
-        elevatorMasterMotor.setControl(positionRequest.withPosition(ignoreConstraints ? targetPositionRotations : Math.max(targetPositionRotations, calculateMinimumSafeElevatorHeightRotations())));
+        elevatorMasterMotor.setControl(elevatorPositionRequest.withPosition(ignoreConstraints ? targetPositionRotations : Math.max(targetPositionRotations, calculateMinimumSafeElevatorHeightRotations())));
     }
 
     private Rotation2d calculateMinimumArmSafeAngle() {
@@ -215,12 +257,12 @@ public class ArmElevator extends MotorSubsystem {
         final double cosOfMinimumSafeAngle = MathUtil.clamp(heightFromSafeZone / ArmElevatorConstants.ARM_LENGTH_METERS, 0, 1);
         final double acos = Math.acos(cosOfMinimumSafeAngle);
         return Double.isNaN(acos)
-                ? Rotation2d.fromRadians(0)
-                : Rotation2d.fromRadians(acos);
+                ? Rotation2d.fromDegrees(-100)
+                : Rotation2d.fromRadians(acos).minus(Rotation2d.kCCW_90deg);
     }
 
     private double calculateMinimumSafeElevatorHeightRotations() {
-        final double armCos = RobotContainer.ARM_ELEVATOR.getCurrentArmAngle().getCos();
+        final double armCos = RobotContainer.ARM_ELEVATOR.getCurrentArmAngle().plus(Rotation2d.kCCW_90deg).getCos();
         final double elevatorHeightFromArm = armCos * ArmElevatorConstants.ARM_LENGTH_METERS;
         final double minimumElevatorSafeZone = ArmElevatorConstants.MINIMUM_ELEVATOR_SAFE_ZONE_METERS;
         final double minimumSafeHeightMeters = (RobotContainer.ARM_ELEVATOR.isArmAboveSafeAngle()
@@ -233,22 +275,32 @@ public class ArmElevator extends MotorSubsystem {
         return getCurrentElevatorPositionMeters() - ArmElevatorConstants.MINIMUM_ELEVATOR_SAFE_ZONE_METERS;
     }
 
-    private static Rotation2d subtractFrom360Degrees(Rotation2d angleToSubtract) {
-        return Rotation2d.fromDegrees(Rotation2d.k180deg.getDegrees() * 2 - angleToSubtract.getDegrees());
+    private static Rotation2d subtractFrom180Degrees(Rotation2d angleToSubtract) {
+        return Rotation2d.fromDegrees(Rotation2d.k180deg.getDegrees() - angleToSubtract.getDegrees());
     }
 
     private Pose3d calculateVisualizationPose() {
         final Transform3d armTransform = new Transform3d(
                 new Translation3d(0, 0, getCurrentElevatorPositionMeters()),
-                new Rotation3d(0, getCurrentArmAngle().getRadians(), 0)
+                new Rotation3d(0, getCurrentArmAngle().getRadians() + Math.PI / 2, 0)
         );
         return ArmElevatorConstants.ARM_VISUALIZATION_ORIGIN_POINT.transformBy(armTransform);
     }
 
+    private void scaleArmPositionRequestSpeed(double speedScalar) {
+        armPositionRequest.Velocity = ArmElevatorConstants.ARM_DEFAULT_MAXIMUM_VELOCITY * speedScalar;
+        armPositionRequest.Acceleration = ArmElevatorConstants.ARM_DEFAULT_MAXIMUM_ACCELERATION * speedScalar;
+        armPositionRequest.Jerk = armPositionRequest.Acceleration * 10;
+    }
+
     private void scaleElevatorPositionRequestSpeed(double speedScalar) {
-        positionRequest.Velocity = ArmElevatorConstants.ELEVATOR_DEFAULT_MAXIMUM_VELOCITY * speedScalar;
-        positionRequest.Acceleration = ArmElevatorConstants.ELEVATOR_DEFAULT_MAXIMUM_ACCELERATION * speedScalar;
-        positionRequest.Jerk = positionRequest.Acceleration * 10;
+        elevatorPositionRequest.Velocity = ArmElevatorConstants.ELEVATOR_DEFAULT_MAXIMUM_VELOCITY * speedScalar;
+        elevatorPositionRequest.Acceleration = ArmElevatorConstants.ELEVATOR_DEFAULT_MAXIMUM_ACCELERATION * speedScalar;
+        elevatorPositionRequest.Jerk = elevatorPositionRequest.Acceleration * 10;
+    }
+
+    void setElevatorVoltage(double voltage) {
+        elevatorMasterMotor.setControl(voltageRequest.withOutput(voltage));
     }
 
     private Pose3d getFirstStageComponentPose() {

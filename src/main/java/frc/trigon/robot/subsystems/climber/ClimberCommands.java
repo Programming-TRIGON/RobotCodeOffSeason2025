@@ -3,6 +3,8 @@ package frc.trigon.robot.subsystems.climber;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.trigon.robot.RobotContainer;
+import frc.trigon.robot.constants.OperatorConstants;
+import frc.trigon.robot.subsystems.swerve.SwerveCommands;
 import lib.commands.ExecuteEndCommand;
 import lib.commands.NetworkTablesCommand;
 
@@ -19,6 +21,15 @@ public class ClimberCommands {
                 "Debugging/TargetServoSpeed"
         );
     }
+
+    public static Command resetClimberPositionCommand() {
+        return new ExecuteEndCommand(
+                () -> RobotContainer.CLIMBER.setTargetVoltage(OperatorConstants.DRIVER_CONTROLLER.getRightY() * 3),
+                RobotContainer.CLIMBER::resetClimberPosition,
+                RobotContainer.CLIMBER
+        ).alongWith(SwerveCommands.getOpenLoopFieldRelativeDriveCommand(() -> 0, () -> 0, () -> 0));
+    }
+
 
     public static Command getSetTargetStateCommand(ClimberConstants.ClimberState targetState) {
         return new StartEndCommand(
@@ -40,6 +51,15 @@ public class ClimberCommands {
         return new ExecuteEndCommand(
                 () -> RobotContainer.CLIMBER.setTargetVoltage(targetSpeed.getAsDouble() * ClimberConstants.MAXIMUM_MANUAL_CONTROL_VOLTAGE),
                 RobotContainer.CLIMBER::stop,
+                RobotContainer.CLIMBER
+        );
+    }
+
+    public static Command getDefaultCommand() {
+        return new StartEndCommand(
+                RobotContainer.CLIMBER::stop,
+                () -> {
+                },
                 RobotContainer.CLIMBER
         );
     }

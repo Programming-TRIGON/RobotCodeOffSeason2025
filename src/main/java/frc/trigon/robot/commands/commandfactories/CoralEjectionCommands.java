@@ -17,10 +17,10 @@ import frc.trigon.robot.subsystems.transporter.TransporterConstants;
 public class CoralEjectionCommands {
     public static Command getCoralEjectionCommand() {
         return GeneralCommands.getContinuousConditionalCommand(
-                getEjectCoralFromIntakeCommand(),
-                getEjectCoralFromEndEffectorCommand(),
+                getEjectCoralFromIntakeCommand().asProxy(),
+                getEjectCoralFromEndEffectorCommand().asProxy(),
                 () -> RobotContainer.TRANSPORTER.hasCoral() || RobotContainer.INTAKE.hasCoral()
-        ).onlyIf(SimulationFieldHandler::isHoldingCoral);
+        );
     }
 
     private static Command getEjectCoralFromIntakeCommand() {

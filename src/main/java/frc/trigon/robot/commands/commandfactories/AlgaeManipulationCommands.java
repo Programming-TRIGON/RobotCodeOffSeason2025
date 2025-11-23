@@ -49,7 +49,7 @@ public class AlgaeManipulationCommands {
         return new SequentialCommandGroup(
                 GeneralCommands.getResetFlipArmOverrideCommand(),
                 CoralCollectionCommands.getUnloadCoralCommand().onlyIf(RobotContainer.END_EFFECTOR::hasGamePiece),
-                getInitiateFloorAlgaeCollectionCommand().until(RobotContainer.END_EFFECTOR::hasGamePiece),
+                getInitiateFloorAlgaeCollectionCommand().raceWith(new WaitUntilCommand(RobotContainer.END_EFFECTOR::hasGamePiece).andThen(new WaitCommand(0.1))),
                 new InstantCommand(() -> {
                     IS_HOLDING_ALGAE = true;
                     SHOULD_COLLECT_FROM_LOLLIPOP = false;
@@ -64,7 +64,7 @@ public class AlgaeManipulationCommands {
         return new SequentialCommandGroup(
                 GeneralCommands.getResetFlipArmOverrideCommand(),
                 CoralCollectionCommands.getUnloadCoralCommand().onlyIf(RobotContainer.END_EFFECTOR::hasGamePiece),
-                getInitiateReefAlgaeCollectionCommand().until(RobotContainer.END_EFFECTOR::hasGamePiece),
+                getInitiateReefAlgaeCollectionCommand().raceWith(new WaitUntilCommand(RobotContainer.END_EFFECTOR::hasGamePiece).andThen(new WaitCommand(0.1))),
                 new InstantCommand(() -> IS_HOLDING_ALGAE = true),
                 GeneralCommands.getResetFlipArmOverrideCommand(),
                 getScoreAlgaeCommand().alongWith(getAlgaeCollectionConfirmationCommand())
@@ -112,6 +112,13 @@ public class AlgaeManipulationCommands {
     private static Command getScoreInNetCommand() {
         return new ParallelRaceGroup(
                 GeneralCommands.getFlippableOverridableArmCommand(ArmElevatorConstants.ArmElevatorState.SCORE_NET, false, AlgaeManipulationCommands::shouldReverseNetScore),
+                GeneralCommands.runWhen(EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.SCORE_ALGAE), OperatorConstants.CONTINUE_TRIGGER)
+        );
+    }
+
+    private static Command getAutonomouslyScoreInNetCommand() {
+        return new ParallelRaceGroup(
+                GeneralCommands.getFlippableOverridableArmCommand(ArmElevatorConstants.ArmElevatorState.SCORE_NET, false, AlgaeManipulationCommands::shouldReverseNetScore),
                 GeneralCommands.runWhen(EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.SCORE_ALGAE), OperatorConstants.CONTINUE_TRIGGER),
                 getDriveToNetCommand()
         );
@@ -119,7 +126,14 @@ public class AlgaeManipulationCommands {
 
     private static Command getScoreInProcessorCommand() {
         return new ParallelCommandGroup(
-                GeneralCommands.getFlippableOverridableArmCommand(ArmElevatorConstants.ArmElevatorState.SCORE_PROCESSOR, false),
+                ArmElevatorCommands.getSetTargetStateCommand(ArmElevatorConstants.ArmElevatorState.SCORE_PROCESSOR),
+                GeneralCommands.runWhen(EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.SCORE_ALGAE), OperatorConstants.CONTINUE_TRIGGER)
+        ).finallyDo(GeneralCommands.getFieldRelativeDriveCommand()::schedule);
+    }
+
+    private static Command getAtonomouslyScoreInProcessorCommand() {
+        return new ParallelCommandGroup(
+                ArmElevatorCommands.getSetTargetStateCommand(ArmElevatorConstants.ArmElevatorState.SCORE_PROCESSOR),
                 GeneralCommands.runWhen(EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.SCORE_ALGAE), OperatorConstants.CONTINUE_TRIGGER),
                 getDriveToProcessorCommand()
         ).finallyDo(GeneralCommands.getFieldRelativeDriveCommand()::schedule);
@@ -181,7 +195,7 @@ public class AlgaeManipulationCommands {
                         .onlyIf(() -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE)
                         .until(() -> !OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE)
                         .repeatedly()
-        );
+        ).finallyDo(() -> SHOULD_COLLECT_FROM_LOLLIPOP = false);
     }
 
     private static Command getCollectAlgaeFromFloorSequenceCommand() {

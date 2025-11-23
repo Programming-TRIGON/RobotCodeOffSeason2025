@@ -1,5 +1,6 @@
 package frc.trigon.robot.subsystems.endeffector;
 
+import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import edu.wpi.first.math.geometry.Translation3d;
 import frc.trigon.robot.RobotContainer;
@@ -31,9 +32,10 @@ public class EndEffector extends MotorSubsystem {
         EndEffectorConstants.DISTANCE_SENSOR.updateSensor();
 
         Logger.recordOutput("EndEffector/isHoldingAlgae", AlgaeManipulationCommands.isHoldingAlgae());
+        Logger.recordOutput("EndEffector/EndEffectorSensorCM", EndEffectorConstants.DISTANCE_SENSOR.getScaledValue());
     }
 
-    @AutoLogOutput(key = "EndEffector/HasCoral")
+    @AutoLogOutput(key = "EndEffector/EndEffectorHasCoral")
     public boolean hasGamePiece() {
         return EndEffectorConstants.COLLECTION_DETECTION_BOOLEAN_EVENT.getAsBoolean();
     }
@@ -56,15 +58,23 @@ public class EndEffector extends MotorSubsystem {
 
     @AutoLogOutput(key = "EndEffector/IsEjecting")
     public boolean isEjecting() {
-        return endEffectorMotor.getSignal(TalonFXSignal.MOTOR_VOLTAGE) > 2;
+        return endEffectorMotor.getSignal(TalonFXSignal.MOTOR_VOLTAGE) > 1;
     }
 
-    void setTargetState(EndEffectorConstants.EndEffectorState targetState) {
-        setEndEffectorTargetVoltage(targetState.targetVoltage);
+    public void setTargetState(EndEffectorConstants.EndEffectorState targetState) {
+        if (targetState == EndEffectorConstants.EndEffectorState.HOLD_ALGAE) {
+            setCur(targetState.targetVoltage);
+        } else {
+            setEndEffectorTargetVoltage(targetState.targetVoltage);
+        }
     }
 
     void setTargetState(double targetVoltage) {
         setEndEffectorTargetVoltage(targetVoltage);
+    }
+
+    private void setCur(double cur) {
+        endEffectorMotor.setControl(new TorqueCurrentFOC(cur).withMaxAbsDutyCycle(0.6));
     }
 
     private void setEndEffectorTargetVoltage(double targetVoltage) {

@@ -15,13 +15,15 @@ import frc.trigon.robot.subsystems.intake.IntakeConstants;
 import frc.trigon.robot.subsystems.swerve.SwerveCommands;
 
 public class ClimbCommands {
-    private static boolean IS_CLIMBING = false;//TODO: Make score triggers not work while climbing
+    private static boolean IS_CLIMBING = false;
 
     public static Command getClimbCommand() {
         return new SequentialCommandGroup(
                 new InstantCommand(() -> IS_CLIMBING = true),
+                ClimberCommands.getSetTargetStateCommand(ClimberConstants.ClimberState.BREAK_ZIP_TIE)
+                        .until(() -> RobotContainer.CLIMBER.atState(ClimberConstants.ClimberState.BREAK_ZIP_TIE)),
                 ClimberCommands.getSetTargetStateCommand(ClimberConstants.ClimberState.PREPARE_FOR_CLIMB)
-                        .until(() -> RobotContainer.CLIMBER.hasCage() || OperatorConstants.CONTINUE_TRIGGER.getAsBoolean()),
+                        .until(OperatorConstants.CONTINUE_TRIGGER),
                 ClimberCommands.getSetTargetStateCommand(ClimberConstants.ClimberState.CLIMB)
                         .until(RobotContainer.CLIMBER::atTargetState),
                 getAdjustClimbManuallyCommand()
@@ -36,19 +38,19 @@ public class ClimbCommands {
 
     private static Command getAdjustClimbManuallyCommand() {
         return new ParallelCommandGroup(
-                ClimberCommands.getSetTargetSpeedCommand(OperatorConstants.DRIVER_CONTROLLER::getRightY),
+                ClimberCommands.getSetTargetSpeedCommand(() -> OperatorConstants.DRIVER_CONTROLLER.getRightY() * 3),
                 SwerveCommands.getClosedLoopSelfRelativeDriveCommand(
                         () -> 0,
                         () -> 0,
                         () -> 0
-                )
+                ).asProxy()
         );
     }
 
     private static Command getSetSubsystemsToRestForClimbCommand() {
         return new ParallelCommandGroup(
                 ArmElevatorCommands.getSetTargetStateCommand(ArmElevatorConstants.ArmElevatorState.REST_FOR_CLIMB),
-                IntakeCommands.getSetTargetStateCommand(IntakeConstants.IntakeState.REST_FOR_CLIMB)
+                IntakeCommands.getSetTargetStateCommand(IntakeConstants.IntakeState.OPEN_REST)
         );
     }
 }

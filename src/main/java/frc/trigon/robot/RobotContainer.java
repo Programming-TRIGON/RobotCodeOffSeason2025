@@ -13,10 +13,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.trigon.robot.commands.CommandConstants;
 import frc.trigon.robot.commands.commandfactories.*;
-import frc.trigon.robot.constants.AutonomousConstants;
-import frc.trigon.robot.constants.CameraConstants;
-import frc.trigon.robot.constants.LEDConstants;
-import frc.trigon.robot.constants.OperatorConstants;
+import frc.trigon.robot.constants.*;
 import frc.trigon.robot.misc.objectdetectioncamera.ObjectPoseEstimator;
 import frc.trigon.robot.misc.simulatedfield.SimulatedGamePieceConstants;
 import frc.trigon.robot.misc.simulatedfield.SimulationFieldHandler;
@@ -24,13 +21,10 @@ import frc.trigon.robot.poseestimation.poseestimator.PoseEstimator;
 import frc.trigon.robot.subsystems.MotorSubsystem;
 import frc.trigon.robot.subsystems.armelevator.ArmElevator;
 import frc.trigon.robot.subsystems.armelevator.ArmElevatorCommands;
-import frc.trigon.robot.subsystems.armelevator.ArmElevatorConstants;
 import frc.trigon.robot.subsystems.climber.Climber;
 import frc.trigon.robot.subsystems.climber.ClimberCommands;
-import frc.trigon.robot.subsystems.climber.ClimberConstants;
 import frc.trigon.robot.subsystems.endeffector.EndEffector;
 import frc.trigon.robot.subsystems.endeffector.EndEffectorCommands;
-import frc.trigon.robot.subsystems.endeffector.EndEffectorConstants;
 import frc.trigon.robot.subsystems.intake.Intake;
 import frc.trigon.robot.subsystems.intake.IntakeCommands;
 import frc.trigon.robot.subsystems.intake.IntakeConstants;
@@ -45,7 +39,7 @@ import java.util.List;
 
 public class RobotContainer {
     public static final PoseEstimator ROBOT_POSE_ESTIMATOR = new PoseEstimator(
-            CameraConstants.INTAKE_SIDE_REEF_TAG_CAMERA,
+            CameraConstants.FRONT_REEF_TAG_CAMERA,
             CameraConstants.LEFT_REEF_TAG_CAMERA,
             CameraConstants.RIGHT_REEF_TAG_CAMERA
     );
@@ -80,13 +74,14 @@ public class RobotContainer {
     private void configureBindings() {
         bindDefaultCommands();
         bindControllerCommands();
+//        configureSysIDBindings(ARM_ELEVATOR);
     }
 
     private void bindDefaultCommands() {
         SWERVE.setDefaultCommand(GeneralCommands.getFieldRelativeDriveCommand());
         ARM_ELEVATOR.setDefaultCommand(ArmElevatorCommands.getDefaultCommand());
-        CLIMBER.setDefaultCommand(ClimberCommands.getSetTargetStateCommand(ClimberConstants.ClimberState.REST));
-        END_EFFECTOR.setDefaultCommand(EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.REST));
+        CLIMBER.setDefaultCommand(ClimberCommands.getDefaultCommand());
+        END_EFFECTOR.setDefaultCommand(EndEffectorCommands.getDefaultCommand());
         INTAKE.setDefaultCommand(IntakeCommands.getSetTargetStateCommand(IntakeConstants.IntakeState.REST));
         TRANSPORTER.setDefaultCommand(TransporterCommands.getSetTargetStateCommand(TransporterConstants.TransporterState.REST));
     }
@@ -103,6 +98,8 @@ public class RobotContainer {
     }
 
     private void bindControllerCommands() {
+        OperatorConstants.OPERATOR_CONTROLLER.t().whileTrue(ArmElevatorCommands.getArmCalibrationCommand());
+
         OperatorConstants.RESET_HEADING_TRIGGER.onTrue(CommandConstants.RESET_HEADING_COMMAND);
 //        OperatorConstants.DRIVE_FROM_DPAD_TRIGGER.whileTrue(CommandConstants.SELF_RELATIVE_DRIVE_FROM_DPAD_COMMAND);
         OperatorConstants.TOGGLE_BRAKE_TRIGGER.onTrue(GeneralCommands.getToggleBrakeCommand());
@@ -118,7 +115,15 @@ public class RobotContainer {
         OperatorConstants.SPAWN_CORAL_IN_SIMULATION_TRIGGER.onTrue(new InstantCommand(() -> SimulationFieldHandler.updateCoralSpawning(ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose())));
         OperatorConstants.FLIP_ARM_TRIGGER.onTrue(new InstantCommand(() -> OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE = !OperatorConstants.SHOULD_FLIP_ARM_OVERRIDE));
         OperatorConstants.LOLLIPOP_ALGAE_TOGGLE_TRIGGER.onTrue(new InstantCommand(AlgaeManipulationCommands::toggleLollipopCollection));
+        OperatorConstants.SHOULD_LOAD_CORAL_TOGGLE_TRIGGER.onTrue(GeneralCommands.getToggleShouldLoadCoralCommand());
+        OperatorConstants.SHOULD_MANIPULATE_CORAL_ATONOMOUSLY_TRIGGER.onTrue(GeneralCommands.getToggleShouldManipulateCoralAutonomouslyCommand());
+        OperatorConstants.SHOULD_COLLECT_CORAL_ATONOMOUSLY_TRIGGER.onTrue(GeneralCommands.getToggleShouldCollectCoralAtonomouslyCommand());
+        OperatorConstants.SHOULD_SCORE_CORAL_ATONOMOUSLY_TRIGGER.onTrue(GeneralCommands.getToggleShouldScoreCoralAtonomouslyCommand());
         OperatorConstants.CLIMB_TRIGGER.toggleOnTrue(ClimbCommands.getClimbCommand());
+//        OperatorConstants.DEBUGGING_TRIGGER.whileTrue(ClimberCommands.getDebuggingCommand());
+        OperatorConstants.RESET_CLIMBER_POSITION_TRIGGER.whileTrue(ClimberCommands.resetClimberPositionCommand().ignoringDisable(true));
+        OperatorConstants.RESET_INTAKE_POSITION_TRIGGER.whileTrue(IntakeCommands.resetIntakePositionCommand().ignoringDisable(true));
+        OperatorConstants.RESET_ELEVATOR_POSITION_TRIGGER.whileTrue(ArmElevatorCommands.resetElevatorPositionCommand().ignoringDisable(true));
     }
 
     private void configureSysIDBindings(MotorSubsystem subsystem) {
@@ -161,7 +166,11 @@ public class RobotContainer {
 
         addCommandsToChooser(
                 AutonomousCommands.getFloorAutonomousCommand(true),
-                AutonomousCommands.getFloorAutonomousCommand(false)
+                AutonomousCommands.getFloorAutonomousCommand(false),
+                AutonomousCommands.getFloorAutonomousCommand(true, FieldConstants.ReefClockPosition.REEF_2_OCLOCK, FieldConstants.ReefClockPosition.REEF_4_OCLOCK),
+                AutonomousCommands.getFloorAutonomousCommand(false, FieldConstants.ReefClockPosition.REEF_8_OCLOCK, FieldConstants.ReefClockPosition.REEF_10_OCLOCK),
+                AutonomousCommands.getFloorAutonomousCommand(true, FieldConstants.ReefClockPosition.REEF_2_OCLOCK, FieldConstants.ReefClockPosition.REEF_4_OCLOCK, FieldConstants.ReefClockPosition.REEF_6_OCLOCK),
+                AutonomousCommands.getFloorAutonomousCommand(false, FieldConstants.ReefClockPosition.REEF_8_OCLOCK, FieldConstants.ReefClockPosition.REEF_10_OCLOCK, FieldConstants.ReefClockPosition.REEF_6_OCLOCK)
         );
     }
 

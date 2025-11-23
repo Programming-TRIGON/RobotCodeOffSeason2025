@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.trigon.robot.commands.commandclasses.IntakeAssistCommand;
 import frc.trigon.robot.commands.commandfactories.AlgaeManipulationCommands;
+import frc.trigon.robot.commands.commandfactories.ClimbCommands;
 import frc.trigon.robot.misc.ReefChooser;
 import lib.hardware.misc.KeyboardController;
 import lib.hardware.misc.XboxController;
@@ -18,7 +19,7 @@ public class OperatorConstants {
             DRIVER_CONTROLLER_PORT = 0,
             REEF_CHOOSER_PORT = 1;
     private static final int
-            DRIVER_CONTROLLER_RIGHT_STICK_EXPONENT = 1,
+            DRIVER_CONTROLLER_RIGHT_STICK_EXPONENT = 2,
             DRIVER_CONTROLLER_LEFT_STICK_EXPONENT = 2;
     public static final XboxController DRIVER_CONTROLLER = new XboxController(
             DRIVER_CONTROLLER_PORT, DRIVER_CONTROLLER_RIGHT_STICK_EXPONENT, DRIVER_CONTROLLER_LEFT_STICK_EXPONENT, DRIVER_CONTROLLER_DEADBAND
@@ -36,7 +37,7 @@ public class OperatorConstants {
             ROTATION_STICK_SPEED_DIVIDER = 1;
 
     public static final double INTAKE_ASSIST_SCALAR = 1;
-    public static final IntakeAssistCommand.AssistMode DEFAULT_INTAKE_ASSIST_MODE = IntakeAssistCommand.AssistMode.ALTERNATE_ASSIST;
+    public static final IntakeAssistCommand.AssistMode DEFAULT_INTAKE_ASSIST_MODE = IntakeAssistCommand.AssistMode.ALTERNATE_ALIGN;
 
     public static final Trigger
             RESET_HEADING_TRIGGER = DRIVER_CONTROLLER.povUp(),
@@ -51,19 +52,26 @@ public class OperatorConstants {
     public static final Trigger
             FLOOR_ALGAE_COLLECTION_TRIGGER = DRIVER_CONTROLLER.leftBumper(),//TODO: Add operator control
             REEF_ALGAE_COLLECTION_TRIGGER = DRIVER_CONTROLLER.rightBumper().or(OPERATOR_CONTROLLER.a()),
-            STOP_REEF_ALGAE_ALIGN_TRIGGER = DRIVER_CONTROLLER.povLeft(),
+            STOP_REEF_ALGAE_ALIGN_TRIGGER = DRIVER_CONTROLLER.povRight(),
             SCORE_ALGAE_IN_NET_TRIGGER = OPERATOR_CONTROLLER.n().or(createScoreTrigger(true, true)),
             SCORE_ALGAE_IN_PROCESSOR_TRIGGER = OPERATOR_CONTROLLER.j().or(createScoreTrigger(false, true)),
             CORAL_COLLECTION_TRIGGER = DRIVER_CONTROLLER.leftTrigger().or(OPERATOR_CONTROLLER.c()),
             SCORE_CORAL_RIGHT_TRIGGER = createScoreTrigger(true, false),
             SCORE_CORAL_LEFT_TRIGGER = createScoreTrigger(false, false),
-            EJECT_CORAL_TRIGGER = OPERATOR_CONTROLLER.e();
+            EJECT_CORAL_TRIGGER = OPERATOR_CONTROLLER.e(),
+            SHOULD_LOAD_CORAL_TOGGLE_TRIGGER = DRIVER_CONTROLLER.back(),
+            SHOULD_MANIPULATE_CORAL_ATONOMOUSLY_TRIGGER = DRIVER_CONTROLLER.povLeft(),
+            SHOULD_COLLECT_CORAL_ATONOMOUSLY_TRIGGER = OPERATOR_CONTROLLER.y(),
+            SHOULD_SCORE_CORAL_ATONOMOUSLY_TRIGGER = OPERATOR_CONTROLLER.t();
     public static final Trigger
             SPAWN_CORAL_IN_SIMULATION_TRIGGER = OPERATOR_CONTROLLER.equals(),
             FLIP_ARM_TRIGGER = DRIVER_CONTROLLER.start(),
             LOLLIPOP_ALGAE_TOGGLE_TRIGGER = DRIVER_CONTROLLER.a(),
-            CLIMB_TRIGGER = DRIVER_CONTROLLER.back().or(OPERATOR_CONTROLLER.c());
-
+            CLIMB_TRIGGER = DRIVER_CONTROLLER.povDown().or(OPERATOR_CONTROLLER.c());
+    public static final Trigger
+            RESET_CLIMBER_POSITION_TRIGGER = OPERATOR_CONTROLLER.r().and(OPERATOR_CONTROLLER.b()),
+            RESET_INTAKE_POSITION_TRIGGER = OPERATOR_CONTROLLER.r().and(OPERATOR_CONTROLLER.n()),
+            RESET_ELEVATOR_POSITION_TRIGGER = OPERATOR_CONTROLLER.r().and(OPERATOR_CONTROLLER.m());
     public static final Trigger
             SET_TARGET_SCORING_REEF_LEVEL_L1_TRIGGER = OPERATOR_CONTROLLER.numpad0().or(DRIVER_CONTROLLER.a().and(() -> !AlgaeManipulationCommands.isHoldingAlgae())),
             SET_TARGET_SCORING_REEF_LEVEL_L2_TRIGGER = OPERATOR_CONTROLLER.numpad1().or(DRIVER_CONTROLLER.b()),
@@ -79,7 +87,7 @@ public class OperatorConstants {
             SET_TARGET_REEF_SCORING_SIDE_RIGHT_TRIGGER = OPERATOR_CONTROLLER.right();
 
     private static Trigger createScoreTrigger(boolean isRight, boolean isAlgaeCommand) {
-        final Trigger scoreTrigger;
+        Trigger scoreTrigger;
 
         if (isRight)
             scoreTrigger = DRIVER_CONTROLLER.rightStick()
@@ -91,6 +99,8 @@ public class OperatorConstants {
                     .and(() -> !IS_RIGHT_SCORE_BUTTON_PRESSED)
                     .onTrue(new InstantCommand(() -> IS_LEFT_SCORE_BUTTON_PRESSED = true))
                     .onFalse(new InstantCommand(() -> IS_LEFT_SCORE_BUTTON_PRESSED = false));
+
+        scoreTrigger = scoreTrigger.and(() -> !ClimbCommands.isClimbing());
 
         if (isAlgaeCommand)
             return scoreTrigger.and(AlgaeManipulationCommands::isHoldingAlgae);

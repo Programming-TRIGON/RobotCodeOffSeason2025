@@ -23,13 +23,13 @@ public class IntakeAssistCommand extends ParallelCommandGroup {
     static final ProfiledPIDController
             X_PID_CONTROLLER = RobotHardwareStats.isSimulation() ?
             new ProfiledPIDController(0.5, 0, 0, new TrapezoidProfile.Constraints(2.8, 5)) :
-            new ProfiledPIDController(2.4, 0, 0, new TrapezoidProfile.Constraints(2.65, 5.5)),
+            new ProfiledPIDController(0.7, 0, 0, new TrapezoidProfile.Constraints(2.65, 4.5)),
             Y_PID_CONTROLLER = RobotHardwareStats.isSimulation() ?
                     new ProfiledPIDController(0.5, 0, 0, new TrapezoidProfile.Constraints(2.8, 5)) :
-                    new ProfiledPIDController(0.3, 0, 0.03, new TrapezoidProfile.Constraints(2.65, 5.5)),
+                    new ProfiledPIDController(0.25, 0, 0.03, new TrapezoidProfile.Constraints(2.65, 4)),
             THETA_PID_CONTROLLER = RobotHardwareStats.isSimulation() ?
                     new ProfiledPIDController(0.4, 0, 0, new TrapezoidProfile.Constraints(2.8, 5)) :
-                    new ProfiledPIDController(2.4, 0, 0, new TrapezoidProfile.Constraints(2.65, 5.5));
+                    new ProfiledPIDController(0.6, 0, 0, new TrapezoidProfile.Constraints(2.8, 4.5));
     private Translation2d distanceFromTrackedGamePiece;
 
     /**
@@ -96,8 +96,8 @@ public class IntakeAssistCommand extends ParallelCommandGroup {
         final double xPIDOutput = clampToOutputRange(X_PID_CONTROLLER.calculate(distanceFromTrackedGamePiece.getX()));
         final double yPIDOutput = clampToOutputRange(Y_PID_CONTROLLER.calculate(distanceFromTrackedGamePiece.getY()));
 
-        if (assistMode.equals(AssistMode.ALTERNATE_ASSIST))
-            return calculateAlternateAssistTranslationPower(selfRelativeJoystickPower, xPIDOutput, yPIDOutput);
+        if (assistMode.isAlternate)
+            return calculateAlternateAssistTranslationPower(assistMode, selfRelativeJoystickPower, xPIDOutput, yPIDOutput);
         return calculateNormalAssistTranslationPower(assistMode, selfRelativeJoystickPower, xPIDOutput, yPIDOutput, intakeAssistScalar);
     }
 
@@ -115,14 +115,13 @@ public class IntakeAssistCommand extends ParallelCommandGroup {
         return pow;
     }
 
-    private static Translation2d calculateAlternateAssistTranslationPower(Translation2d joystickValue, double xPIDOutput, double yPIDOutput) {
-        final double pidScalar = Math.cbrt(joystickValue.getNorm());
+    private static Translation2d calculateAlternateAssistTranslationPower(AssistMode assistMode, Translation2d joystickValue, double xPIDOutput, double yPIDOutput) {
         final double
-                xJoystickPower = Math.cbrt(joystickValue.getX()),
-                yJoystickPower = Math.cbrt(joystickValue.getY());
+                xJoystickPower = joystickValue.getX(),
+                yJoystickPower = joystickValue.getY();
         final double
-                xPower = calculateAlternateAssistPower(xPIDOutput, pidScalar, xJoystickPower),
-                yPower = calculateAlternateAssistPower(yPIDOutput, pidScalar, yJoystickPower);
+                xPower = assistMode.shouldAssistX ? calculateAlternateAssistPower(xPIDOutput, xJoystickPower) : xJoystickPower,
+                yPower = assistMode.shouldAssistY ? calculateAlternateAssistPower(yPIDOutput, yJoystickPower) : yJoystickPower;
 
         return new Translation2d(xPower, yPower);
     }
@@ -143,8 +142,8 @@ public class IntakeAssistCommand extends ParallelCommandGroup {
                 pidOutput = clampToOutputRange(THETA_PID_CONTROLLER.calculate(thetaOffset.getRadians())),
                 joystickValue = OperatorConstants.DRIVER_CONTROLLER.getRightX();
 
-        if (assistMode.equals(AssistMode.ALTERNATE_ASSIST))
-            return calculateAlternateAssistPower(pidOutput, joystickValue, joystickValue);
+        if (assistMode.isAlternate)
+            return calculateAlternateAssistPower(pidOutput, joystickValue);
         return calculateNormalAssistPower(pidOutput, joystickValue, intakeAssistScalar);
     }
 
@@ -152,8 +151,8 @@ public class IntakeAssistCommand extends ParallelCommandGroup {
         return MathUtil.clamp(value, -1, 1);
     }
 
-    private static double calculateAlternateAssistPower(double pidOutput, double pidScalar, double joystickPower) {
-        return pidOutput * (1 - Math.abs(pidScalar)) + joystickPower;
+    private static double calculateAlternateAssistPower(double pidOutput, double joystickPower) {
+        return pidOutput * (1 - Math.abs(joystickPower)) + joystickPower;
     }
 
     private static double calculateNormalAssistPower(double pidOutput, double joystickPower, double scalar) {
@@ -162,6 +161,7 @@ public class IntakeAssistCommand extends ParallelCommandGroup {
 
     private static void resetPIDControllers(Translation2d distanceFromTrackedGamePiece) {
         X_PID_CONTROLLER.reset(distanceFromTrackedGamePiece.getX(), RobotContainer.SWERVE.getSelfRelativeVelocity().vxMetersPerSecond);
+        X_PID_CONTROLLER.setGoal(-0.15);
         Y_PID_CONTROLLER.reset(distanceFromTrackedGamePiece.getY(), RobotContainer.SWERVE.getSelfRelativeVelocity().vyMetersPerSecond);
         THETA_PID_CONTROLLER.reset(distanceFromTrackedGamePiece.getAngle().plus(Rotation2d.k180deg).unaryMinus().getRadians(), RobotContainer.SWERVE.getSelfRelativeVelocity().omegaRadiansPerSecond);
     }
@@ -173,29 +173,35 @@ public class IntakeAssistCommand extends ParallelCommandGroup {
         /**
          * An alternate method for assisting the intake where the pid output is scaled down the more input the driver gives.
          */
-        ALTERNATE_ASSIST(true, true, true),
+        ALTERNATE_ASSIST(true, true, true, true),
+        /**
+         * An alternate method for assisting the intake where the pid output is scaled down the more input the driver gives.
+         */
+        ALTERNATE_ALIGN(false, true, true, true),
         /**
          * Applies pid values to autonomously drive to the game piece, scaled by the intake assist scalar in addition to the driver's inputs
          */
-        FULL_ASSIST(true, true, true),
+        FULL_ASSIST(true, true, true, false),
         /**
          * Applies pid values to align to the game piece, scaled by the intake assist scalar in addition to the driver's inputs
          */
-        ALIGN_ASSIST(false, true, true),
+        ALIGN_ASSIST(false, true, true, false),
         /**
          * Applies pid values to face the game piece, scaled by the intake assist scalar in addition to the driver's inputs
          */
-        ASSIST_ROTATION(false, false, true);
+        ASSIST_ROTATION(false, false, true, false);
 
         final boolean
                 shouldAssistX,
                 shouldAssistY,
-                shouldAssistTheta;
+                shouldAssistTheta,
+                isAlternate;
 
-        AssistMode(boolean shouldAssistX, boolean shouldAssistY, boolean shouldAssistTheta) {
+        AssistMode(boolean shouldAssistX, boolean shouldAssistY, boolean shouldAssistTheta, boolean isAlternate) {
             this.shouldAssistX = shouldAssistX;
             this.shouldAssistY = shouldAssistY;
             this.shouldAssistTheta = shouldAssistTheta;
+            this.isAlternate = isAlternate;
         }
     }
 }

@@ -42,12 +42,12 @@ public class Transporter extends MotorSubsystem {
         return targetState;
     }
 
-    @AutoLogOutput(key = "Transporter/hasCoral")
+    @AutoLogOutput(key = "Transporter/TransporterHasCoral")
     public boolean hasCoral() {
         return TransporterConstants.HAS_CORAL_BOOLEAN_EVENT.getAsBoolean();
     }
 
-    void setTargetState(TransporterConstants.TransporterState targetState) {
+    public void setTargetState(TransporterConstants.TransporterState targetState) {
         this.targetState = targetState;
         setTargetState(targetState.targetRightMotorVoltage, targetState.targetLeftMotorVoltage);
     }

@@ -1,8 +1,10 @@
 package frc.trigon.robot.subsystems.endeffector;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.trigon.robot.RobotContainer;
+import frc.trigon.robot.commands.commandfactories.GeneralCommands;
 import lib.commands.NetworkTablesCommand;
 
 import java.util.Set;
@@ -20,8 +22,16 @@ public class EndEffectorCommands {
     public static Command getSetTargetStateCommand(EndEffectorConstants.EndEffectorState targetState) {
         return new StartEndCommand(
                 () -> RobotContainer.END_EFFECTOR.setTargetState(targetState),
-                RobotContainer.END_EFFECTOR::stop,
+                () -> {},
                 RobotContainer.END_EFFECTOR
+        );
+    }
+
+    public static Command getDefaultCommand() {
+        return GeneralCommands.getContinuousConditionalCommand(
+                getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.HOLD_CORAL),
+                getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.REST),
+                RobotContainer.END_EFFECTOR::hasGamePiece
         );
     }
 }

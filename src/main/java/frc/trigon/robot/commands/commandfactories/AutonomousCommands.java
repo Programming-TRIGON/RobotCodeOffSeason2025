@@ -2,6 +2,8 @@ package frc.trigon.robot.commands.commandfactories;
 
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.*;
@@ -32,13 +34,13 @@ public class AutonomousCommands {
     private static FlippablePose2d TARGET_SCORING_POSE = null;
     private static boolean IS_FIRST_CORAL = true;
 
-    public static Command getFloorAutonomousCommand(boolean isRight) {
-        return getCycleCoralCommand(isRight).repeatedly().withName("FloorAutonomous" + (isRight ? "Right" : "Left"));
+    public static Command getFloorAutonomousCommand(boolean isRight, FieldConstants.ReefClockPosition... reefClockPositions) {
+        return getCycleCoralCommand(isRight, reefClockPositions).repeatedly().withName("FloorAutonomous" + (isRight ? "Right" : "Left") + (reefClockPositions.length * 2) + "Branches");
     }
 
-    public static Command getCycleCoralCommand(boolean isRight) {
+    public static Command getCycleCoralCommand(boolean isRight, FieldConstants.ReefClockPosition[] reefClockPositions) {
         return new SequentialCommandGroup(
-                getDriveToReefAndScoreCommand(),
+                getDriveToReefAndScoreCommand(reefClockPositions),
                 getCollectCoralCommand(isRight)
         );
     }
@@ -49,7 +51,7 @@ public class AutonomousCommands {
                 SwerveCommands.getClosedLoopSelfRelativeDriveCommand(
                         () -> 0,
                         () -> 0,
-                        () -> AutonomousConstants.AUTO_FIND_CORAL_ROTATION_POWER
+                        () -> 0
                 )
         );
     }
@@ -81,29 +83,30 @@ public class AutonomousCommands {
         ).alongWith(new InstantCommand(() -> IS_FIRST_CORAL = false));
     }
 
-    public static Command getDriveToReefAndScoreCommand() {
+    public static Command getDriveToReefAndScoreCommand(FieldConstants.ReefClockPosition[] reefClockPositions) {
         return new ParallelRaceGroup(
-                getDriveToReefCommand(),
+                getDriveToReefCommand(reefClockPositions),
                 getCoralSequenceCommand()
+        );
+    }
+
+    public static Command getDriveToReefCommand(FieldConstants.ReefClockPosition[] reefClockPositions) {
+        return new SequentialCommandGroup(
+                new InstantCommand(() -> TARGET_SCORING_POSE = calculateClosestOpenScoringPose(reefClockPositions, false)),
+                new WaitUntilCommand(() -> TARGET_SCORING_POSE != null).raceWith(SwerveCommands.getClosedLoopSelfRelativeDriveCommand(() -> 0, () -> 0, () -> 0)),
+                SwerveCommands.getDriveToPoseCommand(() -> calculateClosestOpenScoringPose(reefClockPositions, true), AutonomousConstants.DRIVE_TO_REEF_CONSTRAINTS).repeatedly().until(CoralPlacingCommands::isPrepareArmAngleAboveCurrentArmAngle),
+                SwerveCommands.getDriveToPoseCommand(() -> TARGET_SCORING_POSE, AutonomousConstants.DRIVE_TO_REEF_CONSTRAINTS).repeatedly()
         );
     }
 
     public static Command getCollectCoralCommand(boolean isRight) {
         return new ParallelCommandGroup(
-                CoralCollectionCommands.getIntakeSequenceCommand(),
-                ArmElevatorCommands.getPrepareForStateCommand(() -> ArmElevatorConstants.ArmElevatorState.LOAD_CORAL),
+                CoralCollectionCommands.getIntakeCoralCommand(),
+                ArmElevatorCommands.getSetTargetStateCommand(() -> ArmElevatorConstants.ArmElevatorState.REST),
                 getDriveToCoralCommand(isRight)
         )
-                .until(RobotContainer.INTAKE::hasCoral)
-                .unless(() -> RobotContainer.TRANSPORTER.hasCoral() || RobotContainer.END_EFFECTOR.hasGamePiece());
-    }
-
-    public static Command getDriveToReefCommand() {
-        return new SequentialCommandGroup(
-                new InstantCommand(() -> TARGET_SCORING_POSE = calculateClosestOpenScoringPose()),
-                new WaitUntilCommand(() -> TARGET_SCORING_POSE != null).raceWith(SwerveCommands.getClosedLoopSelfRelativeDriveCommand(() -> 0, () -> 0, () -> 0)),
-                SwerveCommands.getDriveToPoseCommand(() -> TARGET_SCORING_POSE, AutonomousConstants.DRIVE_TO_REEF_CONSTRAINTS).repeatedly()
-        );
+                .until(() -> RobotContainer.INTAKE.hasCoral() || RobotContainer.TRANSPORTER.hasCoral())
+                .unless(RobotContainer.TRANSPORTER::hasCoral);
     }
 
     public static Command getCoralSequenceCommand() {
@@ -112,14 +115,6 @@ public class AutonomousCommands {
                 new WaitUntilCommand(() -> TARGET_SCORING_POSE != null),
                 getScoreCommand()
         );
-    }
-
-    public static Command getDriveToCoralCommand(boolean isRight) {
-        return new ConditionalCommand(
-                IntakeAssistCommand.getAssistIntakeCommand(IntakeAssistCommand.AssistMode.FULL_ASSIST, IntakeAssistCommand::calculateDistanceFromTrackedGamePiece, OperatorConstants.INTAKE_ASSIST_SCALAR).onlyWhile(() -> CORAL_POSE_ESTIMATOR.getClosestObjectToRobot() != null).withTimeout(10),
-                getFindCoralCommand(isRight).until(() -> CORAL_POSE_ESTIMATOR.getClosestObjectToRobot() != null),
-                () -> CORAL_POSE_ESTIMATOR.getClosestObjectToRobot() != null
-        ).repeatedly();
     }
 
     public static Command getScoreCommand() {
@@ -157,13 +152,13 @@ public class AutonomousCommands {
         return currentTranslation.getDistance(targetTranslation);
     }
 
-    public static FlippablePose2d calculateClosestOpenScoringPose() {
+    public static FlippablePose2d calculateClosestOpenScoringPose(FieldConstants.ReefClockPosition[] reefClockPositions, boolean shouldStayBehindAlgae) {
         final boolean[] scoredBranchesAtL4 = getScoredBranchesAtL4();
         final Pose2d currentRobotPose = RobotContainer.ROBOT_POSE_ESTIMATOR.getEstimatedRobotPose();
 
         double closestDistance = Double.POSITIVE_INFINITY;
         Pose2d closestScoringPose = null;
-        for (FieldConstants.ReefClockPosition currentClockPosition : FieldConstants.ReefClockPosition.values()) {
+        for (FieldConstants.ReefClockPosition currentClockPosition : reefClockPositions) {
             for (FieldConstants.ReefSide currentSide : FieldConstants.ReefSide.values()) {
                 if (scoredBranchesAtL4[currentClockPosition.ordinal() * 2 + currentSide.ordinal()])
                     continue;
@@ -171,12 +166,23 @@ public class AutonomousCommands {
                 final double distance = currentRobotPose.getTranslation().getDistance(reefSideScoringPose.getTranslation());
                 if (distance < closestDistance) {
                     closestDistance = distance;
-                    closestScoringPose = reefSideScoringPose;
+                    if (shouldStayBehindAlgae)
+                        closestScoringPose = reefSideScoringPose.transformBy(new Transform2d(new Translation2d(FieldConstants.REEF_CENTER_TO_TARGET_NO_HIT_REEF_POSITION_X_TRANSFORM_METERS - FieldConstants.REEF_CENTER_TO_TARGET_SCORING_POSITION_X_TRANSFORM_METERS, 0), new Rotation2d()));
+                    else
+                        closestScoringPose = reefSideScoringPose;
                 }
             }
         }
 
         return closestScoringPose == null ? null : new FlippablePose2d(closestScoringPose, false);
+    }
+
+    public static Command getDriveToCoralCommand(boolean isRight) {
+        return new ConditionalCommand(
+                IntakeAssistCommand.getAssistIntakeCommand(IntakeAssistCommand.AssistMode.FULL_ASSIST, IntakeAssistCommand::calculateDistanceFromTrackedGamePiece, OperatorConstants.INTAKE_ASSIST_SCALAR).onlyWhile(() -> CORAL_POSE_ESTIMATOR.getClosestObjectToRobot() != null).withTimeout(10),
+                getFindCoralCommand(isRight).until(() -> CORAL_POSE_ESTIMATOR.getClosestObjectToRobot() != null),
+                () -> CORAL_POSE_ESTIMATOR.getClosestObjectToRobot() != null
+        ).repeatedly();
     }
 
     private static Command getAddCurrentScoringBranchToScoredBranchesCommand() {

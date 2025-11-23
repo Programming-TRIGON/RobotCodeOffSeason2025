@@ -22,9 +22,10 @@ public class ObjectPoseEstimator extends SubsystemBase {
     /**
      * Constructs an ObjectPoseEstimator for estimating the positions of objects detected by camera.
      *
-     * @param deletionThresholdSeconds the time in seconds after which an object is considered old and removed
-     * @param gamePieceType            the type of game piece to track
-     * @param camera                   the camera used for detecting objects
+     * @param deletionThresholdSeconds  the time in seconds after which an object is considered old and removed
+     * @param distanceCalculationMethod the method used to calculate the distance from the game piece
+     * @param gamePieceType             the type of game piece to track
+     * @param camera                    the camera used for detecting objects
      */
     public ObjectPoseEstimator(double deletionThresholdSeconds, DistanceCalculationMethod distanceCalculationMethod,
                                SimulatedGamePieceConstants.GamePieceType gamePieceType,

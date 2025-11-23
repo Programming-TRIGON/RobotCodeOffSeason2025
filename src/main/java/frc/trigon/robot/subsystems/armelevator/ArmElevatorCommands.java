@@ -1,10 +1,17 @@
 package frc.trigon.robot.subsystems.armelevator;
 
+import com.ctre.phoenix6.controls.VoltageOut;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.trigon.robot.RobotContainer;
+import frc.trigon.robot.commands.commandfactories.GeneralCommands;
+import frc.trigon.robot.constants.OperatorConstants;
+import frc.trigon.robot.subsystems.endeffector.EndEffectorCommands;
+import frc.trigon.robot.subsystems.endeffector.EndEffectorConstants;
+import frc.trigon.robot.subsystems.swerve.SwerveCommands;
+import lib.commands.ArmCalibrationCommand;
 import lib.commands.ExecuteEndCommand;
 import lib.commands.GearRatioCalculationCommand;
 import lib.commands.NetworkTablesCommand;
@@ -26,6 +33,14 @@ public class ArmElevatorCommands {
         );
     }
 
+    public static Command getArmCalibrationCommand() {
+        return new ArmCalibrationCommand(
+                () -> RobotContainer.ARM_ELEVATOR.getCurrentArmAngle().getRotations(),
+                voltage -> ArmElevatorConstants.ARM_MASTER_MOTOR.setControl(new VoltageOut(voltage).withEnableFOC(true)),
+                RobotContainer.ARM_ELEVATOR
+        );
+    }
+
     public static Command getArmGearRatioCalulationCommand() {
         return new GearRatioCalculationCommand(
                 ArmElevatorConstants.ARM_MASTER_MOTOR,
@@ -33,6 +48,27 @@ public class ArmElevatorCommands {
                 0.5,
                 RobotContainer.ARM_ELEVATOR
         );
+    }
+
+    public static Command resetElevatorPositionCommand() {
+        return new ParallelCommandGroup(
+                new ExecuteEndCommand(
+                        () -> RobotContainer.ARM_ELEVATOR.setTargetArmState(ArmElevatorConstants.ArmElevatorState.ZERO_ELEVATOR, false),
+                        () -> {
+                        }
+                ).until(() -> RobotContainer.ARM_ELEVATOR.atState(ArmElevatorConstants.ArmElevatorState.ZERO_ELEVATOR)),
+                new ExecuteEndCommand(
+                        () -> RobotContainer.ARM_ELEVATOR.setElevatorVoltage(OperatorConstants.DRIVER_CONTROLLER.getRightY() * 2),
+                        () -> {
+                        },
+                        RobotContainer.ARM_ELEVATOR
+                ),
+                SwerveCommands.getOpenLoopFieldRelativeDriveCommand(() -> 0, () -> 0, () -> 0),
+                EndEffectorCommands.getSetTargetStateCommand(EndEffectorConstants.EndEffectorState.EJECT)
+        ).finallyDo(() -> {
+            RobotContainer.ARM_ELEVATOR.resetElevatorPosition();
+            RobotContainer.END_EFFECTOR.setTargetState(EndEffectorConstants.EndEffectorState.REST);
+        });
     }
 
     public static Command getSetTargetStateCommand(ArmElevatorConstants.ArmElevatorState targetState) {
@@ -56,6 +92,17 @@ public class ArmElevatorCommands {
         );
     }
 
+    public static Command getStayInPlaceCommand() {
+        return new ExecuteEndCommand(
+                () -> {
+                    RobotContainer.ARM_ELEVATOR.setTargetArmAngle(RobotContainer.ARM_ELEVATOR.getCurrentArmAngle(), true);
+                    RobotContainer.ARM_ELEVATOR.setTargetElevatorPositionMeters(RobotContainer.ARM_ELEVATOR.getCurrentElevatorPositionMeters(), true);
+                },
+                RobotContainer.ARM_ELEVATOR::stop,
+                RobotContainer.ARM_ELEVATOR
+        );
+    }
+
     public static Command getPrepareForStateCommand(Supplier<ArmElevatorConstants.ArmElevatorState> targetState) {
         return getPrepareForStateCommand(targetState, () -> false);
     }
@@ -69,7 +116,7 @@ public class ArmElevatorCommands {
     }
 
     public static Command getDefaultCommand() {
-        return new ConditionalCommand(
+        return GeneralCommands.getContinuousConditionalCommand(
                 getSetTargetStateCommand(ArmElevatorConstants.ArmElevatorState.REST_WITH_CORAL),
                 getSetTargetStateCommand(ArmElevatorConstants.ArmElevatorState.REST),
                 RobotContainer.END_EFFECTOR::hasGamePiece

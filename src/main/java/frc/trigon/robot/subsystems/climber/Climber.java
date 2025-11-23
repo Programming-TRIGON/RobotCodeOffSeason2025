@@ -10,6 +10,8 @@ import frc.trigon.robot.subsystems.MotorSubsystem;
 import lib.hardware.misc.servo.Servo;
 import lib.hardware.phoenix6.talonfx.TalonFXMotor;
 import lib.hardware.phoenix6.talonfx.TalonFXSignal;
+import org.littletonrobotics.junction.AutoLog;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Climber extends MotorSubsystem {
@@ -28,7 +30,7 @@ public class Climber extends MotorSubsystem {
     @Override
     public void stop() {
         motor.stopMotor();
-        setServoPowers(0);
+        stopServos();
     }
 
     @Override
@@ -45,7 +47,7 @@ public class Climber extends MotorSubsystem {
     public void updatePeriodically() {
         motor.update();
         rightServo.update();
-        leftServo.update();
+        //   leftServo.update();
     }
 
     @Override
@@ -79,10 +81,6 @@ public class Climber extends MotorSubsystem {
         return Math.abs(getPositionRotations() - targetState.targetPositionRotations) < ClimberConstants.CLIMBER_TOLERANCE_ROTATIONS;
     }
 
-    public boolean hasCage() {
-        return ClimberConstants.HAS_CAGE_BOOLEAN_EVENT.getAsBoolean();
-    }
-
     void setTargetState(ClimberConstants.ClimberState targetState) {
         this.targetState = targetState;
         setTargetState(targetState.targetPositionRotations, targetState.targetServoPower, targetState.isAffectedByRobotWeight);
@@ -100,9 +98,18 @@ public class Climber extends MotorSubsystem {
         motor.setControl(voltageRequest.withOutput(targetVoltage));
     }
 
-    private void setServoPowers(double power) {
+    void resetClimberPosition() {
+        motor.setPosition(0);
+    }
+
+    public void setServoPowers(double power) {
         rightServo.setTargetSpeed(power);
         leftServo.setTargetSpeed(-power);
+    }
+
+    private void stopServos() {
+        rightServo.stop();
+        leftServo.stop();
     }
 
     private Pose3d calculateVisualizationPose() {
@@ -113,7 +120,7 @@ public class Climber extends MotorSubsystem {
 
         return ClimberConstants.CLIMBER_VISUALIZATION_ORIGIN_POINT.transformBy(climberTransform);
     }
-
+    @AutoLogOutput(key = "Climber/ClimberPosition")
     private double getPositionRotations() {
         return motor.getSignal(TalonFXSignal.POSITION);
     }

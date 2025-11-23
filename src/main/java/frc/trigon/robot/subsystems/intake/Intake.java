@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.trigon.robot.commands.commandfactories.CoralCollectionCommands;
 import frc.trigon.robot.subsystems.MotorSubsystem;
 import lib.hardware.phoenix6.talonfx.TalonFXMotor;
 import lib.hardware.phoenix6.talonfx.TalonFXSignal;
@@ -51,9 +52,10 @@ public class Intake extends MotorSubsystem {
     public void updatePeriodically() {
         intakeMotor.update();
         angleMotor.update();
-        IntakeConstants.FORWARD_LIMIT_SENSOR.updateSensor();
-        IntakeConstants.REVERSE_LIMIT_SENSOR.updateSensor();
         IntakeConstants.DISTANCE_SENSOR.updateSensor();
+        Logger.recordOutput("Intake/IntakeSensorCM", IntakeConstants.DISTANCE_SENSOR.getScaledValue());
+        Logger.recordOutput("Intake/IntakeAngle", getCurrentAngle().getDegrees());
+        Logger.recordOutput("Intake/AutonomousIntake", CoralCollectionCommands.SHOULD_USE_INTAKE_ASSIST);
     }
 
     @Override
@@ -70,7 +72,7 @@ public class Intake extends MotorSubsystem {
     @Override
     public void stop() {
         IntakeConstants.INTAKE_MECHANISM.setTargetVelocity(0);
-        intakeMotor.stopMotor();
+//        intakeMotor.stopMotor();
         angleMotor.stopMotor();
     }
 
@@ -78,13 +80,13 @@ public class Intake extends MotorSubsystem {
         return targetState == this.targetState && atTargetAngle();
     }
 
-    @AutoLogOutput(key = "CoralIntake/AtTargetAngle")
+    @AutoLogOutput(key = "Intake/AtTargetAngle")
     public boolean atTargetAngle() {
         final double angleDifferenceFromTargetAngleDegrees = Math.abs(getCurrentAngle().minus(targetState.targetAngle).getDegrees());
         return angleDifferenceFromTargetAngleDegrees < IntakeConstants.ANGLE_TOLERANCE.getDegrees();
     }
 
-    @AutoLogOutput(key = "CoralIntake/HasCoral")
+    @AutoLogOutput(key = "Intake/IntakeHasCoral")
     public boolean hasCoral() {
         return IntakeConstants.COLLECTION_DETECTION_BOOLEAN_EVENT.getAsBoolean();
     }
@@ -97,7 +99,7 @@ public class Intake extends MotorSubsystem {
                 targetState.targetVoltage
         );
     }
-    
+
     public Translation3d calculateLinearIntakeVelocity() {
         double velocityMetersPerSecond = intakeMotor.getSignal(TalonFXSignal.VELOCITY) * 2 * Math.PI * IntakeConstants.WHEEL_RADIUS_METERS;
         return new Translation3d(
@@ -107,7 +109,11 @@ public class Intake extends MotorSubsystem {
         );
     }
 
-    void setTargetState(IntakeConstants.IntakeState targetState) {
+    public void resetIntakePosition() {
+        angleMotor.setPosition(0);
+    }
+
+    public void setTargetState(IntakeConstants.IntakeState targetState) {
         this.targetState = targetState;
         setTargetState(targetState.targetAngle, targetState.targetVoltage);
     }
@@ -115,6 +121,10 @@ public class Intake extends MotorSubsystem {
     void setTargetState(Rotation2d targetAngle, double targetVoltage) {
         setTargetVoltage(targetVoltage);
         setTargetAngle(targetAngle);
+    }
+
+    void setAngleMotorVoltage(double voltage) {
+        angleMotor.setControl(voltageRequest.withOutput(voltage));
     }
 
     private void setTargetVoltage(double voltage) {
@@ -129,7 +139,7 @@ public class Intake extends MotorSubsystem {
     private Pose3d calculateVisualizationPose() {
         final Transform3d transform = new Transform3d(
                 new Translation3d(),
-                new Rotation3d(0, getCurrentAngle().getRadians(), 0)
+                new Rotation3d(0, -getCurrentAngle().getRadians(), 0)
         );
         return IntakeConstants.INTAKE_VISUALIZATION_ORIGIN_POINT.transformBy(transform);
     }
